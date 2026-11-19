@@ -1,0 +1,95 @@
+import { defineField, defineType } from 'sanity'
+
+export const siteSettingsType = defineType({
+  name: 'siteSettings',
+  title: 'Portada y Configuración del Sitio',
+  type: 'document',
+  fields: [
+    defineField({ name: 'heroImage', title: 'Imagen de portada', type: 'image', options: { hotspot: true } }),
+    defineField({ name: 'heroBadgeEs', title: 'Etiqueta Hero (ES)', type: 'string' }),
+    defineField({ name: 'heroBadgeEn', title: 'Hero Badge (EN)', type: 'string' }),
+    defineField({ name: 'heroTitleEs', title: 'Título Hero (ES)', type: 'string' }),
+    defineField({ name: 'heroTitleEn', title: 'Hero Title (EN)', type: 'string' }),
+    defineField({ name: 'heroSubtitleEs', title: 'Subtítulo Hero (ES)', type: 'text', rows: 3 }),
+    defineField({ name: 'heroSubtitleEn', title: 'Hero Subtitle (EN)', type: 'text', rows: 3 }),
+
+    defineField({ name: 'aboutImage', title: 'Imagen Quiénes Somos', type: 'image', options: { hotspot: true } }),
+    defineField({ name: 'aboutBadgeEs', title: 'Etiqueta Quiénes Somos (ES)', type: 'string' }),
+    defineField({ name: 'aboutBadgeEn', title: 'About Us Badge (EN)', type: 'string' }),
+    defineField({ name: 'aboutTitleEs', title: 'Título Quiénes Somos (ES)', type: 'string' }),
+    defineField({ name: 'aboutTitleEn', title: 'About Us Title (EN)', type: 'string' }),
+    defineField({ name: 'aboutDescriptionEs', title: 'Descripción Quiénes Somos (ES)', type: 'text', rows: 4 }),
+    defineField({ name: 'aboutDescriptionEn', title: 'About Us Description (EN)', type: 'text', rows: 4 }),
+    defineField({ name: 'aboutHighlightsEs', title: 'Puntos fuertes (ES)', type: 'array', of: [{ type: 'string' }] }),
+    defineField({ name: 'aboutHighlightsEn', title: 'Key highlights (EN)', type: 'array', of: [{ type: 'string' }] }),
+
+    defineField({ name: 'toursTitleEs', title: 'Título Tours (ES)', type: 'string' }),
+    defineField({ name: 'toursTitleEn', title: 'Tours Title (EN)', type: 'string' }),
+    defineField({ name: 'toursSubtitleEs', title: 'Subtítulo Tours (ES)', type: 'text', rows: 3 }),
+    defineField({ name: 'toursSubtitleEn', title: 'Tours Subtitle (EN)', type: 'text', rows: 3 }),
+    defineField({ name: 'transfersTitleEs', title: 'Título Traslados (ES)', type: 'string' }),
+    defineField({ name: 'transfersTitleEn', title: 'Transfers Title (EN)', type: 'string' }),
+    defineField({ name: 'transfersSubtitleEs', title: 'Subtítulo Traslados (ES)', type: 'text', rows: 3 }),
+    defineField({ name: 'transfersSubtitleEn', title: 'Transfers Subtitle (EN)', type: 'text', rows: 3 }),
+    defineField({ name: 'rentTitleEs', title: 'Título Rent Car (ES)', type: 'string' }),
+    defineField({ name: 'rentTitleEn', title: 'Rent Car Title (EN)', type: 'string' }),
+    defineField({ name: 'rentSubtitleEs', title: 'Subtítulo Rent Car (ES)', type: 'text', rows: 3 }),
+    defineField({ name: 'rentSubtitleEn', title: 'Rent Car Subtitle (EN)', type: 'text', rows: 3 }),
+
+    defineField({ name: 'showFloatingWhatsapp', title: 'Mostrar WhatsApp flotante', type: 'boolean', initialValue: true }),
+    defineField({ name: 'whatsappNumber', title: 'Número de WhatsApp', type: 'string', initialValue: '+1 809-447-7101' }),
+    defineField({ name: 'whatsappLink', title: 'Enlace directo de WhatsApp', type: 'url', initialValue: 'https://wa.link/pbnzgo' }),
+    defineField({ name: 'whatsappFloatingTextEs', title: 'Texto flotante WhatsApp (ES)', type: 'string', initialValue: '¡Escríbenos!' }),
+    defineField({ name: 'whatsappFloatingTextEn', title: 'Floating WhatsApp Text (EN)', type: 'string', initialValue: 'Chat with us!' }),
+    defineField({ name: 'whatsappDefaultMessageEs', title: 'Mensaje predeterminado (ES)', type: 'string' }),
+    defineField({ name: 'whatsappDefaultMessageEn', title: 'Default WhatsApp Message (EN)', type: 'string' }),
+
+    defineField({
+      name: 'faqs', title: 'Preguntas Frecuentes', type: 'array', of: [{
+        type: 'object', fields: [
+          defineField({ name: 'questionEs', title: 'Pregunta (ES)', type: 'string', validation: (Rule) => Rule.required() }),
+          defineField({ name: 'questionEn', title: 'Question (EN)', type: 'string', validation: (Rule) => Rule.required() }),
+          defineField({ name: 'answerEs', title: 'Respuesta (ES)', type: 'text', rows: 4, validation: (Rule) => Rule.required() }),
+          defineField({ name: 'answerEn', title: 'Answer (EN)', type: 'text', rows: 4, validation: (Rule) => Rule.required() }),
+        ], preview: { select: { title: 'questionEs', subtitle: 'questionEn' } },
+      }],
+    }),
+
+    defineField({
+      name: 'reviews',
+      title: 'Reseñas de clientes',
+      type: 'array',
+      of: [{
+        type: 'object',
+        fields: [
+          defineField({ name: 'clientName', title: 'Nombre del cliente', type: 'string', validation: (Rule) => Rule.required() }),
+          defineField({ name: 'country', title: 'País', type: 'string' }),
+          defineField({ name: 'rating', title: 'Calificación', type: 'number', options: { list: [1, 2, 3, 4, 5] }, validation: (Rule) => Rule.required().min(1).max(5) }),
+          defineField({ name: 'commentEs', title: 'Comentario (ES)', type: 'text', rows: 3, validation: (Rule) => Rule.required() }),
+          defineField({ name: 'commentEn', title: 'Comment (EN)', type: 'text', rows: 3, validation: (Rule) => Rule.required() }),
+        ],
+        preview: { select: { title: 'clientName', subtitle: 'country' } },
+      }],
+    }),
+
+    defineField({ name: 'instagramHandle', title: 'Instagram', type: 'string', initialValue: '@BlessedTransportSafe' }),
+    defineField({ name: 'footerDescriptionEs', title: 'Descripción del footer (ES)', type: 'string' }),
+    defineField({ name: 'footerDescriptionEn', title: 'Footer Description (EN)', type: 'string' }),
+    defineField({ name: 'showPromoVideo', title: 'Mostrar video promocional', type: 'boolean', initialValue: false }),
+    defineField({ name: 'promoVideoUrl', title: 'URL de video promocional (YouTube/Vimeo)', type: 'url' }),
+    defineField({
+      name: 'legalPolicies',
+      title: 'Políticas Legales',
+      type: 'object',
+      fields: [
+        defineField({ name: 'privacyPolicyEs', title: 'Política de Privacidad (ES)', type: 'text', rows: 8 }),
+        defineField({ name: 'privacyPolicyEn', title: 'Privacy Policy (EN)', type: 'text', rows: 8 }),
+        defineField({ name: 'termsConditionsEs', title: 'Términos y Condiciones (ES)', type: 'text', rows: 8 }),
+        defineField({ name: 'termsConditionsEn', title: 'Terms & Conditions (EN)', type: 'text', rows: 8 }),
+        defineField({ name: 'cancellationPolicyEs', title: 'Política de Cancelación (ES)', type: 'text', rows: 8 }),
+        defineField({ name: 'cancellationPolicyEn', title: 'Cancellation Policy (EN)', type: 'text', rows: 8 }),
+      ],
+    }),
+  ],
+  preview: { prepare: () => ({ title: 'Portada y Configuración del Sitio' }) },
+})

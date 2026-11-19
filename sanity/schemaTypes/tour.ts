@@ -48,6 +48,12 @@ export const tourType = defineType({
       validation: (Rule) => Rule.min(0),
     }),
     defineField({
+      name: 'showPrice',
+      title: 'Mostrar precio en la web',
+      type: 'boolean',
+      initialValue: false,
+    }),
+    defineField({
       name: 'duration',
       title: 'Duración (Español)',
       type: 'string',

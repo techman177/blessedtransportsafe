@@ -15,6 +15,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Blessed Transport Safe | VIP Transfers & Tours",
   description: "Traslados privados, tours y rent car en República Dominicana.",
+  openGraph: {
+    title: "Blessed Transport Safe",
+    description: "VIP Transfers, tours y rent car en República Dominicana.",
+    images: ["https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=85"],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
