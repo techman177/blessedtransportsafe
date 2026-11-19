@@ -1,0 +1,383 @@
+[
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "name": "title",
+        "type": "string",
+        "title": "Nombre del Tour / Excursión"
+      },
+      {
+        "options": {
+          "list": [
+            {
+              "title": "1. Cuevas Los 3 Ojos",
+              "value": "tres-ojos"
+            },
+            {
+              "title": "2. Faro a Colón",
+              "value": "faro-a-colon"
+            },
+            {
+              "title": "3. Zona Colonial (Ciudad Histórica Santo Domingo)",
+              "value": "zona-colonial"
+            },
+            {
+              "title": "Excursión Isla Saona",
+              "value": "isla-saona"
+            },
+            {
+              "title": "Buggies / Aventura",
+              "value": "buggies"
+            },
+            {
+              "title": "Tour en la Ciudad",
+              "value": "city-tour"
+            }
+          ]
+        },
+        "initialValue": "tres-ojos",
+        "name": "category",
+        "type": "string",
+        "title": "Categoría"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 1
+              }
+            ]
+          }
+        ],
+        "name": "priceUsd",
+        "type": "number",
+        "title": "Precio en USD ($)"
+      },
+      {
+        "name": "duration",
+        "type": "string",
+        "title": "Duración (Ej: 3 horas / Día completo)"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "name": "image",
+        "type": "image",
+        "title": "Foto principal"
+      },
+      {
+        "rows": 3,
+        "name": "description",
+        "type": "text",
+        "title": "Descripción"
+      },
+      {
+        "of": [
+          {
+            "type": "string"
+          }
+        ],
+        "name": "includes",
+        "type": "array",
+        "title": "Incluye (Ej: Transporte, entradas, guías, bebidas)"
+      },
+      {
+        "initialValue": true,
+        "name": "featured",
+        "type": "boolean",
+        "title": "Destacar en portada"
+      }
+    ],
+    "name": "tour",
+    "type": "document",
+    "title": "Tours y Excursiones"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "name": "name",
+        "type": "string",
+        "title": "Nombre"
+      },
+      {
+        "options": {
+          "list": [
+            {
+              "title": "Van / Minibus VIP",
+              "value": "van-vip"
+            },
+            {
+              "title": "SUV / Ejecutivo",
+              "value": "suv"
+            },
+            {
+              "title": "Sedán Privado",
+              "value": "sedan"
+            },
+            {
+              "title": "Rent Car",
+              "value": "rent-car"
+            }
+          ]
+        },
+        "initialValue": "rent-car",
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "valid",
+                "constraint": [
+                  "van-vip",
+                  "suv",
+                  "sedan",
+                  "rent-car"
+                ]
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "name": "category",
+        "type": "string",
+        "title": "Categoría"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 0
+              }
+            ]
+          }
+        ],
+        "name": "dailyRateUsd",
+        "type": "number",
+        "title": "Tarifa diaria en USD"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 1
+              },
+              {
+                "flag": "max",
+                "constraint": 50
+              }
+            ]
+          }
+        ],
+        "name": "passengers",
+        "type": "number",
+        "title": "Pasajeros"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 0
+              },
+              {
+                "flag": "max",
+                "constraint": 50
+              }
+            ]
+          }
+        ],
+        "name": "luggage",
+        "type": "number",
+        "title": "Maletas"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "name": "photo",
+        "type": "image",
+        "title": "Foto"
+      },
+      {
+        "of": [
+          {
+            "type": "string"
+          }
+        ],
+        "name": "features",
+        "type": "array",
+        "title": "Características"
+      },
+      {
+        "initialValue": true,
+        "name": "available",
+        "type": "boolean",
+        "title": "Disponibilidad"
+      }
+    ],
+    "name": "vehicle",
+    "type": "document",
+    "title": "Rent Car / Vehículos"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "name": "title",
+        "type": "string",
+        "title": "Título"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "name": "airport",
+        "type": "string",
+        "title": "Aeropuerto"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "name": "hotelZone",
+        "type": "string",
+        "title": "Zona de hoteles"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 0
+              }
+            ]
+          }
+        ],
+        "name": "privateRateUsd",
+        "type": "number",
+        "title": "Tarifa privada en USD"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "name": "estimatedTime",
+        "type": "string",
+        "title": "Tiempo estimado"
+      },
+      {
+        "initialValue": false,
+        "name": "featured",
+        "type": "boolean",
+        "title": "Destacado"
+      }
+    ],
+    "name": "transferRoute",
+    "type": "document",
+    "title": "Transporte Aeropuerto a Hoteles"
+  }
+]
