@@ -108,7 +108,7 @@ export default async function Home() {
       descriptionEn,
       "imageUrl": image.asset->url
     },
-    "transfers": *[_type == "transferRoute"] {
+    "transfers": *[_type == "transferRoute"] | order(featured desc, title asc) {
       _id,
       title,
       airport,

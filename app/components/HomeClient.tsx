@@ -179,6 +179,21 @@ export default function HomeClient({ tours, transfers, vehicles, settings }: { t
     { _id: 'fallback-suv', name: 'SUV Ejecutivo', category: 'suv', passengers: 6, luggage: 5, available: true, features: ['A/C', 'Confort ejecutivo'] },
     { _id: 'fallback-sedan', name: 'Sedán Privado', category: 'sedan', passengers: 3, luggage: 3, available: true, features: ['A/C', 'Servicio privado'] },
   ]
+  const displayTransfers = transfers.length
+    ? transfers.map((route) => ({
+        _id: route._id,
+        title: route.title || (route.airport && route.hotelZone ? `${route.airport} → ${route.hotelZone}` : (es ? 'Traslado privado' : 'Private transfer')),
+        detail: route.airport && route.hotelZone
+          ? `${route.airport} → ${route.hotelZone}`
+          : route.estimatedTime || (es ? 'Cotización personalizada' : 'Custom quote'),
+        estimatedTime: route.estimatedTime,
+        privateRateUsd: route.privateRateUsd,
+      }))
+    : [
+        { _id: 'fallback-sdq', title: es ? 'Aeropuerto Las Américas' : 'Las Américas Airport', detail: 'SDQ → HOTELS', estimatedTime: undefined, privateRateUsd: undefined },
+        { _id: 'fallback-puj', title: 'Punta Cana', detail: 'PUJ → PUNTA CANA', estimatedTime: undefined, privateRateUsd: undefined },
+        { _id: 'fallback-custom', title: es ? 'Rutas Personalizadas' : 'Custom Routes', detail: es ? 'Tu ruta, tu horario' : 'Your route, your schedule', estimatedTime: undefined, privateRateUsd: undefined },
+      ]
 
   const faqs = settings?.faqs?.length ? settings.faqs.map((faq) => ({ question: es ? faq.questionEs || faq.questionEn : faq.questionEn || faq.questionEs, answer: es ? faq.answerEs || faq.answerEn : faq.answerEn || faq.answerEs })) : es
     ? [{ question: '¿El traslado es 100% privado?', answer: 'Sí. El vehículo es exclusivo para usted y las personas incluidas en su reservación.' }, { question: '¿Qué pasa si mi vuelo se retrasa?', answer: 'Su horario se ajustará según el estado del vuelo cuando esté disponible.' }, { question: '¿Cómo reservo y cómo pago?', answer: 'Reserve por WhatsApp y confirme la disponibilidad y el método de pago acordado.' }, { question: '¿Incluyen sillas para bebés y paradas adicionales?', answer: 'Sí, sujeto a disponibilidad. Indíquenos la edad del menor y las paradas al reservar.' }]
@@ -309,11 +324,14 @@ Before payment, guests may request written confirmation of the price, pickup det
 
       <section id="top" className="relative min-h-[660px] pt-20"><div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `linear-gradient(90deg,rgba(255,255,255,.96),rgba(255,255,255,.82) 55%,rgba(207,250,254,.25)),url('${heroImage}')` }} /><div className="relative mx-auto flex min-h-[580px] max-w-7xl items-center px-5 py-16 sm:px-8"><div className="max-w-2xl"><p className="mb-5 inline-flex rounded-full border border-cyan-200 bg-white/90 px-4 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-cyan-700">{copy.heroBadge}</p><h1 className="text-4xl font-black leading-tight text-slate-900 sm:text-6xl">{copy.heroTitle}</h1><p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">{copy.heroSubtitle}</p><div className="mt-8 flex flex-col gap-3 sm:flex-row"><a href={getWhatsappUrl(defaultMessage)} target="_blank" rel="noopener noreferrer" className="rounded-full bg-emerald-500 px-7 py-4 text-center text-sm font-extrabold text-white">{copy.heroCta}</a><a href="#tours" className="rounded-full border-2 border-cyan-600 bg-white px-7 py-4 text-center text-sm font-extrabold text-cyan-700">{copy.toursCta}</a></div></div></div></section>
 
-      <section id="transfers" className="bg-cyan-50/40 py-24"><div className="mx-auto max-w-7xl px-5 sm:px-8"><div className="mb-10 max-w-2xl"><p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">VIP</p><h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-5xl">{copy.transfersTitle}</h2><p className="mt-4 leading-7 text-slate-600">{copy.transfersSubtitle}</p></div><div className="grid gap-6 lg:grid-cols-[1fr_420px]"><div className="grid gap-5 md:grid-cols-3">{[
-        { title: es ? 'Aeropuerto Las Américas' : 'Las Américas Airport', detail: 'SDQ → HOTELS' },
-        { title: 'Punta Cana', detail: 'PUJ → PUNTA CANA' },
-        { title: es ? 'Rutas Personalizadas' : 'Custom Routes', detail: es ? 'Tu ruta, tu horario' : 'Your route, your schedule' },
-      ].map((card) => <article key={card.title} className="rounded-3xl border border-cyan-100 bg-white p-6"><p className="text-xs font-bold text-cyan-600">{card.detail}</p><h3 className="mt-3 text-xl font-black text-slate-900">{card.title}</h3></article>)}</div>
+      <section id="transfers" className="bg-cyan-50/40 py-24"><div className="mx-auto max-w-7xl px-5 sm:px-8"><div className="mb-10 max-w-2xl"><p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">VIP</p><h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-5xl">{copy.transfersTitle}</h2><p className="mt-4 leading-7 text-slate-600">{copy.transfersSubtitle}</p></div><div className="grid gap-6 lg:grid-cols-[1fr_420px]"><div className="grid gap-5 md:grid-cols-3">{displayTransfers.map((card) => (
+          <article key={card._id} className="rounded-3xl border border-cyan-100 bg-white p-6">
+            <p className="text-xs font-bold text-cyan-600">{card.detail}</p>
+            <h3 className="mt-3 text-xl font-black text-slate-900">{card.title}</h3>
+            {card.estimatedTime && <p className="mt-3 text-sm text-slate-600">{card.estimatedTime}</p>}
+            {typeof card.privateRateUsd === 'number' && <p className="mt-4 text-sm font-bold text-cyan-700">USD ${card.privateRateUsd}</p>}
+          </article>
+        ))}</div>
         <form onSubmit={(event) => { event.preventDefault(); window.open(getWhatsappUrl(quoteMessage), '_blank', 'noopener,noreferrer') }} className="rounded-3xl border border-cyan-100 bg-white p-5 shadow-xl shadow-cyan-900/5"><h3 className="mb-4 text-xl font-black text-slate-900">{es ? 'Cotizador rápido' : 'Quick Quote'}</h3><div className="space-y-3"><div><label className="mb-1 block text-xs font-bold text-slate-600">{es ? 'Origen' : 'Origin'}</label><select value={origin} onChange={(e) => setOrigin(e.target.value)} className="w-full rounded-xl border border-cyan-100 px-4 py-3"><option>Aeropuerto Las Américas SDQ</option><option>Aeropuerto Punta Cana PUJ</option><option>Aeropuerto La Romana LRM</option><option>Santo Domingo</option><option>{es ? 'Otro' : 'Other'}</option></select></div>
             <div><label className="mb-1 block text-xs font-bold text-slate-600">{es ? 'Destino' : 'Destination'}</label><input value={destination} onChange={(e) => setDestination(e.target.value)} placeholder={es ? 'Hotel / Zona' : 'Hotel / Area'} className="w-full rounded-xl border border-cyan-100 px-4 py-3" /></div>
             <div><label className="mb-1 block text-xs font-bold text-slate-600">{es ? 'Fecha' : 'Date'}</label><input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full rounded-xl border border-cyan-100 px-4 py-3" /></div>
