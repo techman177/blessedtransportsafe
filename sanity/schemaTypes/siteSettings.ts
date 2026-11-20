@@ -73,6 +73,8 @@ export const siteSettingsType = defineType({
     }),
 
     defineField({ name: 'instagramHandle', title: 'Instagram', type: 'string', initialValue: '@BlessedTransportSafe' }),
+    defineField({ name: 'email', title: 'Correo Electrónico Corporativo', type: 'string', initialValue: 'reservas@blessedtransportsafe.com' }),
+    defineField({ name: 'phone', title: 'Teléfono / WhatsApp de Contacto', type: 'string', initialValue: '+1 809-447-7101' }),
     defineField({ name: 'footerDescriptionEs', title: 'Descripción del footer (ES)', type: 'string' }),
     defineField({ name: 'footerDescriptionEn', title: 'Footer Description (EN)', type: 'string' }),
     defineField({ name: 'showPromoVideo', title: 'Mostrar video promocional', type: 'boolean', initialValue: false }),

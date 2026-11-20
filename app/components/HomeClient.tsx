@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { CalendarDays, Camera, CarFront, CheckCircle, ChevronDown, ChevronLeft, ChevronRight, Circle, Clock3, ShieldCheck, Users, X } from 'lucide-react'
+import { CalendarDays, Camera, CarFront, CheckCircle, ChevronDown, ChevronLeft, ChevronRight, Circle, Clock3, Mail, MessageCircle, ShieldCheck, Users, X } from 'lucide-react'
 
 export type Tour = {
   _id: string
@@ -120,6 +120,8 @@ export type SiteSettings = {
   promoVideoUrl?: string
   faqs?: Array<{ questionEs?: string; questionEn?: string; answerEs?: string; answerEn?: string }>
   instagramHandle?: string
+  email?: string
+  phone?: string
   footerDescriptionEs?: string
   footerDescriptionEn?: string
   reviews?: Array<{ clientName?: string; country?: string; rating?: number; commentEs?: string; commentEn?: string }>
@@ -304,6 +306,11 @@ export default function HomeClient({ tours, transfers, vehicles, rentCars, setti
   const heroImage = settings?.heroImageUrl || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1800&q=88'
   const aboutImage = settings?.aboutImageUrl || 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=85'
   const instagramHandle = settings?.instagramHandle || '@BlessedTransportSafe'
+  const contactEmail = settings?.email?.trim() || 'reservas@blessedtransportsafe.com'
+  const contactPhone = settings?.phone?.trim() || '+1 809-447-7101'
+  const contactPhoneDigits = contactPhone.replace(/[^0-9]/g, '')
+  const contactWhatsappUrl = `https://wa.me/${contactPhoneDigits}`
+  const contactTitle = es ? 'Contacto' : it ? 'Contatto' : 'Contact'
 
   const getWhatsappUrl = (message: string) => `${whatsappMe}?text=${encodeURIComponent(message)}`
   const getServiceWhatsappUrl = (serviceName: string) => {
@@ -929,6 +936,19 @@ Before payment, guests may request written confirmation of the price, pickup det
                   <span className="relative grid h-5 w-5 place-items-center"><Circle className="absolute h-5 w-5" /><span className="text-xs font-bold">f</span></span>
                 </a>
                 <a href="#" aria-label="Instagram" className="text-slate-500 transition hover:text-cyan-700"><Camera className="h-5 w-5" /></a>
+              </div>
+            </div>
+            <div className="min-w-0 sm:w-64">
+              <h3 className="mb-4 text-sm font-bold text-slate-900">{contactTitle}</h3>
+              <div className="space-y-3">
+                <a href={`mailto:${contactEmail}`} className="flex items-center gap-2 text-sm text-slate-500 transition hover:text-cyan-700">
+                  <Mail className="h-4 w-4 shrink-0" />
+                  <span className="break-all">{contactEmail}</span>
+                </a>
+                <a href={contactWhatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-slate-500 transition hover:text-cyan-700">
+                  <MessageCircle className="h-4 w-4 shrink-0" />
+                  <span>{contactPhone}</span>
+                </a>
               </div>
             </div>
           </div>

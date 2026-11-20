@@ -113,6 +113,8 @@ type SiteSettings = {
   whatsappDefaultMessageEn?: string
   faqs?: Array<{ questionEs?: string; questionEn?: string; answerEs?: string; answerEn?: string }>
   instagramHandle?: string
+  email?: string
+  phone?: string
   footerDescriptionEs?: string
   footerDescriptionEn?: string
   showPromoVideo?: boolean
@@ -243,6 +245,8 @@ export default async function Home() {
       faqs,
       reviews,
       instagramHandle,
+      email,
+      phone,
       footerDescriptionEs,
       footerDescriptionEn,
       showPromoVideo,
