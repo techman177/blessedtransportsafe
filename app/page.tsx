@@ -127,7 +127,7 @@ export default async function Home() {
       photo,
       features,
       available,
-      "photoUrl": photo.asset->url
+      "photoUrl": coalesce(photo.asset->url, image.asset->url),
     },
     "settings": *[_type == "siteSettings"][0] {
       "heroImageUrl": heroImage.asset->url,

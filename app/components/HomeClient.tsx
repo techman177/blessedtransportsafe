@@ -38,6 +38,8 @@ export type Vehicle = {
   luggage?: number
   photo?: unknown
   photoUrl?: string
+  imageUrl?: string
+  image?: unknown
   features?: string[]
   available?: boolean
 }
@@ -297,6 +299,31 @@ Before payment, guests may request written confirmation of the price, pickup det
         cancellation: ['Cancellation Policy', settings?.legalPolicies?.cancellationPolicyEn || cancellationFallbackEn],
       }
 
+  function VehicleImage({ vehicle, name, spanish }: { vehicle: Vehicle; name: string; spanish: boolean }) {
+    const [failed, setFailed] = useState(false)
+    const source = vehicle.photoUrl || vehicle.imageUrl
+
+    if (!source || failed) {
+      return (
+        <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-gray-100 text-center" role="img" aria-label={spanish ? 'Imagen no disponible' : 'Image unavailable'}>
+          <CarFront className="h-10 w-10 text-gray-400" aria-hidden="true" />
+          <span className="text-sm font-semibold text-gray-500">
+            {spanish ? 'Próximamente' : 'Coming soon'}
+          </span>
+        </div>
+      )
+    }
+
+    return (
+      <img
+        src={source}
+        alt={name}
+        className="absolute inset-0 h-full w-full object-cover"
+        onError={() => setFailed(true)}
+      />
+    )
+  }
+
   return (
     <main className="min-h-screen overflow-hidden bg-white text-slate-800">
       <header className="fixed inset-x-0 top-0 z-50 border-b border-cyan-100 bg-white/95 backdrop-blur-md">
@@ -449,7 +476,7 @@ Before payment, guests may request written confirmation of the price, pickup det
                 className="flex flex-col rounded-2xl border border-cyan-100 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
               >
                 <div className="relative aspect-video w-full overflow-hidden rounded-xl">
-                  <img src={vehicle.photoUrl} alt={vehicle.name} className="absolute inset-0 h-full w-full object-cover" />
+                  <VehicleImage vehicle={vehicle} name={vehicle.name || ''} spanish={es} />
                 </div>
                 <div className="mt-4 flex flex-col gap-3">
                   <div className="flex items-center gap-2">
@@ -486,7 +513,7 @@ Before payment, guests may request written confirmation of the price, pickup det
                 className="flex flex-col rounded-2xl border border-cyan-100 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
               >
                 <div className="relative aspect-video w-full overflow-hidden rounded-xl">
-                  <img src={vehicle.photoUrl} alt={vehicle.name} className="absolute inset-0 h-full w-full object-cover" />
+                  <VehicleImage vehicle={vehicle} name={vehicle.name || ''} spanish={es} />
                 </div>
                 <div className="mt-4 flex flex-col gap-3">
                   <div className="flex items-center gap-2">
