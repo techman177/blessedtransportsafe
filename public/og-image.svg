@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ecfeff"/><stop offset="1" stop-color="#ffffff"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="1050" cy="110" r="220" fill="#cffafe" opacity="0.8"/>
+  <circle cx="980" cy="520" r="260" fill="#fef3c7" opacity="0.5"/>
+  <text x="90" y="220" font-family="Arial, sans-serif" font-size="92" font-weight="800" fill="#0f172a">Blessed</text>
+  <text x="510" y="220" font-family="Arial, sans-serif" font-size="92" font-weight="800" fill="#0891b2">Transport Safe</text>
+  <text x="90" y="310" font-family="Arial, sans-serif" font-size="44" fill="#334155">Traslados VIP y Tours</text>
+  <text x="90" y="390" font-family="Arial, sans-serif" font-size="30" fill="#0891b2">República Dominicana</text>
+  <rect x="90" y="465" width="300" height="58" rx="29" fill="#10b981"/>
+  <text x="240" y="503" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#ffffff">Reserva por WhatsApp</text>
+</svg>

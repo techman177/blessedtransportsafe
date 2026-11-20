@@ -103,7 +103,8 @@ export type SiteSettings = {
   }
 }
 
-const WHATSAPP_ME = 'https://wa.me/18094477101'
+const WHATSAPP_PHONE = '18094477101'
+const WHATSAPP_ME = `https://wa.me/${WHATSAPP_PHONE}`
 const WHATSAPP_LINK = 'https://wa.link/pbnzgo'
 
 function whatsappUrl(message: string) {
@@ -146,7 +147,7 @@ const copy = {
 } as const
 
 export default function HomeClient({ tours, transfers, vehicles, rentCars, settings }: { tours: Tour[]; transfers: TransferRoute[]; vehicles: Vehicle[]; rentCars: RentCar[]; settings: SiteSettings | null }) {
-  const [language, setLanguage] = useState<'es' | 'en'>('es')
+  const [language, setLanguage] = useState<'es' | 'en' | 'it'>('es')
   const [menuOpen, setMenuOpen] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(0)
   const [activePolicy, setActivePolicy] = useState<'privacy' | 'terms' | 'cancellation' | null>(null)
@@ -160,20 +161,36 @@ export default function HomeClient({ tours, transfers, vehicles, rentCars, setti
   useEffect(() => { document.documentElement.lang = language }, [language])
 
   const es = language === 'es'
+  const it = language === 'it'
   const copy = es
     ? { tours: 'Tours', transfers: 'Traslados', fleet: 'Flota', rent: 'Rent Car', about: 'Quiénes Somos', reviews: 'Reseñas', faq: 'Preguntas Frecuentes', book: 'Reservar', heroBadge: settings?.heroBadgeEs || 'Servicio VIP en República Dominicana', heroTitle: settings?.heroTitleEs || 'Tu viaje seguro, cómodo y sin preocupaciones', heroSubtitle: settings?.heroSubtitleEs || 'Traslados privados, tours exclusivos y vehículos cómodos con atención personalizada las 24 horas.', heroCta: 'Reservar por WhatsApp', toursCta: 'Ver Excursiones', toursTitle: settings?.toursTitleEs || 'Tours y excursiones', toursSubtitle: settings?.toursSubtitleEs || 'Descubre los mejores destinos de República Dominicana.', transfersTitle: settings?.transfersTitleEs || 'Traslados VIP privados', transfersSubtitle: settings?.transfersSubtitleEs || 'Punto a punto con chofer profesional y vehículos climatizados.', rentTitle: settings?.rentTitleEs || 'Rent Car para explorar sin límites', rentSubtitle: settings?.rentSubtitleEs || 'Vehículos disponibles según tu itinerario.', aboutBadge: settings?.aboutBadgeEs || 'Sobre Nosotros', aboutTitle: settings?.aboutTitleEs || 'Experiencias VIP hechas a tu medida', aboutDescription: settings?.aboutDescriptionEs || 'Somos una empresa dominicana especializada en traslados privados, excursiones y rent car.', quote: 'Cotizar por WhatsApp', priceQuote: 'Precio por WhatsApp', faqTitle: 'Preguntas frecuentes', footerDescription: settings?.footerDescriptionEs || 'VIP Transfers, tours y rent car en República Dominicana.' }
-    : { tours: 'Tours', transfers: 'Transfers', fleet: 'Fleet', rent: 'Rent Car', about: 'About Us', reviews: 'Reviews', faq: 'FAQ', book: 'Book Now', heroBadge: settings?.heroBadgeEn || 'VIP service in the Dominican Republic', heroTitle: settings?.heroTitleEn || 'Your trip, safe, comfortable and worry-free', heroSubtitle: settings?.heroSubtitleEn || 'Private transfers, exclusive tours and comfortable vehicles with personalized 24-hour assistance.', heroCta: 'Book on WhatsApp', toursCta: 'Explore Tours', toursTitle: settings?.toursTitleEn || 'Tours & excursions', toursSubtitle: settings?.toursSubtitleEn || 'Discover the best destinations in the Dominican Republic.', transfersTitle: settings?.transfersTitleEn || 'Private VIP transfers', transfersSubtitle: settings?.transfersSubtitleEn || 'Point-to-point service with professional drivers and air-conditioned vehicles.', rentTitle: settings?.rentTitleEn || 'Rent Car for limitless exploration', rentSubtitle: settings?.rentSubtitleEn || 'Vehicles available for your itinerary.', aboutBadge: settings?.aboutBadgeEn || 'About Us', aboutTitle: settings?.aboutTitleEn || 'VIP experiences tailored to you', aboutDescription: settings?.aboutDescriptionEn || 'We are a Dominican company specializing in private transfers, excursions and rent car.', quote: 'Get Quote on WhatsApp', priceQuote: 'Price via WhatsApp', faqTitle: 'Frequently Asked Questions', footerDescription: settings?.footerDescriptionEn || 'VIP Transfers, tours and rent car in the Dominican Republic.' }
+    : it
+      ? { tours: 'Tour', transfers: 'Transfer', fleet: 'Flotta', rent: 'Noleggio Auto', about: 'Chi siamo', reviews: 'Recensioni', faq: 'Domande frequenti', book: 'Prenota', heroBadge: 'Servizio VIP nella Repubblica Dominicana', heroTitle: 'Il tuo viaggio, sicuro e senza preoccupazioni', heroSubtitle: 'Transfer privati, tour esclusivi e veicoli confortevoli con assistenza personalizzata.', heroCta: 'Prenota su WhatsApp', toursCta: 'Esplora i Tour', toursTitle: 'Tour ed escursioni', toursSubtitle: 'Scopri le migliori destinazioni della Repubblica Dominicana.', transfersTitle: 'Transfer VIP privati', transfersSubtitle: 'Servizio porta a porta con autista professionista.', rentTitle: 'Noleggio auto per esplorare', rentSubtitle: 'Veicoli disponibili per il tuo itinerario.', aboutBadge: 'Chi siamo', aboutTitle: 'Esperienze VIP su misura', aboutDescription: 'Siamo un’azienda dominicana specializzata in transfer privati, escursioni e noleggio auto.', quote: 'Richiedi preventivo', priceQuote: 'Prezzo su WhatsApp', faqTitle: 'Domande frequenti', footerDescription: 'Transfer VIP, tour e noleggio auto nella Repubblica Dominicana.' }
+      : { tours: 'Tours', transfers: 'Transfers', fleet: 'Fleet', rent: 'Rent Car', about: 'About Us', reviews: 'Reviews', faq: 'FAQ', book: 'Book Now', heroBadge: settings?.heroBadgeEn || 'VIP service in the Dominican Republic', heroTitle: settings?.heroTitleEn || 'Your trip, safe, comfortable and worry-free', heroSubtitle: settings?.heroSubtitleEn || 'Private transfers, exclusive tours and comfortable vehicles with personalized 24-hour assistance.', heroCta: 'Book on WhatsApp', toursCta: 'Explore Tours', toursTitle: settings?.toursTitleEn || 'Tours & excursions', toursSubtitle: settings?.toursSubtitleEn || 'Discover the best destinations in the Dominican Republic.', transfersTitle: settings?.transfersTitleEn || 'Private VIP transfers', transfersSubtitle: settings?.transfersSubtitleEn || 'Point-to-point service with professional drivers and air-conditioned vehicles.', rentTitle: settings?.rentTitleEn || 'Rent Car for limitless exploration', rentSubtitle: settings?.rentSubtitleEn || 'Vehicles available for your itinerary.', aboutBadge: settings?.aboutBadgeEn || 'About Us', aboutTitle: settings?.aboutTitleEn || 'VIP experiences tailored to you', aboutDescription: settings?.aboutDescriptionEn || 'We are a Dominican company specializing in private transfers, excursions and rent car.', quote: 'Get Quote on WhatsApp', priceQuote: 'Price via WhatsApp', faqTitle: 'Frequently Asked Questions', footerDescription: settings?.footerDescriptionEn || 'VIP Transfers, tours and rent car in the Dominican Republic.' }
 
-  const whatsappNumber = settings?.whatsappNumber || '+1 809-447-7101'
+  const whatsappNumber = settings?.whatsappNumber || `+1 ${WHATSAPP_PHONE.slice(1,4)}-${WHATSAPP_PHONE.slice(4,7)}-${WHATSAPP_PHONE.slice(7)}`
   const whatsappLink = settings?.whatsappLink || 'https://wa.link/pbnzgo'
   const whatsappMe = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}`
-  const defaultMessage = es ? settings?.whatsappDefaultMessageEs || 'Hola, quiero reservar un servicio VIP.' : settings?.whatsappDefaultMessageEn || 'Hello, I would like to book a VIP service.'
+  const defaultMessage = es
+    ? settings?.whatsappDefaultMessageEs || 'Hola, quiero reservar un servicio VIP.'
+    : it
+      ? 'Ciao, vorrei prenotare un servizio VIP.'
+      : settings?.whatsappDefaultMessageEn || 'Hello, I would like to book a VIP service.'
   const floatingText = es ? settings?.whatsappFloatingTextEs || '¡Escríbenos!' : settings?.whatsappFloatingTextEn || 'Chat with us!'
   const heroImage = settings?.heroImageUrl || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1800&q=88'
   const aboutImage = settings?.aboutImageUrl || 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=85'
   const instagramHandle = settings?.instagramHandle || '@BlessedTransportSafe'
 
   const getWhatsappUrl = (message: string) => `${whatsappMe}?text=${encodeURIComponent(message)}`
+  const getServiceWhatsappUrl = (serviceName: string) => {
+    const prefix = es
+      ? 'Hola, me interesa '
+      : it
+        ? 'Ciao, mi interessa '
+        : 'Hello, I am interested in '
+    return getWhatsappUrl(`${prefix}${serviceName}`)
+  }
+
   const quoteMessage = es
     ? `Hola, quisiera cotizar un traslado privado.\nOrigen: ${origin}\nDestino: ${destination || 'Por confirmar'}\nFecha: ${date || 'Por confirmar'}\nPasajeros: ${passengers}\nMaletas: ${luggage}\nTipo de viaje: ${tripType}`
     : `Hello, I would like a private transfer quote.\nOrigin: ${origin}\nDestination: ${destination || 'To be confirmed'}\nDate: ${date || 'To be confirmed'}\nPassengers: ${passengers}\nLuggage: ${luggage}\nTrip type: ${tripType}`
@@ -227,7 +244,7 @@ Los datos que podemos solicitar incluyen nombre, número de teléfono de WhatsAp
 
 Las conversaciones por WhatsApp se utilizan como canal de reserva y atención al cliente. No comercializamos ni vendemos datos personales ni los usamos con fines publicitarios ajenos a Blessed Transport Safe. Limitamos el acceso a la información a nuestro personal autorizado y la conservamos únicamente durante el tiempo necesario para cumplir obligaciones operativas, fiscales, de seguridad o legales.
 
-El cliente podrá solicitar corrección o eliminación de sus datos mediante el WhatsApp oficial ${whatsappNumber}, cuando dicha eliminación no interfiera con obligaciones legales o registros operativos requeridos.
+El cliente podrá solicitar corrección o eliminación de sus datos mediante el WhatsApp oficial ${WHATSAPP_PHONE}, cuando dicha eliminación no interfiera con obligaciones legales o registros operativos requeridos.
 
 Esta política puede actualizarse para reflejar cambios operativos o legales. La versión vigente estará disponible en esta página web.`
 
@@ -247,7 +264,7 @@ El pasajero deberá proporcionar datos reales y seguir las instrucciones del con
 
   const cancellationFallbackEs = `POLÍTICA DE CANCELACIÓN
 
-Las solicitudes de cancelación o modificación deberán enviarse por WhatsApp al número oficial ${whatsappNumber}. La solicitud se considera recibida al confirmar la hora de recepción por nuestro equipo.
+Las solicitudes de cancelación o modificación deberán enviarse por WhatsApp al número oficial ${WHATSAPP_PHONE}. La solicitud se considera recibida al confirmar la hora de recepción por nuestro equipo.
 
 Las cancelaciones realizadas con al menos 24 horas de anticipación a la hora confirmada podrán recibir reembolso o crédito, según el método de pago y las condiciones de la reserva. Las cancelaciones realizadas con menos de 24 horas, las reservaciones de última hora y los servicios ya iniciados podrán generar cargos por hasta el 100 % del servicio.
 
@@ -267,7 +284,7 @@ We may request name, WhatsApp phone number, passenger and luggage count, pickup 
 
 WhatsApp conversations serve as our reservation and customer service channel. We do not sell or commercialize personal data or use it for unrelated advertising. Access is limited to authorized personnel, and information is retained only as long as necessary to meet operational, tax, safety or legal obligations.
 
-Guests may request correction or deletion of their data through our official WhatsApp number ${whatsappNumber}, when deletion does not conflict with legal or required operational records.
+Guests may request correction or deletion of their data through our official WhatsApp number ${WHATSAPP_PHONE}, when deletion does not conflict with legal or required operational records.
 
 This policy may be updated to reflect operational or legal changes. The current version is available on this website.`
 
@@ -287,7 +304,7 @@ Guests must provide accurate information and follow driver instructions for safe
 
   const cancellationFallbackEn = `CANCELLATION POLICY
 
-Cancellation or modification requests must be sent to our official WhatsApp number ${whatsappNumber}. A request is considered received once our team confirms receipt.
+Cancellation or modification requests must be sent to our official WhatsApp number ${WHATSAPP_PHONE}. A request is considered received once our team confirms receipt.
 
 Cancellations made at least 24 hours before the confirmed service time may receive a refund or account credit, subject to payment method and reservation conditions. Cancellations made with less than 24 hours’ notice, last-minute bookings and services already in progress may be charged up to 100% of the booking value.
 
@@ -349,14 +366,25 @@ Before payment, guests may request written confirmation of the price, pickup det
             <a className="text-sm font-semibold text-slate-700 hover:text-cyan-700" href="#about">{copy.about}</a>
           </nav>
           <div className="hidden items-center gap-3 sm:flex">
-            <div className="flex rounded-full border border-cyan-200 bg-cyan-50 p-1"><button type="button" onClick={() => setLanguage('es')} className={`rounded-full px-2.5 py-1 text-xs font-bold ${language === 'es' ? 'bg-cyan-600 text-white' : 'text-cyan-700'}`}>ES</button><button type="button" onClick={() => setLanguage('en')} className={`rounded-full px-2.5 py-1 text-xs font-bold ${language === 'en' ? 'bg-cyan-600 text-white' : 'text-cyan-700'}`}>EN</button></div>
+            <div className="flex rounded-full border border-cyan-200 bg-cyan-50 p-1" aria-label="Language selector">
+              {(['es', 'en', 'it'] as const).map((locale) => (
+                <button
+                  key={locale}
+                  type="button"
+                  onClick={() => setLanguage(locale)}
+                  className={`rounded-full px-2.5 py-1 text-xs font-bold ${language === locale ? 'bg-cyan-600 text-white' : 'text-cyan-700'}`}
+                >
+                  {locale.toUpperCase()}
+                </button>
+              ))}
+            </div>
             <a href={getWhatsappUrl(defaultMessage)} target="_blank" rel="noopener noreferrer" className="rounded-full bg-cyan-600 px-5 py-3 text-sm font-bold text-white">{copy.book}</a>
           </div>
           <button type="button" aria-label="Menu" aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)} className="grid h-11 w-11 place-items-center rounded-xl border border-cyan-100 text-cyan-700 md:hidden">{menuOpen ? '×' : '☰'}</button>
         </div>
         {menuOpen && (
           <nav className="border-t border-cyan-100 bg-white px-5 py-5 md:hidden">
-            <div className="flex flex-col gap-4"><a onClick={() => setMenuOpen(false)} href="#transfers">{copy.transfers}</a><a onClick={() => setMenuOpen(false)} href="#tours">{copy.tours}</a><a onClick={() => setMenuOpen(false)} href="#fleet">{copy.fleet}</a><a onClick={() => setMenuOpen(false)} href="#rent">{copy.rent}</a><a onClick={() => setMenuOpen(false)} href="#about">{copy.about}</a><div className="flex gap-2"><button type="button" onClick={() => setLanguage('es')} className="rounded-full border border-cyan-200 px-3 py-2 text-xs font-bold">ES</button><button type="button" onClick={() => setLanguage('en')} className="rounded-full border border-cyan-200 px-3 py-2 text-xs font-bold">EN</button></div><a href={getWhatsappUrl(defaultMessage)} target="_blank" rel="noopener noreferrer" className="rounded-full bg-cyan-600 px-5 py-3 text-center text-sm font-bold text-white">{copy.book}</a></div>
+            <div className="flex flex-col gap-4"><a onClick={() => setMenuOpen(false)} href="#transfers">{copy.transfers}</a><a onClick={() => setMenuOpen(false)} href="#tours">{copy.tours}</a><a onClick={() => setMenuOpen(false)} href="#fleet">{copy.fleet}</a><a onClick={() => setMenuOpen(false)} href="#rent">{copy.rent}</a><a onClick={() => setMenuOpen(false)} href="#about">{copy.about}</a><div className="flex gap-2" aria-label="Language selector">{(['es', 'en', 'it'] as const).map((locale) => (<button key={locale} type="button" onClick={() => setLanguage(locale)} className={`rounded-full border px-3 py-2 text-xs font-bold ${language === locale ? 'border-cyan-600 bg-cyan-600 text-white' : 'border-cyan-200 text-cyan-700'}`}>{locale.toUpperCase()}</button>))}</div><a href={getWhatsappUrl(defaultMessage)} target="_blank" rel="noopener noreferrer" className="rounded-full bg-cyan-600 px-5 py-3 text-center text-sm font-bold text-white">{copy.book}</a></div>
           </nav>
         )}
       </header>
@@ -411,7 +439,10 @@ Before payment, guests may request written confirmation of the price, pickup det
                 <p className="text-xs font-extrabold uppercase tracking-wider text-cyan-600">{card.detail}</p>
                 <h3 className="mt-3 text-xl font-black leading-7 text-slate-900">{card.title}</h3>
                 {card.estimatedTime && <p className="mt-3 text-sm leading-6 text-slate-600">{card.estimatedTime}</p>}
-                {typeof card.privateRateUsd === 'number' && <p className="mt-auto pt-4 text-sm font-bold text-cyan-700">Desde USD ${card.privateRateUsd}</p>}
+                {typeof card.privateRateUsd === 'number' && <p className="mt-4 text-sm font-bold text-cyan-700">Desde USD ${card.privateRateUsd}</p>}
+                <a href={getServiceWhatsappUrl(card.title || (es ? 'Traslado privado' : 'Private transfer'))} target="_blank" rel="noopener noreferrer" className="mt-auto pt-4 text-sm font-bold text-cyan-700">
+                  {es ? 'Reservar traslado →' : it ? 'Prenota transfer →' : 'Book transfer →'}
+                </a>
               </article>
             ))}
           </div>
@@ -448,7 +479,7 @@ Before payment, guests may request written confirmation of the price, pickup det
                   <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{es ? tour.description : tour.descriptionEn || tour.description}</p>
                   <div className="mt-4 flex items-center justify-between gap-3">
                     {typeof tour.priceUsd === 'number' && tour.showPrice !== false && <p className="text-sm font-bold text-cyan-700">Desde USD ${tour.priceUsd}</p>}
-                    <a href={getWhatsappUrl(es ? `Hola, quiero reservar ${tour.title}.` : `Hello, I want to book ${tour.titleEn || tour.title}.`)} target="_blank" rel="noopener noreferrer" className="ml-auto text-sm font-bold text-cyan-700">{es ? 'Reservar →' : 'Book →'}</a>
+                    <a href={getServiceWhatsappUrl(es ? tour.title || 'Tour' : tour.titleEn || tour.title || 'Tour')} target="_blank" rel="noopener noreferrer" className="ml-auto text-sm font-bold text-cyan-700">{es ? 'Reservar →' : it ? 'Prenota →' : 'Book →'}</a>
                   </div>
                 </div>
               </article>
@@ -511,7 +542,7 @@ Before payment, guests may request written confirmation of the price, pickup det
                     </p>
                   )}
                   <a
-                    href={getWhatsappUrl(es ? `Hola, quiero consultar disponibilidad para ${rentCar.name || 'Rent Car'}.` : `Hello, I want to check availability for ${rentCar.name || 'Rent Car'}.`)}
+                    href={getServiceWhatsappUrl(rentCar.name || 'Rent Car')}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-2 inline-flex rounded-full bg-cyan-700 px-5 py-3 text-center text-sm font-bold text-white"

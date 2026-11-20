@@ -13,12 +13,35 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Blessed Transport Safe | VIP Transfers & Tours",
-  description: "Traslados privados, tours y rent car en República Dominicana.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://blessedtransportsafe.com"),
+  title: {
+    default: "Blessed Transport Safe - Traslados VIP y Tours",
+    template: "%s | Blessed Transport Safe",
+  },
+  description: "Traslados privados, tours exclusivos y rent car en República Dominicana con atención VIP las 24 horas.",
+  keywords: ["traslados VIP", "tours República Dominicana", "rent car", "Blessed Transport Safe"],
   openGraph: {
-    title: "Blessed Transport Safe",
-    description: "VIP Transfers, tours y rent car en República Dominicana.",
-    images: ["https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=85"],
+    type: "website",
+    locale: "es_DO",
+    alternateLocale: ["en_US", "it_IT"],
+    siteName: "Blessed Transport Safe",
+    title: "Blessed Transport Safe - Traslados VIP y Tours",
+    description: "Viaja seguro por República Dominicana con traslados privados, tours exclusivos y rent car.",
+    url: "/",
+    images: [
+      {
+        url: "/og-image.svg",
+        width: 1200,
+        height: 630,
+        alt: "Blessed Transport Safe - Traslados VIP y Tours",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Blessed Transport Safe - Traslados VIP y Tours",
+    description: "Traslados privados, tours exclusivos y rent car en República Dominicana.",
+    images: ["/og-image.svg"],
   },
 };
 
