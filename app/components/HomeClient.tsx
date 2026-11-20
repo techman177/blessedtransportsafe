@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { CalendarDays, CarFront, Clock3, Menu, ShieldCheck, Users, X } from 'lucide-react'
+import { CalendarDays, CarFront, CheckCircle, ChevronDown, Clock3, Menu, ShieldCheck, Users, X } from 'lucide-react'
 
 export type Tour = {
   _id: string
@@ -324,58 +324,306 @@ Before payment, guests may request written confirmation of the price, pickup det
 
       <section id="top" className="relative min-h-[660px] pt-20"><div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `linear-gradient(90deg,rgba(255,255,255,.96),rgba(255,255,255,.82) 55%,rgba(207,250,254,.25)),url('${heroImage}')` }} /><div className="relative mx-auto flex min-h-[580px] max-w-7xl items-center px-5 py-16 sm:px-8"><div className="max-w-2xl"><p className="mb-5 inline-flex rounded-full border border-cyan-200 bg-white/90 px-4 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-cyan-700">{copy.heroBadge}</p><h1 className="text-4xl font-black leading-tight text-slate-900 sm:text-6xl">{copy.heroTitle}</h1><p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">{copy.heroSubtitle}</p><div className="mt-8 flex flex-col gap-3 sm:flex-row"><a href={getWhatsappUrl(defaultMessage)} target="_blank" rel="noopener noreferrer" className="rounded-full bg-emerald-500 px-7 py-4 text-center text-sm font-extrabold text-white">{copy.heroCta}</a><a href="#tours" className="rounded-full border-2 border-cyan-600 bg-white px-7 py-4 text-center text-sm font-extrabold text-cyan-700">{copy.toursCta}</a></div></div></div></section>
 
-      <section id="transfers" className="bg-cyan-50/40 py-24"><div className="mx-auto max-w-7xl px-5 sm:px-8"><div className="mb-10 max-w-2xl"><p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">VIP</p><h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-5xl">{copy.transfersTitle}</h2><p className="mt-4 leading-7 text-slate-600">{copy.transfersSubtitle}</p></div><div className="grid gap-6 lg:grid-cols-[1fr_420px]"><div className="grid gap-5 md:grid-cols-3">{displayTransfers.map((card) => (
-          <article key={card._id} className="rounded-3xl border border-cyan-100 bg-white p-6">
-            <p className="text-xs font-bold text-cyan-600">{card.detail}</p>
-            <h3 className="mt-3 text-xl font-black text-slate-900">{card.title}</h3>
-            {card.estimatedTime && <p className="mt-3 text-sm text-slate-600">{card.estimatedTime}</p>}
-            {typeof card.privateRateUsd === 'number' && <p className="mt-4 text-sm font-bold text-cyan-700">USD ${card.privateRateUsd}</p>}
-          </article>
-        ))}</div>
-        <form onSubmit={(event) => { event.preventDefault(); window.open(getWhatsappUrl(quoteMessage), '_blank', 'noopener,noreferrer') }} className="rounded-3xl border border-cyan-100 bg-white p-5 shadow-xl shadow-cyan-900/5"><h3 className="mb-4 text-xl font-black text-slate-900">{es ? 'Cotizador rápido' : 'Quick Quote'}</h3><div className="space-y-3"><div><label className="mb-1 block text-xs font-bold text-slate-600">{es ? 'Origen' : 'Origin'}</label><select value={origin} onChange={(e) => setOrigin(e.target.value)} className="w-full rounded-xl border border-cyan-100 px-4 py-3"><option>Aeropuerto Las Américas SDQ</option><option>Aeropuerto Punta Cana PUJ</option><option>Aeropuerto La Romana LRM</option><option>Santo Domingo</option><option>{es ? 'Otro' : 'Other'}</option></select></div>
-            <div><label className="mb-1 block text-xs font-bold text-slate-600">{es ? 'Destino' : 'Destination'}</label><input value={destination} onChange={(e) => setDestination(e.target.value)} placeholder={es ? 'Hotel / Zona' : 'Hotel / Area'} className="w-full rounded-xl border border-cyan-100 px-4 py-3" /></div>
-            <div><label className="mb-1 block text-xs font-bold text-slate-600">{es ? 'Fecha' : 'Date'}</label><input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full rounded-xl border border-cyan-100 px-4 py-3" /></div>
-            <div className="grid grid-cols-2 gap-3">
-              <div><label className="mb-1 block text-xs font-bold text-slate-600">{es ? 'Pasajeros' : 'Passengers'}</label><select value={passengers} onChange={(e) => setPassengers(e.target.value)} className="w-full rounded-xl border border-cyan-100 px-3 py-3">{Array.from({ length: 14 }, (_, i) => i + 1).map((n) => <option key={n} value={n}>{n === 14 ? '14+' : n}</option>)}</select></div>
-              <div><label className="mb-1 block text-xs font-bold text-slate-600">{es ? 'Maletas' : 'Luggage'}</label><select value={luggage} onChange={(e) => setLuggage(e.target.value)} className="w-full rounded-xl border border-cyan-100 px-3 py-3">{Array.from({ length: 16 }, (_, i) => i).map((n) => <option key={n} value={n}>{n === 15 ? '15+' : n}</option>)}</select></div>
+      <section id="transfers" className="bg-cyan-50/40 py-24">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8">
+          <div className="mb-10 max-w-2xl">
+            <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">VIP</p>
+            <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-5xl">{copy.transfersTitle}</h2>
+            <p className="mt-4 leading-7 text-slate-600">{copy.transfersSubtitle}</p>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+              {displayTransfers.map((card) => (
+                <article
+                  key={card._id}
+                  className="flex h-full min-h-52 flex-col rounded-2xl border border-cyan-100 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
+                >
+                  <p className="line-clamp-2 text-xs font-extrabold uppercase tracking-wider text-cyan-600">
+                    {card.detail}
+                  </p>
+                  <h3 className="mt-3 line-clamp-2 min-h-14 text-xl font-black leading-7 text-slate-900">
+                    {card.title}
+                  </h3>
+                  {card.estimatedTime && (
+                    <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">
+                      {card.estimatedTime}
+                    </p>
+                  )}
+                  {typeof card.privateRateUsd === 'number' && (
+                    <p className="mt-auto pt-5 text-sm font-bold text-cyan-700">
+                      USD ${card.privateRateUsd}
+                    </p>
+                  )}
+                </article>
+              ))}
             </div>
-            <div><label className="mb-1 block text-xs font-bold text-slate-600">{es ? 'Tipo de viaje' : 'Trip type'}</label><select value={tripType} onChange={(e) => setTripType(e.target.value)} className="w-full rounded-xl border border-cyan-100 px-3 py-3"><option>{es ? 'Solo ida' : 'One way'}</option><option>{es ? 'Ida y vuelta' : 'Round trip'}</option></select></div>
-            <button type="submit" className="w-full rounded-full bg-emerald-500 px-5 py-3.5 text-sm font-extrabold text-white">{copy.quote}</button>
-          </div></form></div></div></section>
 
-      <section id="tours" className="py-24"><div className="mx-auto max-w-7xl px-5 sm:px-8"><div className="mx-auto mb-12 max-w-2xl text-center"><p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">{es ? 'Experiencias seleccionadas' : 'Handpicked experiences'}</p><h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-5xl">{copy.toursTitle}</h2><p className="mt-4 leading-7 text-slate-600">{copy.toursSubtitle}</p></div><div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">{displayTours.map((tour) => { const title = es ? tour.title || tour.titleEn : tour.titleEn || tour.title; const titleCategory = tour.category || ''; const showPrice = titleCategory === 'isla-saona' || ['city-tour-full-day','zona-colonial','tres-ojos','faro-a-colon'].includes(titleCategory); const canShowPrice = showPrice && (tour.showPrice === true || typeof tour.priceUsd === 'number'); return <article key={tour._id} className="overflow-hidden rounded-3xl border border-cyan-100 bg-white shadow-sm"><div className="h-64 overflow-hidden bg-cyan-50">{tour.imageUrl && <img src={tour.imageUrl} alt={title} className="h-full w-full object-cover" />}</div><div className="p-6"><h3 className="text-xl font-black text-slate-900">{title}</h3>{tour.description && <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">{es ? tour.description : tour.descriptionEn || tour.description}</p>}<p className="mt-4 text-sm font-bold text-cyan-700">{canShowPrice ? `USD $${tour.priceUsd}` : copy.priceQuote}</p><a href={getWhatsappUrl(es ? `Hola, quiero reservar el tour: ${title}.` : `Hello, I want to book the tour: ${title}.`)} target="_blank" rel="noopener noreferrer" className="mt-5 block rounded-full bg-cyan-600 px-5 py-3.5 text-center text-sm font-extrabold text-white">{es ? 'Reservar' : 'Book Now'}</a></div></article>})}</div></div></section>
+            {/* existing quick quote form */}
+            <form
+              onSubmit={(event) => {
+                event.preventDefault()
+                window.open(getWhatsappUrl(quoteMessage), '_blank', 'noopener,noreferrer')
+              }}
+              className="rounded-2xl border border-cyan-100 bg-white p-6 shadow-sm"
+            >
+              <h3 className="mb-5 text-xl font-black text-slate-900">{es ? 'Cotizador rápido' : 'Quick Quote'}</h3>
+              <div className="space-y-3">
+                <select value={origin} onChange={(event) => setOrigin(event.target.value)} className="w-full rounded-xl border border-cyan-100 px-4 py-3 text-sm">
+                  <option>Aeropuerto Las Américas SDQ</option>
+                  <option>Aeropuerto Punta Cana PUJ</option>
+                  <option>Aeropuerto La Romana LRM</option>
+                  <option>Santo Domingo</option>
+                  <option>{es ? 'Otro' : 'Other'}</option>
+                </select>
+                <input value={destination} onChange={(event) => setDestination(event.target.value)} placeholder={es ? 'Destino / Hotel / Zona' : 'Destination / Hotel / Area'} className="w-full rounded-xl border border-cyan-100 px-4 py-3 text-sm" />
+                <input type="date" value={date} onChange={(event) => setDate(event.target.value)} className="w-full rounded-xl border border-cyan-100 px-4 py-3 text-sm" />
+                <div className="grid grid-cols-2 gap-3">
+                  <select value={passengers} onChange={(event) => setPassengers(event.target.value)} className="rounded-xl border border-cyan-100 px-3 py-3 text-sm">
+                    {Array.from({ length: 14 }, (_, index) => index + 1).map((number) => <option key={number} value={number}>{number === 14 ? '14+' : number}</option>)}
+                  </select>
+                  <select value={luggage} onChange={(event) => setLuggage(event.target.value)} aria-label={es ? 'Maletas' : 'Luggage'} className="rounded-xl border border-cyan-100 px-3 py-3 text-sm">
+                    {Array.from({ length: 16 }, (_, index) => index).map((number) => <option key={number} value={number}>{number === 15 ? '15+' : number}</option>)}
+                  </select>
+                </div>
+                <select value={tripType} onChange={(event) => setTripType(event.target.value)} className="w-full rounded-xl border border-cyan-100 px-3 py-3 text-sm">
+                  <option>{es ? 'Solo ida' : 'One way'}</option>
+                  <option>{es ? 'Ida y vuelta' : 'Round trip'}</option>
+                </select>
+                <button type="submit" className="w-full rounded-full bg-emerald-500 px-5 py-3.5 text-sm font-extrabold text-white">{copy.quote}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
 
-      <section id="fleet" className="bg-cyan-50/40 py-24"><div className="mx-auto max-w-7xl px-5 sm:px-8"><div className="mb-10 text-center"><p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">{es ? 'Nuestra flota' : 'Our fleet'}</p><h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-5xl">{es ? 'Vehículos cómodos y seguros' : 'Comfortable and safe vehicles'}</h2></div><div className="grid gap-6 md:grid-cols-3">{displayVehicles.map((vehicle) => <article key={vehicle._id} className="overflow-hidden rounded-3xl border border-cyan-100 bg-white"><div className="h-56 overflow-hidden bg-cyan-100">{vehicle.photoUrl ? <img src={vehicle.photoUrl} alt={vehicle.name || 'Vehicle'} className="h-full w-full object-cover" /> : <div className="grid h-full place-items-center text-cyan-600">{es ? 'Vehículo VIP' : 'VIP Vehicle'}</div>}</div><div className="p-6"><h3 className="text-xl font-black text-slate-900">{vehicle.name || (es ? 'Vehículo VIP' : 'VIP Vehicle')}</h3><p className="mt-2 text-sm text-slate-600">{vehicle.passengers || '—'} {es ? 'pasajeros' : 'passengers'} · {es ? 'A/C y equipaje' : 'A/C and luggage'}</p><a href={getWhatsappUrl(es ? `Hola, quiero consultar el vehículo ${vehicle.name}.` : `Hello, I want to check the vehicle ${vehicle.name}.`)} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex rounded-full bg-cyan-600 px-5 py-3 text-sm font-bold text-white">{es ? 'Consultar' : 'Inquire'}</a></div></article>)}</div></div></section>
+      <section id="tours" className="py-24">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8">
+          <div className="mb-10 max-w-2xl">
+            <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">EXCLUSIVOS</p>
+            <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-5xl">{copy.toursTitle}</h2>
+            <p className="mt-4 leading-7 text-slate-600">{copy.toursSubtitle}</p>
+          </div>
 
-      <section id="rent" className="px-5 py-12"><div className="mx-auto max-w-7xl rounded-[2rem] bg-gradient-to-r from-teal-500 to-cyan-600 px-6 py-12 text-white sm:px-12 lg:flex lg:items-center lg:justify-between"><div className="max-w-2xl"><p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-100">Mobility &amp; comfort</p><h2 className="mt-3 text-3xl font-black sm:text-5xl">{copy.rentTitle}</h2><p className="mt-4 text-cyan-50">{copy.rentSubtitle}</p></div><a href={getWhatsappUrl(es ? 'Hola, quiero consultar disponibilidad de Rent Car.' : 'Hello, I want to check Rent Car availability.')} target="_blank" rel="noopener noreferrer" className="mt-8 inline-block rounded-full bg-white px-7 py-4 text-sm font-extrabold text-cyan-700 lg:mt-0">{es ? 'Consultar disponibilidad' : 'Check availability'}</a></div></section>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {displayTours.map((tour) => (
+              <article
+                key={tour._id}
+                className="flex flex-col rounded-2xl border border-cyan-100 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
+              >
+                <div className="relative aspect-video w-full overflow-hidden rounded-xl">
+                  <img src={tour.imageUrl} alt={tour.title} className="absolute inset-0 h-full w-full object-cover" />
+                </div>
+                <div className="mt-4 flex flex-col gap-3">
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-extrabold uppercase tracking-wider text-cyan-600">{tour.category}</p>
+                    <div className="flex-1" />
+                    <p className="whitespace-nowrap text-xs text-slate-500">{tour.duration}</p>
+                  </div>
+                  <h3 className="text-xl font-black leading-7 text-slate-900">{tour.title}</h3>
+                  <p className="line-clamp-2 text-sm leading-6 text-slate-600">{tour.description}</p>
+                  {typeof tour.priceUsd === 'number' && (
+                    <p className="mt-auto text-sm font-bold text-cyan-700">
+                      Desde USD ${tour.priceUsd}
+                    </p>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
 
-      <section id="about" className="py-24"><div className="mx-auto grid max-w-7xl items-center gap-10 px-5 sm:px-8 md:grid-cols-2"><div className="overflow-hidden rounded-[2rem] border border-cyan-100 bg-cyan-50 p-3"><img src={aboutImage} alt={copy.aboutTitle} className="h-[420px] w-full rounded-[1.5rem] object-cover" /></div><div><p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">{copy.aboutBadge}</p><h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-5xl">{copy.aboutTitle}</h2><p className="mt-5 leading-7 text-slate-600">{copy.aboutDescription}</p><ul className="mt-7 grid gap-3 sm:grid-cols-2">{aboutHighlights.map((item) => <li key={item} className="rounded-xl border border-cyan-100 bg-cyan-50/50 px-4 py-3 text-sm font-bold text-slate-700">• {item}</li>)}</ul></div></div></section>
+      <section id="fleet" className="bg-cyan-50/40 py-24">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8">
+          <div className="mb-10 max-w-2xl">
+            <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">NUESTRA FLOTA</p>
+            <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-5xl">{copy.fleet}</h2>
+            <p className="mt-4 leading-7 text-slate-600">{es ? 'Vehículos cómodos y seguros para su traslado.' : 'Comfortable and safe vehicles for your transfer.'}</p>
+          </div>
 
-      <section id="reviews" className="bg-cyan-50/40 py-24"><div className="mx-auto max-w-7xl px-5 sm:px-8"><h2 className="text-center text-3xl font-black text-slate-900 sm:text-5xl">{es ? 'Lo que dicen nuestros viajeros' : 'What our travelers say'}</h2><div className="mt-10 grid gap-6 md:grid-cols-3">{reviews.slice(0,3).map((review, index) => <article key={`${review.clientName}-${index}`} className="rounded-3xl border border-cyan-100 bg-white p-7"><div className="text-amber-400" aria-label="5 stars">★★★★★</div><p className="mt-4 text-sm leading-7 text-slate-600">“{es ? review.commentEs : review.commentEn || review.commentEs}”</p><p className="mt-5 font-extrabold text-slate-900">{review.clientName}</p><p className="text-sm text-cyan-700">{review.country}</p></article>)}</div></div></section>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {displayVehicles.map((vehicle) => (
+              <article
+                key={vehicle._id}
+                className="flex flex-col rounded-2xl border border-cyan-100 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
+              >
+                <div className="relative aspect-video w-full overflow-hidden rounded-xl">
+                  <img src={vehicle.photoUrl} alt={vehicle.name} className="absolute inset-0 h-full w-full object-cover" />
+                </div>
+                <div className="mt-4 flex flex-col gap-3">
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-extrabold uppercase tracking-wider text-cyan-600">{vehicle.category}</p>
+                    <div className="flex-1" />
+                    <p className="whitespace-nowrap text-xs text-slate-500">{vehicle.passengers} {es ? 'pasajeros' : 'passengers'}</p>
+                  </div>
+                  <h3 className="text-xl font-black leading-7 text-slate-900">{vehicle.name}</h3>
+                  <p className="line-clamp-2 text-sm leading-6 text-slate-600">{vehicle.features?.join(', ')}</p>
+                  {typeof vehicle.dailyRateUsd === 'number' && (
+                    <p className="mt-auto text-sm font-bold text-cyan-700">
+                      Desde USD ${vehicle.dailyRateUsd}
+                    </p>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
 
-      <section id="faq" className="py-24"><div className="mx-auto max-w-4xl px-5 sm:px-8"><h2 className="mb-10 text-center text-3xl font-black text-slate-900 sm:text-5xl">{copy.faqTitle}</h2><div className="space-y-3">{faqs.map((faq, index) => <article key={faq.question} className="rounded-2xl border border-cyan-100 bg-white"><button type="button" onClick={() => setOpenFaq(openFaq === index ? null : index)} className="flex w-full items-center justify-between px-5 py-5 text-left font-extrabold text-slate-900"><span>{faq.question}</span><span className="text-cyan-700">{openFaq === index ? '−' : '+'}</span></button>{openFaq === index && <p className="border-t border-cyan-50 px-5 py-5 text-sm leading-7 text-slate-600">{faq.answer}</p>}</article>)}</div></div></section>
+      <section id="rent" className="py-24">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8">
+          <div className="mb-10 max-w-2xl">
+            <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">RENT CAR</p>
+            <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-5xl">{copy.rentTitle}</h2>
+            <p className="mt-4 leading-7 text-slate-600">{copy.rentSubtitle}</p>
+          </div>
 
-      <footer className="border-t border-cyan-100 bg-cyan-50/60 py-12"><div className="mx-auto grid max-w-7xl gap-8 px-5 sm:px-8 md:grid-cols-3"><div><p className="text-lg font-extrabold text-cyan-700">Blessed <span className="text-amber-500">Transport</span> Safe</p><p className="mt-3 text-sm text-slate-600">{copy.footerDescription}</p></div><div><p className="font-black">WhatsApp</p><a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="mt-3 block text-sm font-semibold text-cyan-700">{whatsappNumber}</a></div><div><p className="font-black">Instagram</p><a href={`https://www.instagram.com/${instagramHandle.replace('@','')}`} target="_blank" rel="noopener noreferrer" className="mt-3 block text-sm font-semibold text-cyan-700">{instagramHandle}</a></div></div><div className="mx-auto mt-10 flex max-w-7xl flex-col items-center justify-between gap-4 border-t border-cyan-100 px-5 pt-6 text-center sm:px-8 md:flex-row"><p className="text-xs text-slate-500">© 2026 Blessed Transport Safe. {es ? 'Todos los derechos reservados.' : 'All rights reserved.'}</p><div className="flex flex-wrap justify-center gap-5 text-xs font-semibold text-cyan-700"><button type="button" onClick={() => setActivePolicy('privacy')}>{es ? 'Política de Privacidad' : 'Privacy Policy'}</button><button type="button" onClick={() => setActivePolicy('terms')}>{es ? 'Términos y Condiciones' : 'Terms & Conditions'}</button><button type="button" onClick={() => setActivePolicy('cancellation')}>{es ? 'Política de Cancelación' : 'Cancellation Policy'}</button></div><p className="text-xs text-slate-400">{es ? 'Creado por IntegratCore' : 'Created by IntegratCore'}</p></div></footer>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {displayVehicles.map((vehicle) => (
+              <article
+                key={vehicle._id}
+                className="flex flex-col rounded-2xl border border-cyan-100 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
+              >
+                <div className="relative aspect-video w-full overflow-hidden rounded-xl">
+                  <img src={vehicle.photoUrl} alt={vehicle.name} className="absolute inset-0 h-full w-full object-cover" />
+                </div>
+                <div className="mt-4 flex flex-col gap-3">
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-extrabold uppercase tracking-wider text-cyan-600">{vehicle.category}</p>
+                    <div className="flex-1" />
+                    <p className="whitespace-nowrap text-xs text-slate-500">{vehicle.passengers} {es ? 'pasajeros' : 'passengers'}</p>
+                  </div>
+                  <h3 className="text-xl font-black leading-7 text-slate-900">{vehicle.name}</h3>
+                  <p className="line-clamp-2 text-sm leading-6 text-slate-600">{vehicle.features?.join(', ')}</p>
+                  {typeof vehicle.dailyRateUsd === 'number' && (
+                    <p className="mt-auto text-sm font-bold text-cyan-700">
+                      Desde USD ${vehicle.dailyRateUsd}
+                    </p>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
 
-      {activePolicy && <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/30 px-5 backdrop-blur-sm" role="dialog" aria-modal="true"><div className="max-h-[80vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl"><div className="flex items-start justify-between gap-5"><h2 className="text-2xl font-black">{policyContent[activePolicy][0]}</h2><button type="button" onClick={() => setActivePolicy(null)} className="text-2xl text-cyan-700">×</button></div><p className="mt-5 text-sm leading-7 text-slate-600">{policyContent[activePolicy][1]}</p></div></div>}
+      <section id="about" className="bg-cyan-50/40 py-24">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8">
+          <div className="mb-10 max-w-2xl">
+            <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">SOBRE NOSOTROS</p>
+            <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-5xl">{copy.about}</h2>
+            <p className="mt-4 leading-7 text-slate-600">{es ? 'Comprometidos con su seguridad y satisfacción.' : 'Committed to your safety and satisfaction.'}</p>
+          </div>
 
-      {settings?.showFloatingWhatsapp !== false && (
-        <a
-          href={whatsappLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={floatingText}
-          className="fixed bottom-6 right-6 z-50 grid h-16 w-16 place-items-center rounded-full bg-emerald-500 text-white shadow-2xl"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-            className="h-7 w-7 fill-current"
-          >
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.626.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c0-5.445 4.422-9.874 9.892-9.874a9.82 9.82 0 0 1 6.99 2.899 9.78 9.78 0 0 1 2.897 6.993c-.005 5.447-4.427 9.874-9.895 9.874m8.414-18.282A11.816 11.816 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.145 1.588 5.949L.057 24l6.305-1.654a11.88 11.88 0 0 0 5.687 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.84 11.84 0 0 0-3.462-8.397" />
-          </svg>
-        </a>
-      )}
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div className="flex flex-col gap-6">
+              <div className="flex items-center gap-4 rounded-2xl border border-cyan-100 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+                <ShieldCheck className="h-8 w-8 flex-shrink-0 text-cyan-600" />
+                <div className="flex-1">
+                  <p className="text-xs font-extrabold uppercase tracking-wider text-cyan-600">{es ? 'Calidad y seguridad' : 'Quality and safety'}</p>
+                  <p className="mt-1 text-sm leading-6 text-slate-600">{es ? 'Vehículos revisados y seguros.' : 'Inspected and insured vehicles.'}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 rounded-2xl border border-cyan-100 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+                <Users className="h-8 w-8 flex-shrink-0 text-cyan-600" />
+                <div className="flex-1">
+                  <p className="text-xs font-extrabold uppercase tracking-wider text-cyan-600">{es ? 'Atención personalizada' : 'Personalized service'}</p>
+                  <p className="mt-1 text-sm leading-6 text-slate-600">{es ? 'Choferes profesionales y amables.' : 'Professional and friendly drivers.'}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 rounded-2xl border border-cyan-100 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+                <Clock3 className="h-8 w-8 flex-shrink-0 text-cyan-600" />
+                <div className="flex-1">
+                  <p className="text-xs font-extrabold uppercase tracking-wider text-cyan-600">{es ? 'Puntualidad garantizada' : 'On-time guarantee'}</p>
+                  <p className="mt-1 text-sm leading-6 text-slate-600">{es ? 'Monitoreo de vuelos y tráfico.' : 'Flight and traffic monitoring.'}</p>
+                </div>
+              </div>
+            </div>
+            <div className="relative aspect-[3/2] w-full overflow-hidden rounded-2xl border border-cyan-100 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+              <img src={aboutImage} alt="Sobre nosotros" className="absolute inset-0 h-full w-full object-cover" />
+            </div>
+          </div>
+
+          <div className="mt-10">
+            <h3 className="text-xl font-black text-slate-900">{es ? '¿Por qué elegirnos?' : 'Why choose us?'}</h3>
+            <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2">
+              {aboutHighlights.map((highlight) => (
+                <div key={highlight} className="flex items-center gap-3 rounded-2xl border border-cyan-100 bg-white p-4 text-sm shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md">
+                  <CheckCircle className="h-6 w-6 flex-shrink-0 text-emerald-500" />
+                  <p className="font-medium leading-6 text-slate-700">{highlight}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="faq" className="py-24">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8">
+          <div className="mb-10 max-w-2xl">
+            <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">INFORMACIÓN ÚTIL</p>
+            <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-5xl">{copy.faq}</h2>
+          </div>
+
+          <div className="space-y-4">
+            {faqs.map((faq, index) => (
+              <div key={index} className="rounded-2xl border border-cyan-100 bg-white p-6 shadow-sm">
+                <button
+                  onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                  className="flex w-full items-center justify-between text-left"
+                >
+                  <p className="text-sm font-bold text-slate-900">{faq.question}</p>
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-cyan-50 text-cyan-600">
+                    {openFaq === index ? <X className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  </span>
+                </button>
+                {openFaq === index && (
+                  <div className="mt-4 text-sm leading-6 text-slate-600">
+                    {faq.answer}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <footer className="border-t border-cyan-100 bg-white py-10">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8">
+          <div className="flex flex-col gap-8 sm:flex-row">
+            <div className="flex-1">
+              <a href="#top" className="flex items-center gap-2 text-slate-900">
+                <span className="block text-2xl font-extrabold">Blessed <span className="text-emerald-500">Transport</span> Safe</span>
+              </a>
+              <p className="mt-4 text-sm leading-6 text-slate-600">{settings?.footerDescriptionEs || settings?.footerDescriptionEn}</p>
+            </div>
+            <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
+              <div className="flex flex-col gap-3">
+                <p className="text-sm font-semibold text-slate-700">{copy.tours}</p>
+                <a href="#tours" className="text-sm text-slate-500 hover:text-cyan-700">{copy.tours}</a>
+              </div>
+              <div className="flex flex-col gap-3">
+                <p className="text-sm font-semibold text-slate-700">{copy.transfers}</p>
+                <a href="#transfers" className="text-sm text-slate-500 hover:text-cyan-700">{copy.transfers}</a>
+              </div>
+              <div className="flex flex-col gap-3">
+                <p className="text-sm font-semibold text-slate-700">{copy.rent}</p>
+                <a href="#rent" className="text-sm text-slate-500 hover:text-cyan-700">{copy.rent}</a>
+              </div>
+              <div className="flex flex-col gap-3">
+                <p className="text-sm font-semibold text-slate-700">{copy.about}</p>
+                <a href="#about" className="text-sm text-slate-500 hover:text-cyan-700">{copy.about}</a>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-10 border-t border-cyan-100 pt-8 text-center text-sm text-slate-500">
+            <p>© 2026 Blessed Transport Safe. {es ? 'Todos los derechos reservados.' : 'All rights reserved.'}</p>
+            <p className="mt-2">{es ? 'Creado por IntegratCore' : 'Created by IntegratCore'}</p>
+          </div>
+        </div>
+      </footer>
     </main>
   )
 }
