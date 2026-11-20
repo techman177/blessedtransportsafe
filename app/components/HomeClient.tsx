@@ -5,16 +5,20 @@ import { CalendarDays, Camera, CarFront, CheckCircle, ChevronDown, Circle, Clock
 
 export type Tour = {
   _id: string
-  title?: string
-  titleEn?: string
-  category?: string
-  priceUsd?: number
-  showPrice?: boolean
-  duration?: string
-  durationEn?: string
-  description?: string
-  descriptionEn?: string
-  imageUrl?: string
+  title?: string | null
+  titleEn?: string | null
+  category?: string | null
+  priceUsd?: number | null
+  showPrice?: boolean | null
+  duration?: string | null
+  durationEn?: string | null
+  description?: string | null
+  descriptionEn?: string | null
+  includes?: Array<string | null> | null
+  includesEn?: Array<string | null> | null
+  notIncluded?: Array<string | null> | null
+  notIncludedEn?: Array<string | null> | null
+  imageUrl?: string | null
   showPromoVideo?: boolean
   promoVideoUrl?: string
 }
@@ -504,26 +508,66 @@ Before payment, guests may request written confirmation of the price, pickup det
           </div>
 
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {displayTours.slice(0, 3).map((tour) => (
-              <article key={tour._id} className="overflow-hidden rounded-2xl border border-cyan-100 bg-white shadow-sm">
-                <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100">
-                  {tour.imageUrl ? (
-                    <img src={tour.imageUrl} alt={es ? tour.title : tour.titleEn || tour.title} className="absolute inset-0 h-full w-full object-cover" />
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-sm font-semibold text-slate-400">{es ? 'Próximamente' : 'Coming soon'}</div>
-                  )}
-                </div>
-                <div className="p-5">
-                  {tour.category?.trim() && <p className="text-xs font-extrabold uppercase tracking-wider text-cyan-600">{tour.category}</p>}
-                  <h3 className="mt-2 text-xl font-black text-slate-900">{(es ? tour.title : tour.titleEn || tour.title)?.trim() || (es ? 'Tour y excursión' : 'Tour and excursion')}</h3>
-                  {(es ? tour.description : tour.descriptionEn || tour.description)?.trim() && <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{es ? tour.description : tour.descriptionEn || tour.description}</p>}
-                  <div className="mt-4 flex items-center justify-between gap-3">
-                    <p className="text-sm font-bold text-cyan-700">{typeof tour.priceUsd === 'number' && tour.showPrice !== false ? `Desde USD $${tour.priceUsd}` : (es ? 'Consultar precio' : 'Request a quote')}</p>
-                    <a href={getServiceWhatsappUrl(es ? tour.title || 'Tour' : tour.titleEn || tour.title || 'Tour')} target="_blank" rel="noopener noreferrer" className="ml-auto text-sm font-bold text-cyan-700">{es ? 'Reservar →' : it ? 'Prenota →' : 'Book →'}</a>
+            {displayTours.map((tour) => {
+              const includedSource = (
+                es ? tour.includes : tour.includesEn?.length ? tour.includesEn : tour.includes
+              )
+              const includedItems = includedSource?.filter(
+                (item): item is string => typeof item === 'string' && item.trim().length > 0,
+              ).map((item) => item.trim()) ?? []
+              const excludedSource = (
+                es ? tour.notIncluded : tour.notIncludedEn?.length ? tour.notIncludedEn : tour.notIncluded
+              )
+              const excludedItems = excludedSource?.filter(
+                (item): item is string => typeof item === 'string' && item.trim().length > 0,
+              ).map((item) => item.trim()) ?? []
+              const title = (es ? tour.title : tour.titleEn || tour.title)?.trim()
+                || (es ? 'Tour y excursión' : 'Tour and excursion')
+              const description = (es ? tour.description : tour.descriptionEn || tour.description)?.trim()
+              const duration = (es ? tour.duration : tour.durationEn || tour.duration)?.trim()
+
+              return (
+                <article key={tour._id} className="overflow-hidden rounded-2xl border border-cyan-100 bg-white shadow-sm">
+                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100">
+                    {tour.imageUrl ? (
+                      <img src={tour.imageUrl} alt={title} className="absolute inset-0 h-full w-full object-cover" />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-sm font-semibold text-slate-400">{es ? 'Próximamente' : 'Coming soon'}</div>
+                    )}
                   </div>
-                </div>
-              </article>
-            ))}
+                  <div className="p-5">
+                    {tour.category?.trim() && <p className="text-xs font-extrabold uppercase tracking-wider text-cyan-600">{tour.category}</p>}
+                    <h3 className="mt-2 text-xl font-black text-slate-900">{title}</h3>
+                    {duration && <p className="mt-2 text-sm font-semibold text-cyan-700">{es ? 'Duración' : it ? 'Durata' : 'Duration'}: {duration}</p>}
+                    {description && <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{description}</p>}
+                    {(includedItems.length > 0 || excludedItems.length > 0) && (
+                      <div className="mt-4 space-y-3">
+                        {includedItems.length > 0 && (
+                          <div>
+                            <h4 className="text-sm font-bold text-slate-800">{es ? 'Incluye' : it ? 'Incluso' : 'Includes'}</h4>
+                            <ul className="mt-1 list-disc space-y-1 pl-5 text-sm leading-5 text-slate-600">
+                              {includedItems.map((item, index) => <li key={`included-${index}-${item}`}>{item}</li>)}
+                            </ul>
+                          </div>
+                        )}
+                        {excludedItems.length > 0 && (
+                          <div>
+                            <h4 className="text-sm font-bold text-slate-800">{es ? 'No incluye' : it ? 'Non incluso' : 'Not included'}</h4>
+                            <ul className="mt-1 list-disc space-y-1 pl-5 text-sm leading-5 text-slate-600">
+                              {excludedItems.map((item, index) => <li key={`excluded-${index}-${item}`}>{item}</li>)}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    <div className="mt-4 flex items-center justify-between gap-3">
+                      <p className="text-sm font-bold text-cyan-700">{typeof tour.priceUsd === 'number' && tour.showPrice !== false ? `Desde USD $${tour.priceUsd}` : (es ? 'Consultar precio' : 'Request a quote')}</p>
+                      <a href={getServiceWhatsappUrl(es ? tour.title || 'Tour' : tour.titleEn || tour.title || 'Tour')} target="_blank" rel="noopener noreferrer" className="ml-auto text-sm font-bold text-cyan-700">{es ? 'Reservar →' : it ? 'Prenota →' : 'Book →'}</a>
+                    </div>
+                  </div>
+                </article>
+              )
+            })}
           </div>
         </div>
       </section>

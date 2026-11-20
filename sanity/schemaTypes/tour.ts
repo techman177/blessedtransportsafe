@@ -90,6 +90,18 @@ export const tourType = defineType({
       of: [{ type: 'string' }],
     }),
     defineField({
+      name: 'notIncluded',
+      title: 'No incluye (Español)',
+      type: 'array',
+      of: [{ type: 'string' }],
+    }),
+    defineField({
+      name: 'notIncludedEn',
+      title: 'Not included (English)',
+      type: 'array',
+      of: [{ type: 'string' }],
+    }),
+    defineField({
       name: 'featured',
       title: 'Destacar',
       type: 'boolean',

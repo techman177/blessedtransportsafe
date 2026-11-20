@@ -1,20 +1,24 @@
 import HomeClient from '@/app/components/HomeClient'
 import { sanityClient } from '@/app/lib/sanity'
 
-export const revalidate = 60
+export const revalidate = 0
 
 type Tour = {
   _id: string
-  title?: string
-  titleEn?: string
-  category?: string
-  priceUsd?: number
-  showPrice?: boolean
-  duration?: string
-  durationEn?: string
-  description?: string
-  descriptionEn?: string
-  imageUrl?: string
+  title?: string | null
+  titleEn?: string | null
+  category?: string | null
+  priceUsd?: number | null
+  showPrice?: boolean | null
+  duration?: string | null
+  durationEn?: string | null
+  description?: string | null
+  descriptionEn?: string | null
+  includes?: Array<string | null> | null
+  includesEn?: Array<string | null> | null
+  notIncluded?: Array<string | null> | null
+  notIncludedEn?: Array<string | null> | null
+  imageUrl?: string | null
 }
 
 type TransferRoute = {
@@ -105,8 +109,12 @@ export default async function Home() {
   const query = `{
     "tours": *[_type == "tour"] | order(featured desc, _createdAt desc) {
       _id,
+      _type,
+      _createdAt,
+      _updatedAt,
       title,
       titleEn,
+      slug,
       category,
       priceUsd,
       showPrice,
@@ -114,6 +122,12 @@ export default async function Home() {
       durationEn,
       description,
       descriptionEn,
+      image,
+      includes,
+      includesEn,
+      notIncluded,
+      notIncludedEn,
+      featured,
       "imageUrl": image.asset->url
     },
     "transfers": *[_type == "transferRoute"] | order(featured desc, title asc) {
@@ -218,8 +232,8 @@ export default async function Home() {
     vehicles = data.vehicles ?? []
     rentCars = data.rentCars ?? []
     settings = data.settings ?? null
-  } catch {
-    // The client component provides useful fallbacks if Sanity is unavailable.
+  } catch (error) {
+    console.error('Failed to fetch homepage content from Sanity', error)
   }
 
   return (
