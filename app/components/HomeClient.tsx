@@ -109,6 +109,40 @@ export type SiteSettings = {
   }
 }
 
+type Language = 'es' | 'en' | 'it'
+
+const TOUR_CATEGORY_LABELS: Record<string, Record<Language, string>> = {
+  'tres-ojos': { es: 'Los Tres Ojos', en: 'Three Eyes', it: 'Los Tres Occhi' },
+  'faro-a-colon': { es: 'Faro a Colón', en: 'Columbus Lighthouse', it: 'Faro a Colón' },
+  'zona-colonial': { es: 'Zona Colonial', en: 'Colonial Zone', it: 'Zona Coloniale' },
+  'city-tour-full-day': { es: 'City Tour Full Day', en: 'Full-Day City Tour', it: 'City Tour di un giorno' },
+  'isla-saona': { es: 'Isla Saona', en: 'Saona Island', it: 'Isola Saona' },
+  buggies: { es: 'Buggies', en: 'Buggy Adventure', it: 'Buggy' },
+  samana: { es: 'Samaná', en: 'Samaná', it: 'Samaná' },
+}
+
+function normalizeTourLabel(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+}
+
+function getTourCategoryLabel(category: string | null | undefined, title: string, language: Language) {
+  if (!category?.trim()) return null
+
+  const categoryKey = category.trim().toLowerCase()
+  const localizedLabels = TOUR_CATEGORY_LABELS[categoryKey]
+  const label = localizedLabels?.[language] || category.replace(/[-_]+/g, ' ').trim()
+  const normalizedTitle = normalizeTourLabel(title)
+  const duplicatesTitle = Object.values(localizedLabels || { fallback: label })
+    .some((localizedLabel) => normalizedTitle.includes(normalizeTourLabel(localizedLabel)))
+
+  return duplicatesTitle ? null : label
+}
+
 const WHATSAPP_PHONE = '18094477101'
 const WHATSAPP_ME = `https://wa.me/${WHATSAPP_PHONE}`
 const WHATSAPP_LINK = 'https://wa.link/pbnzgo'
@@ -502,12 +536,12 @@ Before payment, guests may request written confirmation of the price, pickup det
       <section id="tours" className="py-16">
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
           <div className="mb-8 max-w-2xl">
-            <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">{es ? 'EXCURSIONES DESTACADAS' : 'FEATURED EXCURSIONS'}</p>
+            <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">{es ? 'EXCURSIONES DESTACADAS' : it ? 'ESCURSIONI IN EVIDENZA' : 'FEATURED EXCURSIONS'}</p>
             <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-4xl">{copy.toursTitle}</h2>
             <p className="mt-3 leading-7 text-slate-600">{copy.toursSubtitle}</p>
           </div>
 
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2 lg:grid-cols-3">
             {displayTours.map((tour) => {
               const includedSource = (
                 es ? tour.includes : tour.includesEn?.length ? tour.includesEn : tour.includes
@@ -521,23 +555,29 @@ Before payment, guests may request written confirmation of the price, pickup det
               const excludedItems = excludedSource?.filter(
                 (item): item is string => typeof item === 'string' && item.trim().length > 0,
               ).map((item) => item.trim()) ?? []
+              const includedPreviewItems = includedItems.slice(0, 2)
+              const excludedPreviewItems = excludedItems.slice(0, 2)
               const title = (es ? tour.title : tour.titleEn || tour.title)?.trim()
-                || (es ? 'Tour y excursión' : 'Tour and excursion')
+                || (es ? 'Tour y excursión' : it ? 'Tour ed escursione' : 'Tour and excursion')
               const description = (es ? tour.description : tour.descriptionEn || tour.description)?.trim()
               const duration = (es ? tour.duration : tour.durationEn || tour.duration)?.trim()
+              const categoryLabel = getTourCategoryLabel(tour.category, title, language)
+              const priceLabel = typeof tour.priceUsd === 'number' && tour.showPrice !== false
+                ? `${es ? 'Desde' : it ? 'Da' : 'From'} USD $${tour.priceUsd}`
+                : es ? 'Consultar precio' : it ? 'Richiedi un preventivo' : 'Request a quote'
 
               return (
-                <article key={tour._id} className="overflow-hidden rounded-2xl border border-cyan-100 bg-white shadow-sm">
-                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100">
+                <article key={tour._id} className="h-fit self-start overflow-hidden rounded-2xl border border-cyan-100 bg-white shadow-sm">
+                  <div className="relative h-48 w-full overflow-hidden bg-slate-100">
                     {tour.imageUrl ? (
                       <img src={tour.imageUrl} alt={title} className="absolute inset-0 h-full w-full object-cover" />
                     ) : (
-                      <div className="flex h-full items-center justify-center text-sm font-semibold text-slate-400">{es ? 'Próximamente' : 'Coming soon'}</div>
+                      <div className="flex h-full items-center justify-center text-sm font-semibold text-slate-400">{es ? 'Próximamente' : it ? 'Prossimamente' : 'Coming soon'}</div>
                     )}
                   </div>
-                  <div className="p-5">
-                    {tour.category?.trim() && <p className="text-xs font-extrabold uppercase tracking-wider text-cyan-600">{tour.category}</p>}
-                    <h3 className="mt-2 text-xl font-black text-slate-900">{title}</h3>
+                  <div className="p-4">
+                    {categoryLabel && <p className="text-xs font-bold tracking-wide text-cyan-600">{categoryLabel}</p>}
+                    <h3 className="mt-1 line-clamp-2 text-lg font-black leading-6 text-slate-900">{title}</h3>
                     {duration && <p className="mt-2 text-sm font-semibold text-cyan-700">{es ? 'Duración' : it ? 'Durata' : 'Duration'}: {duration}</p>}
                     {description && <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{description}</p>}
                     {(includedItems.length > 0 || excludedItems.length > 0) && (
@@ -545,23 +585,25 @@ Before payment, guests may request written confirmation of the price, pickup det
                         {includedItems.length > 0 && (
                           <div>
                             <h4 className="text-sm font-bold text-slate-800">{es ? 'Incluye' : it ? 'Incluso' : 'Includes'}</h4>
-                            <ul className="mt-1 list-disc space-y-1 pl-5 text-sm leading-5 text-slate-600">
-                              {includedItems.map((item, index) => <li key={`included-${index}-${item}`}>{item}</li>)}
+                            <ul className="mt-1 list-disc space-y-0.5 pl-5 text-sm leading-5 text-slate-600">
+                              {includedPreviewItems.map((item, index) => <li key={`included-${index}-${item}`} className="line-clamp-1">{item}</li>)}
                             </ul>
+                            {includedItems.length > includedPreviewItems.length && <p className="mt-1 text-xs text-slate-500">+{includedItems.length - includedPreviewItems.length} {es ? 'más' : it ? 'altri' : 'more'}</p>}
                           </div>
                         )}
                         {excludedItems.length > 0 && (
                           <div>
                             <h4 className="text-sm font-bold text-slate-800">{es ? 'No incluye' : it ? 'Non incluso' : 'Not included'}</h4>
-                            <ul className="mt-1 list-disc space-y-1 pl-5 text-sm leading-5 text-slate-600">
-                              {excludedItems.map((item, index) => <li key={`excluded-${index}-${item}`}>{item}</li>)}
+                            <ul className="mt-1 list-disc space-y-0.5 pl-5 text-sm leading-5 text-slate-600">
+                              {excludedPreviewItems.map((item, index) => <li key={`excluded-${index}-${item}`} className="line-clamp-1">{item}</li>)}
                             </ul>
+                            {excludedItems.length > excludedPreviewItems.length && <p className="mt-1 text-xs text-slate-500">+{excludedItems.length - excludedPreviewItems.length} {es ? 'más' : it ? 'altri' : 'more'}</p>}
                           </div>
                         )}
                       </div>
                     )}
-                    <div className="mt-4 flex items-center justify-between gap-3">
-                      <p className="text-sm font-bold text-cyan-700">{typeof tour.priceUsd === 'number' && tour.showPrice !== false ? `Desde USD $${tour.priceUsd}` : (es ? 'Consultar precio' : 'Request a quote')}</p>
+                    <div className="mt-3 flex items-center justify-between gap-3">
+                      <p className="text-sm font-bold text-cyan-700">{priceLabel}</p>
                       <a href={getServiceWhatsappUrl(es ? tour.title || 'Tour' : tour.titleEn || tour.title || 'Tour')} target="_blank" rel="noopener noreferrer" className="ml-auto text-sm font-bold text-cyan-700">{es ? 'Reservar →' : it ? 'Prenota →' : 'Book →'}</a>
                     </div>
                   </div>
