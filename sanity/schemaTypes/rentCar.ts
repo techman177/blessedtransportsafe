@@ -9,14 +9,12 @@ export const rentCarType = defineType({
       name: 'name',
       title: 'Nombre',
       type: 'string',
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'image',
       title: 'Imagen',
       type: 'image',
       options: { hotspot: true },
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'description',
@@ -28,7 +26,7 @@ export const rentCarType = defineType({
       name: 'pricePerDay',
       title: 'Precio por día',
       type: 'number',
-      validation: (Rule) => Rule.required().min(0),
+      validation: (Rule) => Rule.min(0).warning(),
     }),
   ],
   preview: {

@@ -9,7 +9,6 @@ export const vehicleType = defineType({
       name: 'name',
       title: 'Nombre',
       type: 'string',
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'category',
@@ -24,32 +23,30 @@ export const vehicleType = defineType({
         layout: 'radio',
       },
       initialValue: 'van-vip',
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'dailyRateUsd',
       title: 'Tarifa diaria en USD',
       type: 'number',
-      validation: (Rule) => Rule.required().min(0),
+      validation: (Rule) => Rule.min(0).warning(),
     }),
     defineField({
       name: 'passengers',
       title: 'Pasajeros',
       type: 'number',
-      validation: (Rule) => Rule.required().min(1).max(50),
+      validation: (Rule) => Rule.min(1).max(50).warning(),
     }),
     defineField({
       name: 'luggage',
       title: 'Maletas',
       type: 'number',
-      validation: (Rule) => Rule.required().min(0).max(50),
+      validation: (Rule) => Rule.min(0).max(50).warning(),
     }),
     defineField({
       name: 'photo',
       title: 'Foto',
       type: 'image',
       options: { hotspot: true },
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'features',

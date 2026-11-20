@@ -9,31 +9,27 @@ export const transferRouteType = defineType({
       name: 'title',
       title: 'Título',
       type: 'string',
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'airport',
       title: 'Aeropuerto',
       type: 'string',
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'hotelZone',
       title: 'Zona de hoteles',
       type: 'string',
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'privateRateUsd',
       title: 'Tarifa privada en USD',
       type: 'number',
-      validation: (Rule) => Rule.required().min(0),
+      validation: (Rule) => Rule.min(0).warning(),
     }),
     defineField({
       name: 'estimatedTime',
       title: 'Tiempo estimado',
       type: 'string',
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'featured',

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { CalendarDays, CarFront, CheckCircle, ChevronDown, Clock3, Menu, ShieldCheck, Users, X } from 'lucide-react'
+import { CalendarDays, Camera, CarFront, CheckCircle, ChevronDown, Circle, Clock3, MessageCircle, ShieldCheck, Users, X } from 'lucide-react'
 
 export type Tour = {
   _id: string
@@ -88,6 +88,8 @@ export type SiteSettings = {
   whatsappFloatingTextEn?: string
   whatsappDefaultMessageEs?: string
   whatsappDefaultMessageEn?: string
+  showPromoVideo?: boolean
+  promoVideoUrl?: string
   faqs?: Array<{ questionEs?: string; questionEn?: string; answerEs?: string; answerEn?: string }>
   instagramHandle?: string
   footerDescriptionEs?: string
@@ -114,7 +116,7 @@ function whatsappUrl(message: string) {
 const copy = {
   es: {
     navTours: 'Excursiones', navTransfers: 'Traslados', navRent: 'Rent Car', book: 'Reservar',
-    heroLabel: 'Servicio VIP en República Dominicana', heroTitle: 'Tu viaje seguro, cómodo y sin preocupaciones',
+    heroLabel: 'Servicio VIP en República Dominicana', heroTitle: 'Traslados VIP y Tours en República Dominicana',
     heroText: 'Traslados privados, tours exclusivos y vehículos cómodos con atención personalizada las 24 horas.',
     whatsapp: 'Reservar por WhatsApp', seeTours: 'Ver Excursiones', punctual: 'Puntualidad garantizada',
     comfortable: 'Vehículos confortables', support: 'Atención 24/7',
@@ -146,6 +148,31 @@ const copy = {
   },
 } as const
 
+function VehicleImage({ vehicle, name, spanish }: { vehicle: Vehicle; name: string; spanish: boolean }) {
+  const [failed, setFailed] = useState(false)
+  const source = vehicle.photoUrl || vehicle.imageUrl
+
+  if (!source || failed) {
+    return (
+      <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-gray-100 text-center" role="img" aria-label={spanish ? 'Imagen no disponible' : 'Image unavailable'}>
+        <CarFront className="h-10 w-10 text-gray-400" aria-hidden="true" />
+        <span className="text-sm font-semibold text-gray-500">
+          {spanish ? 'Próximamente' : 'Coming soon'}
+        </span>
+      </div>
+    )
+  }
+
+  return (
+    <img
+      src={source}
+      alt={name}
+      className="absolute inset-0 h-full w-full object-cover"
+      onError={() => setFailed(true)}
+    />
+  )
+}
+
 export default function HomeClient({ tours, transfers, vehicles, rentCars, settings }: { tours: Tour[]; transfers: TransferRoute[]; vehicles: Vehicle[]; rentCars: RentCar[]; settings: SiteSettings | null }) {
   const [language, setLanguage] = useState<'es' | 'en' | 'it'>('es')
   const [menuOpen, setMenuOpen] = useState(false)
@@ -163,7 +190,7 @@ export default function HomeClient({ tours, transfers, vehicles, rentCars, setti
   const es = language === 'es'
   const it = language === 'it'
   const copy = es
-    ? { tours: 'Tours', transfers: 'Traslados', fleet: 'Flota', rent: 'Rent Car', about: 'Quiénes Somos', reviews: 'Reseñas', faq: 'Preguntas Frecuentes', book: 'Reservar', heroBadge: settings?.heroBadgeEs || 'Servicio VIP en República Dominicana', heroTitle: settings?.heroTitleEs || 'Tu viaje seguro, cómodo y sin preocupaciones', heroSubtitle: settings?.heroSubtitleEs || 'Traslados privados, tours exclusivos y vehículos cómodos con atención personalizada las 24 horas.', heroCta: 'Reservar por WhatsApp', toursCta: 'Ver Excursiones', toursTitle: settings?.toursTitleEs || 'Tours y excursiones', toursSubtitle: settings?.toursSubtitleEs || 'Descubre los mejores destinos de República Dominicana.', transfersTitle: settings?.transfersTitleEs || 'Traslados VIP privados', transfersSubtitle: settings?.transfersSubtitleEs || 'Punto a punto con chofer profesional y vehículos climatizados.', rentTitle: settings?.rentTitleEs || 'Rent Car para explorar sin límites', rentSubtitle: settings?.rentSubtitleEs || 'Vehículos disponibles según tu itinerario.', aboutBadge: settings?.aboutBadgeEs || 'Sobre Nosotros', aboutTitle: settings?.aboutTitleEs || 'Experiencias VIP hechas a tu medida', aboutDescription: settings?.aboutDescriptionEs || 'Somos una empresa dominicana especializada en traslados privados, excursiones y rent car.', quote: 'Cotizar por WhatsApp', priceQuote: 'Precio por WhatsApp', faqTitle: 'Preguntas frecuentes', footerDescription: settings?.footerDescriptionEs || 'VIP Transfers, tours y rent car en República Dominicana.' }
+    ? { tours: 'Tours', transfers: 'Traslados', fleet: 'Flota', rent: 'Rent Car', about: 'Quiénes Somos', reviews: 'Reseñas', faq: 'Preguntas Frecuentes', book: 'Reservar', heroBadge: settings?.heroBadgeEs || 'Servicio VIP en República Dominicana', heroTitle: settings?.heroTitleEs || 'Traslados VIP y Tours en República Dominicana', heroSubtitle: settings?.heroSubtitleEs || 'Traslados privados, tours exclusivos y vehículos cómodos con atención personalizada las 24 horas.', heroCta: 'Reservar por WhatsApp', toursCta: 'Ver Excursiones', toursTitle: settings?.toursTitleEs || 'Tours y excursiones', toursSubtitle: settings?.toursSubtitleEs || 'Descubre los mejores destinos de República Dominicana.', transfersTitle: settings?.transfersTitleEs || 'Traslados VIP privados', transfersSubtitle: settings?.transfersSubtitleEs || 'Punto a punto con chofer profesional y vehículos climatizados.', rentTitle: settings?.rentTitleEs || 'Rent Car para explorar sin límites', rentSubtitle: settings?.rentSubtitleEs || 'Vehículos disponibles según tu itinerario.', aboutBadge: settings?.aboutBadgeEs || 'Sobre Nosotros', aboutTitle: settings?.aboutTitleEs || 'Experiencias VIP hechas a tu medida', aboutDescription: settings?.aboutDescriptionEs || 'Somos una empresa dominicana especializada en traslados privados, excursiones y rent car.', quote: 'Cotizar por WhatsApp', priceQuote: 'Precio por WhatsApp', faqTitle: 'Preguntas frecuentes', footerDescription: settings?.footerDescriptionEs || 'VIP Transfers, tours y rent car en República Dominicana.' }
     : it
       ? { tours: 'Tour', transfers: 'Transfer', fleet: 'Flotta', rent: 'Noleggio Auto', about: 'Chi siamo', reviews: 'Recensioni', faq: 'Domande frequenti', book: 'Prenota', heroBadge: 'Servizio VIP nella Repubblica Dominicana', heroTitle: 'Il tuo viaggio, sicuro e senza preoccupazioni', heroSubtitle: 'Transfer privati, tour esclusivi e veicoli confortevoli con assistenza personalizzata.', heroCta: 'Prenota su WhatsApp', toursCta: 'Esplora i Tour', toursTitle: 'Tour ed escursioni', toursSubtitle: 'Scopri le migliori destinazioni della Repubblica Dominicana.', transfersTitle: 'Transfer VIP privati', transfersSubtitle: 'Servizio porta a porta con autista professionista.', rentTitle: 'Noleggio auto per esplorare', rentSubtitle: 'Veicoli disponibili per il tuo itinerario.', aboutBadge: 'Chi siamo', aboutTitle: 'Esperienze VIP su misura', aboutDescription: 'Siamo un’azienda dominicana specializzata in transfer privati, escursioni e noleggio auto.', quote: 'Richiedi preventivo', priceQuote: 'Prezzo su WhatsApp', faqTitle: 'Domande frequenti', footerDescription: 'Transfer VIP, tour e noleggio auto nella Repubblica Dominicana.' }
       : { tours: 'Tours', transfers: 'Transfers', fleet: 'Fleet', rent: 'Rent Car', about: 'About Us', reviews: 'Reviews', faq: 'FAQ', book: 'Book Now', heroBadge: settings?.heroBadgeEn || 'VIP service in the Dominican Republic', heroTitle: settings?.heroTitleEn || 'Your trip, safe, comfortable and worry-free', heroSubtitle: settings?.heroSubtitleEn || 'Private transfers, exclusive tours and comfortable vehicles with personalized 24-hour assistance.', heroCta: 'Book on WhatsApp', toursCta: 'Explore Tours', toursTitle: settings?.toursTitleEn || 'Tours & excursions', toursSubtitle: settings?.toursSubtitleEn || 'Discover the best destinations in the Dominican Republic.', transfersTitle: settings?.transfersTitleEn || 'Private VIP transfers', transfersSubtitle: settings?.transfersSubtitleEn || 'Point-to-point service with professional drivers and air-conditioned vehicles.', rentTitle: settings?.rentTitleEn || 'Rent Car for limitless exploration', rentSubtitle: settings?.rentSubtitleEn || 'Vehicles available for your itinerary.', aboutBadge: settings?.aboutBadgeEn || 'About Us', aboutTitle: settings?.aboutTitleEn || 'VIP experiences tailored to you', aboutDescription: settings?.aboutDescriptionEn || 'We are a Dominican company specializing in private transfers, excursions and rent car.', quote: 'Get Quote on WhatsApp', priceQuote: 'Price via WhatsApp', faqTitle: 'Frequently Asked Questions', footerDescription: settings?.footerDescriptionEn || 'VIP Transfers, tours and rent car in the Dominican Republic.' }
@@ -205,11 +232,8 @@ export default function HomeClient({ tours, transfers, vehicles, rentCars, setti
     { _id: 'fallback-van', name: 'Van VIP', category: 'van-vip', passengers: 10, luggage: 10, available: true, features: ['A/C', 'Espacio de equipaje'] },
   ]
   const primaryVehicle = displayVehicles.find((vehicle) => vehicle.category === 'van-vip' || vehicle.name?.toLowerCase().includes('van')) || displayVehicles[0]
-  const displayRentCars: RentCar[] = rentCars.length ? rentCars : [
-    { _id: 'fallback-rent-suv', name: 'SUV', description: es ? 'Ideal para familias y recorridos confortables.' : 'Ideal for families and comfortable trips.' },
-    { _id: 'fallback-rent-sedan', name: 'Sedán', description: es ? 'Una opción práctica y eficiente.' : 'A practical and efficient option.' },
-    { _id: 'fallback-rent-executive', name: 'Ejecutivo', description: es ? 'Confort premium para viajes de negocios.' : 'Premium comfort for business travel.' },
-  ]
+  const rentCarImage = rentCars.find((rentCar) => rentCar.imageUrl?.trim())?.imageUrl
+    || 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1800&q=85'
   const displayTransfers = transfers.length
     ? transfers.map((route) => ({
         _id: route._id,
@@ -226,7 +250,11 @@ export default function HomeClient({ tours, transfers, vehicles, rentCars, setti
         { _id: 'fallback-custom', title: es ? 'Rutas Personalizadas' : 'Custom Routes', detail: es ? 'Tu ruta, tu horario' : 'Your route, your schedule', estimatedTime: undefined, privateRateUsd: undefined },
       ]
 
-  const faqs = settings?.faqs?.length ? settings.faqs.map((faq) => ({ question: es ? faq.questionEs || faq.questionEn : faq.questionEn || faq.questionEs, answer: es ? faq.answerEs || faq.answerEn : faq.answerEn || faq.answerEs })) : es
+  const configuredFaqs = settings?.faqs?.map((faq) => ({
+    question: (es ? faq.questionEs || faq.questionEn : faq.questionEn || faq.questionEs)?.trim(),
+    answer: (es ? faq.answerEs || faq.answerEn : faq.answerEn || faq.answerEs)?.trim(),
+  })).filter((faq) => faq.question && faq.answer)
+  const faqs = configuredFaqs?.length ? configuredFaqs : es
     ? [{ question: '¿El traslado es 100% privado?', answer: 'Sí. El vehículo es exclusivo para usted y las personas incluidas en su reservación.' }, { question: '¿Qué pasa si mi vuelo se retrasa?', answer: 'Su horario se ajustará según el estado del vuelo cuando esté disponible.' }, { question: '¿Cómo reservo y cómo pago?', answer: 'Reserve por WhatsApp y confirme la disponibilidad y el método de pago acordado.' }, { question: '¿Incluyen sillas para bebés y paradas adicionales?', answer: 'Sí, sujeto a disponibilidad. Indíquenos la edad del menor y las paradas al reservar.' }]
     : [{ question: 'Is the transfer 100% private?', answer: 'Yes. The vehicle is exclusively reserved for you and your group.' }, { question: 'What happens if my flight is delayed?', answer: 'Pickup time is adjusted according to flight status whenever available.' }, { question: 'How do I book and pay?', answer: 'Book through WhatsApp to confirm availability and the agreed payment method.' }, { question: 'Do you provide baby seats and extra stops?', answer: 'Yes, subject to availability. Share the child’s age and requested stops when booking.' }]
 
@@ -234,7 +262,12 @@ export default function HomeClient({ tours, transfers, vehicles, rentCars, setti
     ? [{ clientName: 'María González', country: 'España', rating: 5, commentEs: 'Servicio puntual, amable y muy seguro. El viaje desde el aeropuerto fue perfecto.' }, { clientName: 'James Wilson', country: 'Estados Unidos', rating: 5, commentEs: 'Excelente atención y vehículos muy cómodos. Los recomiendo ampliamente.' }, { clientName: 'Ana Rodríguez', country: 'México', rating: 5, commentEs: 'Un tour organizado impecablemente. Todo estuvo claro y sin contratiempos.' }]
     : [{ clientName: 'María González', country: 'Spain', rating: 5, commentEn: 'Punctual, friendly and very safe service. The airport transfer was perfect.' }, { clientName: 'James Wilson', country: 'United States', rating: 5, commentEn: 'Excellent service and very comfortable vehicles. Highly recommended.' }, { clientName: 'Ana Rodríguez', country: 'Mexico', rating: 5, commentEn: 'An impeccably organized tour. Everything was clear and smooth.' }]
 
-  const aboutHighlights = es ? settings?.aboutHighlightsEs?.length ? settings.aboutHighlightsEs : ['Conductores certificados', 'Flota moderna y climatizada', 'Atención personalizada', 'Servicio disponible 24/7'] : settings?.aboutHighlightsEn?.length ? settings.aboutHighlightsEn : ['Certified drivers', 'Modern air-conditioned fleet', 'Personalized service', '24/7 assistance']
+  const configuredAboutHighlights = (es ? settings?.aboutHighlightsEs : settings?.aboutHighlightsEn)?.filter((highlight) => highlight?.trim())
+  const aboutHighlights = configuredAboutHighlights?.length
+    ? configuredAboutHighlights
+    : es
+      ? ['Conductores certificados', 'Flota moderna y climatizada', 'Atención personalizada', 'Servicio disponible 24/7']
+      : ['Certified drivers', 'Modern air-conditioned fleet', 'Personalized service', '24/7 assistance']
 
   const privacyFallbackEs = `POLÍTICA DE PRIVACIDAD
 
@@ -328,30 +361,35 @@ Before payment, guests may request written confirmation of the price, pickup det
         cancellation: ['Cancellation Policy', settings?.legalPolicies?.cancellationPolicyEn || cancellationFallbackEn],
       }
 
-  function VehicleImage({ vehicle, name, spanish }: { vehicle: Vehicle; name: string; spanish: boolean }) {
-    const [failed, setFailed] = useState(false)
-    const source = vehicle.photoUrl || vehicle.imageUrl
+  function getPromoVideoEmbedUrl(url?: string) {
+    if (!url) return null
 
-    if (!source || failed) {
-      return (
-        <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-gray-100 text-center" role="img" aria-label={spanish ? 'Imagen no disponible' : 'Image unavailable'}>
-          <CarFront className="h-10 w-10 text-gray-400" aria-hidden="true" />
-          <span className="text-sm font-semibold text-gray-500">
-            {spanish ? 'Próximamente' : 'Coming soon'}
-          </span>
-        </div>
-      )
+    try {
+      const parsed = new URL(url)
+
+      if (parsed.hostname.includes('youtu.be')) {
+        const videoId = parsed.pathname.slice(1).split('/')[0]
+        return videoId ? `https://www.youtube.com/embed/${videoId}` : null
+      }
+
+      if (parsed.hostname.includes('youtube.com')) {
+        if (parsed.pathname.startsWith('/embed/')) return url
+        const videoId = parsed.searchParams.get('v')
+        return videoId ? `https://www.youtube.com/embed/${videoId}` : null
+      }
+
+      if (parsed.hostname.includes('vimeo.com')) {
+        const videoId = parsed.pathname.split('/').filter(Boolean).pop()
+        return videoId ? `https://player.vimeo.com/video/${videoId}` : null
+      }
+
+      return url
+    } catch {
+      return null
     }
-
-    return (
-      <img
-        src={source}
-        alt={name}
-        className="absolute inset-0 h-full w-full object-cover"
-        onError={() => setFailed(true)}
-      />
-    )
   }
+
+  const promoVideoEmbedUrl = getPromoVideoEmbedUrl(settings?.promoVideoUrl)
 
   return (
     <main className="min-h-screen overflow-hidden bg-white text-slate-800">
@@ -435,12 +473,14 @@ Before payment, guests may request written confirmation of the price, pickup det
 
           <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
             {displayTransfers.slice(0, 3).map((card) => (
-              <article key={card._id} className="flex min-h-48 flex-col rounded-2xl border border-cyan-100 bg-white p-6 shadow-sm">
-                <p className="text-xs font-extrabold uppercase tracking-wider text-cyan-600">{card.detail}</p>
-                <h3 className="mt-3 text-xl font-black leading-7 text-slate-900">{card.title}</h3>
-                {card.estimatedTime && <p className="mt-3 text-sm leading-6 text-slate-600">{card.estimatedTime}</p>}
-                {typeof card.privateRateUsd === 'number' && <p className="mt-4 text-sm font-bold text-cyan-700">Desde USD ${card.privateRateUsd}</p>}
-                <a href={getServiceWhatsappUrl(card.title || (es ? 'Traslado privado' : 'Private transfer'))} target="_blank" rel="noopener noreferrer" className="mt-auto pt-4 text-sm font-bold text-cyan-700">
+              <article key={card._id} className="flex min-h-56 min-w-0 flex-col gap-3 rounded-2xl border border-cyan-100 bg-white p-6 shadow-sm">
+                <p className="break-words text-xs font-extrabold uppercase tracking-wider text-cyan-600">{card.detail || (es ? 'Ruta personalizada' : 'Custom route')}</p>
+                <h3 className="mt-1 break-words text-xl font-black leading-7 text-slate-900">{card.title || (es ? 'Traslado privado' : 'Private transfer')}</h3>
+                {card.estimatedTime?.trim() && <p className="text-sm leading-6 text-slate-600">{card.estimatedTime}</p>}
+                <p className="mt-1 text-sm font-bold text-cyan-700">
+                  {typeof card.privateRateUsd === 'number' ? `Desde USD $${card.privateRateUsd}` : (es ? 'Consultar precio' : 'Request a quote')}
+                </p>
+                <a href={getServiceWhatsappUrl(card.title || (es ? 'Traslado privado' : 'Private transfer'))} target="_blank" rel="noopener noreferrer" className="mt-auto pt-3 text-sm font-bold text-cyan-700">
                   {es ? 'Reservar traslado →' : it ? 'Prenota transfer →' : 'Book transfer →'}
                 </a>
               </article>
@@ -474,11 +514,11 @@ Before payment, guests may request written confirmation of the price, pickup det
                   )}
                 </div>
                 <div className="p-5">
-                  <p className="text-xs font-extrabold uppercase tracking-wider text-cyan-600">{tour.category}</p>
-                  <h3 className="mt-2 text-xl font-black text-slate-900">{es ? tour.title : tour.titleEn || tour.title}</h3>
-                  <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{es ? tour.description : tour.descriptionEn || tour.description}</p>
+                  {tour.category?.trim() && <p className="text-xs font-extrabold uppercase tracking-wider text-cyan-600">{tour.category}</p>}
+                  <h3 className="mt-2 text-xl font-black text-slate-900">{(es ? tour.title : tour.titleEn || tour.title)?.trim() || (es ? 'Tour y excursión' : 'Tour and excursion')}</h3>
+                  {(es ? tour.description : tour.descriptionEn || tour.description)?.trim() && <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{es ? tour.description : tour.descriptionEn || tour.description}</p>}
                   <div className="mt-4 flex items-center justify-between gap-3">
-                    {typeof tour.priceUsd === 'number' && tour.showPrice !== false && <p className="text-sm font-bold text-cyan-700">Desde USD ${tour.priceUsd}</p>}
+                    <p className="text-sm font-bold text-cyan-700">{typeof tour.priceUsd === 'number' && tour.showPrice !== false ? `Desde USD $${tour.priceUsd}` : (es ? 'Consultar precio' : 'Request a quote')}</p>
                     <a href={getServiceWhatsappUrl(es ? tour.title || 'Tour' : tour.titleEn || tour.title || 'Tour')} target="_blank" rel="noopener noreferrer" className="ml-auto text-sm font-bold text-cyan-700">{es ? 'Reservar →' : it ? 'Prenota →' : 'Book →'}</a>
                   </div>
                 </div>
@@ -487,6 +527,25 @@ Before payment, guests may request written confirmation of the price, pickup det
           </div>
         </div>
       </section>
+
+      {promoVideoEmbedUrl && (
+        <section id="promo-video" className="bg-white py-16">
+          <div className="mx-auto max-w-7xl px-5 sm:px-8">
+            <div className="mx-auto max-w-5xl overflow-hidden rounded-3xl border border-cyan-100 bg-white shadow-sm">
+              <div className="aspect-video w-full">
+                <iframe
+                  src={promoVideoEmbedUrl}
+                  title={es ? 'Video promocional' : 'Promotional video'}
+                  className="h-full w-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       <section id="fleet" className="bg-cyan-50/40 py-16">
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
@@ -522,36 +581,23 @@ Before payment, guests may request written confirmation of the price, pickup det
             <p className="mt-3 leading-7 text-slate-600">{copy.rentSubtitle}</p>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {displayRentCars.slice(0, 3).map((rentCar) => (
-              <article
-                key={rentCar._id}
-                className="flex flex-col rounded-2xl border border-cyan-100 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
-              >
-                <div className="relative aspect-video w-full overflow-hidden rounded-xl">
-                  <VehicleImage vehicle={rentCar} name={rentCar.name || ''} spanish={es} />
-                </div>
-                <div className="mt-4 flex flex-col gap-3">
-                  <h3 className="text-xl font-black leading-7 text-slate-900">{rentCar.name}</h3>
-                  {rentCar.description && (
-                    <p className="line-clamp-3 text-sm leading-6 text-slate-600">{rentCar.description}</p>
-                  )}
-                  {typeof rentCar.pricePerDay === 'number' && (
-                    <p className="mt-auto text-sm font-bold text-cyan-700">
-                      USD ${rentCar.pricePerDay} / {es ? 'día' : 'day'}
-                    </p>
-                  )}
-                  <a
-                    href={getServiceWhatsappUrl(rentCar.name || 'Rent Car')}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-2 inline-flex rounded-full bg-cyan-700 px-5 py-3 text-center text-sm font-bold text-white"
-                  >
-                    {es ? 'Consultar disponibilidad' : 'Check availability'}
-                  </a>
-                </div>
-              </article>
-            ))}
+          <div className="grid overflow-hidden rounded-3xl border border-cyan-100 bg-white shadow-sm lg:grid-cols-[1.1fr_.9fr]">
+            <div className="relative min-h-64 bg-slate-100 sm:min-h-80">
+              <div
+                role="img"
+                aria-label={es ? 'Servicio de alquiler de vehículos' : 'Car rental service'}
+                className="absolute inset-0 bg-cover bg-center"
+                style={{ backgroundImage: `linear-gradient(0deg,rgba(15,23,42,.16),rgba(15,23,42,.02)),url('${rentCarImage}')` }}
+              />
+            </div>
+            <div className="flex flex-col items-start justify-center gap-5 p-6 sm:p-10 lg:p-12">
+              <CarFront className="h-10 w-10 text-cyan-700" aria-hidden="true" />
+              <h3 className="text-2xl font-black text-slate-900 sm:text-3xl">{es ? 'Vehículos para cada viaje' : 'The right vehicle for every trip'}</h3>
+              <p className="max-w-xl leading-7 text-slate-600">{copy.rentSubtitle?.trim() || (es ? 'Consulta nuestra disponibilidad de vehículos y encuentra la opción ideal para recorrer República Dominicana.' : 'Ask about our available vehicles and find the right option for exploring the Dominican Republic.')}</p>
+              <a href={getServiceWhatsappUrl(es ? 'vehículos disponibles para alquiler' : 'available rental vehicles')} target="_blank" rel="noopener noreferrer" className="inline-flex rounded-full bg-cyan-700 px-6 py-3.5 text-center text-sm font-bold text-white shadow-sm hover:bg-cyan-800">
+                {es ? 'Consultar Vehículos disponibles' : 'Ask about available vehicles'}
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -639,29 +685,25 @@ Before payment, guests may request written confirmation of the price, pickup det
 
       <footer className="border-t border-cyan-100 bg-white py-10">
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
-          <div className="flex flex-col gap-8 sm:flex-row">
+          <div className="flex flex-col gap-8 sm:flex-row sm:items-start">
             <div className="flex-1">
               <a href="#top" className="flex items-center gap-2 text-slate-900">
                 <span className="block text-2xl font-extrabold">Blessed <span className="text-emerald-500">Transport</span> Safe</span>
               </a>
-              <p className="mt-4 text-sm leading-6 text-slate-600">{settings?.footerDescriptionEs || settings?.footerDescriptionEn}</p>
+              {(es ? settings?.footerDescriptionEs || settings?.footerDescriptionEn : settings?.footerDescriptionEn || settings?.footerDescriptionEs)?.trim() && <p className="mt-4 text-sm leading-6 text-slate-600">{es ? settings?.footerDescriptionEs || settings?.footerDescriptionEn : settings?.footerDescriptionEn || settings?.footerDescriptionEs}</p>}
             </div>
-            <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
-              <div className="flex flex-col gap-3">
-                <p className="text-sm font-semibold text-slate-700">{copy.tours}</p>
-                <a href="#tours" className="text-sm text-slate-500 hover:text-cyan-700">{copy.tours}</a>
-              </div>
-              <div className="flex flex-col gap-3">
-                <p className="text-sm font-semibold text-slate-700">{copy.transfers}</p>
-                <a href="#transfers" className="text-sm text-slate-500 hover:text-cyan-700">{copy.transfers}</a>
-              </div>
-              <div className="flex flex-col gap-3">
-                <p className="text-sm font-semibold text-slate-700">{copy.rent}</p>
-                <a href="#rent" className="text-sm text-slate-500 hover:text-cyan-700">{copy.rent}</a>
-              </div>
-              <div className="flex flex-col gap-3">
-                <p className="text-sm font-semibold text-slate-700">{copy.about}</p>
-                <a href="#about" className="text-sm text-slate-500 hover:text-cyan-700">{copy.about}</a>
+            <div className="grid grid-cols-2 gap-x-8 gap-y-4 sm:grid-cols-3">
+              <a href="#tours" className="text-sm text-slate-500 hover:text-cyan-700">{copy.tours}</a>
+              <a href="#transfers" className="text-sm text-slate-500 hover:text-cyan-700">{copy.transfers}</a>
+              <a href="#rent" className="text-sm text-slate-500 hover:text-cyan-700">{copy.rent}</a>
+              <a href="#about" className="text-sm text-slate-500 hover:text-cyan-700">{copy.about}</a>
+              <a href="#" className="text-sm text-slate-500 hover:text-cyan-700">{es ? 'Política de Privacidad' : 'Privacy Policy'}</a>
+              <a href="#" className="text-sm text-slate-500 hover:text-cyan-700">{es ? 'Términos y Condiciones' : 'Terms & Conditions'}</a>
+              <div className="col-span-2 flex items-center gap-4 sm:col-span-3" aria-label={es ? 'Redes sociales' : 'Social media'}>
+                <a href="#" aria-label="Facebook" className="text-slate-500 transition hover:text-cyan-700">
+                  <span className="relative grid h-5 w-5 place-items-center"><Circle className="absolute h-5 w-5" /><span className="text-xs font-bold">f</span></span>
+                </a>
+                <a href="#" aria-label="Instagram" className="text-slate-500 transition hover:text-cyan-700"><Camera className="h-5 w-5" /></a>
               </div>
             </div>
           </div>
@@ -672,6 +714,15 @@ Before payment, guests may request written confirmation of the price, pickup det
           </div>
         </div>
       </footer>
+      <a
+        href={whatsappLink || getWhatsappUrl(defaultMessage)}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={es ? 'Chatear por WhatsApp' : 'Chat on WhatsApp'}
+        className="fixed bottom-6 right-6 z-50 grid h-14 w-14 place-items-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-950/25 transition hover:scale-105 hover:bg-emerald-600 motion-reduce:animate-none animate-pulse"
+      >
+        <MessageCircle className="h-7 w-7" aria-hidden="true" />
+      </a>
     </main>
   )
 }

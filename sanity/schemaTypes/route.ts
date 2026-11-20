@@ -9,25 +9,22 @@ export const routeType = defineType({
       name: 'title',
       title: 'Nombre de la ruta',
       type: 'string',
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'origin',
       title: 'Origen',
       type: 'string',
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'destination',
       title: 'Destino',
       type: 'string',
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'priceUsd',
       title: 'Tarifa privada en USD',
       type: 'number',
-      validation: (Rule) => Rule.required().min(0),
+      validation: (Rule) => Rule.min(0).warning(),
     }),
     defineField({
       name: 'estimatedTime',

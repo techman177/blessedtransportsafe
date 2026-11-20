@@ -2,7 +2,7 @@ import { defineField, defineType } from 'sanity'
 
 export const siteSettingsType = defineType({
   name: 'siteSettings',
-  title: 'Portada y Configuración del Sitio',
+  title: 'Configuración General',
   type: 'document',
   fields: [
     defineField({ name: 'heroImage', title: 'Imagen de portada', type: 'image', options: { hotspot: true } }),
@@ -47,10 +47,10 @@ export const siteSettingsType = defineType({
     defineField({
       name: 'faqs', title: 'Preguntas Frecuentes', type: 'array', of: [{
         type: 'object', fields: [
-          defineField({ name: 'questionEs', title: 'Pregunta (ES)', type: 'string', validation: (Rule) => Rule.required() }),
-          defineField({ name: 'questionEn', title: 'Question (EN)', type: 'string', validation: (Rule) => Rule.required() }),
-          defineField({ name: 'answerEs', title: 'Respuesta (ES)', type: 'text', rows: 4, validation: (Rule) => Rule.required() }),
-          defineField({ name: 'answerEn', title: 'Answer (EN)', type: 'text', rows: 4, validation: (Rule) => Rule.required() }),
+          defineField({ name: 'questionEs', title: 'Pregunta (ES)', type: 'string' }),
+          defineField({ name: 'questionEn', title: 'Question (EN)', type: 'string' }),
+          defineField({ name: 'answerEs', title: 'Respuesta (ES)', type: 'text', rows: 4 }),
+          defineField({ name: 'answerEn', title: 'Answer (EN)', type: 'text', rows: 4 }),
         ], preview: { select: { title: 'questionEs', subtitle: 'questionEn' } },
       }],
     }),
@@ -62,11 +62,11 @@ export const siteSettingsType = defineType({
       of: [{
         type: 'object',
         fields: [
-          defineField({ name: 'clientName', title: 'Nombre del cliente', type: 'string', validation: (Rule) => Rule.required() }),
+          defineField({ name: 'clientName', title: 'Nombre del cliente', type: 'string' }),
           defineField({ name: 'country', title: 'País', type: 'string' }),
-          defineField({ name: 'rating', title: 'Calificación', type: 'number', options: { list: [1, 2, 3, 4, 5] }, validation: (Rule) => Rule.required().min(1).max(5) }),
-          defineField({ name: 'commentEs', title: 'Comentario (ES)', type: 'text', rows: 3, validation: (Rule) => Rule.required() }),
-          defineField({ name: 'commentEn', title: 'Comment (EN)', type: 'text', rows: 3, validation: (Rule) => Rule.required() }),
+          defineField({ name: 'rating', title: 'Calificación', type: 'number', options: { list: [1, 2, 3, 4, 5] }, validation: (Rule) => Rule.min(1).max(5).warning() }),
+          defineField({ name: 'commentEs', title: 'Comentario (ES)', type: 'text', rows: 3 }),
+          defineField({ name: 'commentEn', title: 'Comment (EN)', type: 'text', rows: 3 }),
         ],
         preview: { select: { title: 'clientName', subtitle: 'country' } },
       }],
@@ -76,7 +76,7 @@ export const siteSettingsType = defineType({
     defineField({ name: 'footerDescriptionEs', title: 'Descripción del footer (ES)', type: 'string' }),
     defineField({ name: 'footerDescriptionEn', title: 'Footer Description (EN)', type: 'string' }),
     defineField({ name: 'showPromoVideo', title: 'Mostrar video promocional', type: 'boolean', initialValue: false }),
-    defineField({ name: 'promoVideoUrl', title: 'URL de video promocional (YouTube/Vimeo)', type: 'url' }),
+    defineField({ name: 'promoVideoUrl', title: 'URL de video promocional (YouTube/Vimeo)', type: 'url', description: 'Enlace de YouTube o Vimeo del video promocional' }),
     defineField({
       name: 'legalPolicies',
       title: 'Políticas Legales',

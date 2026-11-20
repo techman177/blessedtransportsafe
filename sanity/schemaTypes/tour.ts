@@ -9,20 +9,17 @@ export const tourType = defineType({
       name: 'title',
       title: 'Título (Español)',
       type: 'string',
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'titleEn',
       title: 'Title (English)',
       type: 'string',
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'slug',
       title: 'URL amigable (Slug)',
       type: 'slug',
       options: { source: 'title', maxLength: 96 },
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'category',
@@ -39,13 +36,12 @@ export const tourType = defineType({
           { title: 'Samaná Aventura / Playas', value: 'samana' },
         ],
       },
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'priceUsd',
       title: 'Precio en USD (Opcional)',
       type: 'number',
-      validation: (Rule) => Rule.min(0),
+      validation: (Rule) => Rule.min(0).warning(),
     }),
     defineField({
       name: 'showPrice',
@@ -68,7 +64,6 @@ export const tourType = defineType({
       title: 'Imagen principal',
       type: 'image',
       options: { hotspot: true },
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'description',
