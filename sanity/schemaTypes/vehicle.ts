@@ -2,7 +2,7 @@ import { defineField, defineType } from 'sanity';
 
 export const vehicleType = defineType({
   name: 'vehicle',
-  title: 'Rent Car / Vehículos',
+  title: 'Flota (Traslados)',
   type: 'document',
   fields: [
     defineField({
@@ -20,10 +20,10 @@ export const vehicleType = defineType({
           { title: 'Van / Minibus VIP', value: 'van-vip' },
           { title: 'SUV / Ejecutivo', value: 'suv' },
           { title: 'Sedán Privado', value: 'sedan' },
-          { title: 'Rent Car', value: 'rent-car' },
         ],
+        layout: 'radio',
       },
-      initialValue: 'rent-car',
+      initialValue: 'van-vip',
       validation: (Rule) => Rule.required(),
     }),
     defineField({

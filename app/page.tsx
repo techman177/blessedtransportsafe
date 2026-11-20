@@ -40,6 +40,14 @@ type Vehicle = {
   photoUrl?: string
 }
 
+type RentCar = {
+  _id: string
+  name?: string
+  description?: string
+  pricePerDay?: number
+  imageUrl?: string
+}
+
 type SiteSettings = {
   heroImageUrl?: string
   heroBadgeEs?: string
@@ -117,7 +125,7 @@ export default async function Home() {
       estimatedTime,
       featured
     },
-    "vehicles": *[_type == "vehicle"] {
+    "vehicles": *[_type == "vehicle" && category != "rent-car"] {
       _id,
       name,
       category,
@@ -128,6 +136,13 @@ export default async function Home() {
       features,
       available,
       "photoUrl": coalesce(photo.asset->url, image.asset->url),
+    },
+    "rentCars": *[_type == "rentCar"] | order(_createdAt desc) {
+      _id,
+      name,
+      description,
+      pricePerDay,
+      "imageUrl": image.asset->url
     },
     "settings": *[_type == "siteSettings"][0] {
       "heroImageUrl": heroImage.asset->url,
@@ -186,6 +201,7 @@ export default async function Home() {
   let tours: Tour[] = []
   let transfers: TransferRoute[] = []
   let vehicles: Vehicle[] = []
+  let rentCars: RentCar[] = []
   let settings: SiteSettings | null = null
 
   try {
@@ -193,12 +209,14 @@ export default async function Home() {
       tours: Tour[]
       transfers: TransferRoute[]
       vehicles: Vehicle[]
+      rentCars: RentCar[]
       settings: SiteSettings | null
     }>(query)
 
     tours = data.tours ?? []
     transfers = data.transfers ?? []
     vehicles = data.vehicles ?? []
+    rentCars = data.rentCars ?? []
     settings = data.settings ?? null
   } catch {
     // The client component provides useful fallbacks if Sanity is unavailable.
@@ -209,6 +227,7 @@ export default async function Home() {
       tours={tours}
       transfers={transfers}
       vehicles={vehicles}
+      rentCars={rentCars}
       settings={settings}
     />
   )

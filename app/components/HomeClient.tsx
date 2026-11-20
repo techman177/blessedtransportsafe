@@ -44,6 +44,14 @@ export type Vehicle = {
   available?: boolean
 }
 
+export type RentCar = {
+  _id: string
+  name?: string
+  description?: string
+  pricePerDay?: number
+  imageUrl?: string
+}
+
 export type SiteSettings = {
   heroImageUrl?: string
   heroBadgeEs?: string
@@ -137,7 +145,7 @@ const copy = {
   },
 } as const
 
-export default function HomeClient({ tours, transfers, vehicles, settings }: { tours: Tour[]; transfers: TransferRoute[]; vehicles: Vehicle[]; settings: SiteSettings | null }) {
+export default function HomeClient({ tours, transfers, vehicles, rentCars, settings }: { tours: Tour[]; transfers: TransferRoute[]; vehicles: Vehicle[]; rentCars: RentCar[]; settings: SiteSettings | null }) {
   const [language, setLanguage] = useState<'es' | 'en'>('es')
   const [menuOpen, setMenuOpen] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(0)
@@ -178,8 +186,12 @@ export default function HomeClient({ tours, transfers, vehicles, settings }: { t
   const displayTours = tours.length ? tours : fallbackTours
   const displayVehicles = vehicles.length ? vehicles : [
     { _id: 'fallback-van', name: 'Van VIP', category: 'van-vip', passengers: 10, luggage: 10, available: true, features: ['A/C', 'Espacio de equipaje'] },
-    { _id: 'fallback-suv', name: 'SUV Ejecutivo', category: 'suv', passengers: 6, luggage: 5, available: true, features: ['A/C', 'Confort ejecutivo'] },
-    { _id: 'fallback-sedan', name: 'Sedán Privado', category: 'sedan', passengers: 3, luggage: 3, available: true, features: ['A/C', 'Servicio privado'] },
+  ]
+  const primaryVehicle = displayVehicles.find((vehicle) => vehicle.category === 'van-vip' || vehicle.name?.toLowerCase().includes('van')) || displayVehicles[0]
+  const displayRentCars: RentCar[] = rentCars.length ? rentCars : [
+    { _id: 'fallback-rent-suv', name: 'SUV', description: es ? 'Ideal para familias y recorridos confortables.' : 'Ideal for families and comfortable trips.' },
+    { _id: 'fallback-rent-sedan', name: 'Sedán', description: es ? 'Una opción práctica y eficiente.' : 'A practical and efficient option.' },
+    { _id: 'fallback-rent-executive', name: 'Ejecutivo', description: es ? 'Confort premium para viajes de negocios.' : 'Premium comfort for business travel.' },
   ]
   const displayTransfers = transfers.length
     ? transfers.map((route) => ({
@@ -349,185 +361,163 @@ Before payment, guests may request written confirmation of the price, pickup det
         )}
       </header>
 
-      <section id="top" className="relative min-h-[660px] pt-20"><div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `linear-gradient(90deg,rgba(255,255,255,.96),rgba(255,255,255,.82) 55%,rgba(207,250,254,.25)),url('${heroImage}')` }} /><div className="relative mx-auto flex min-h-[580px] max-w-7xl items-center px-5 py-16 sm:px-8"><div className="max-w-2xl"><p className="mb-5 inline-flex rounded-full border border-cyan-200 bg-white/90 px-4 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-cyan-700">{copy.heroBadge}</p><h1 className="text-4xl font-black leading-tight text-slate-900 sm:text-6xl">{copy.heroTitle}</h1><p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">{copy.heroSubtitle}</p><div className="mt-8 flex flex-col gap-3 sm:flex-row"><a href={getWhatsappUrl(defaultMessage)} target="_blank" rel="noopener noreferrer" className="rounded-full bg-emerald-500 px-7 py-4 text-center text-sm font-extrabold text-white">{copy.heroCta}</a><a href="#tours" className="rounded-full border-2 border-cyan-600 bg-white px-7 py-4 text-center text-sm font-extrabold text-cyan-700">{copy.toursCta}</a></div></div></div></section>
-
-      <section id="transfers" className="bg-cyan-50/40 py-24">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8">
-          <div className="mb-10 max-w-2xl">
-            <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">VIP</p>
-            <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-5xl">{copy.transfersTitle}</h2>
-            <p className="mt-4 leading-7 text-slate-600">{copy.transfersSubtitle}</p>
+      <section id="top" className="relative pt-20">
+        <div
+          className="absolute inset-x-0 top-20 h-[420px] bg-cover bg-center sm:h-[470px]"
+          style={{ backgroundImage: `linear-gradient(90deg,rgba(255,255,255,.94),rgba(255,255,255,.78) 58%,rgba(207,250,254,.35)),url('${heroImage}')` }}
+        />
+        <div className="relative mx-auto max-w-7xl px-5 pb-16 pt-14 sm:px-8 sm:pt-20">
+          <div className="max-w-2xl rounded-3xl border border-white/80 bg-white/85 p-6 shadow-xl shadow-cyan-950/5 backdrop-blur-sm sm:p-8">
+            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-cyan-700">{copy.heroBadge}</p>
+            <h1 className="mt-4 text-4xl font-black leading-[1.05] text-slate-900 sm:text-6xl">{copy.heroTitle}</h1>
+            <p className="mt-5 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">{copy.heroSubtitle}</p>
+            <a href={getWhatsappUrl(defaultMessage)} target="_blank" rel="noopener noreferrer" className="mt-7 inline-flex rounded-full bg-emerald-500 px-6 py-3.5 text-sm font-extrabold text-white shadow-sm">
+              {copy.heroCta}
+            </a>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-              {displayTransfers.map((card) => (
-                <article
-                  key={card._id}
-                  className="flex h-full min-h-52 flex-col rounded-2xl border border-cyan-100 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
-                >
-                  <p className="line-clamp-2 text-xs font-extrabold uppercase tracking-wider text-cyan-600">
-                    {card.detail}
-                  </p>
-                  <h3 className="mt-3 line-clamp-2 min-h-14 text-xl font-black leading-7 text-slate-900">
-                    {card.title}
-                  </h3>
-                  {card.estimatedTime && (
-                    <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">
-                      {card.estimatedTime}
-                    </p>
-                  )}
-                  {typeof card.privateRateUsd === 'number' && (
-                    <p className="mt-auto pt-5 text-sm font-bold text-cyan-700">
-                      USD ${card.privateRateUsd}
-                    </p>
-                  )}
-                </article>
-              ))}
-            </div>
+          <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <a href="#transfers" className="group flex items-center gap-4 rounded-2xl border border-cyan-100 bg-white p-5 shadow-sm">
+              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-cyan-50 text-cyan-700"><Clock3 className="h-5 w-5" /></div>
+              <div><h2 className="text-sm font-black text-slate-900">{es ? 'Traslados Aeropuerto' : 'Airport Transfers'}</h2><p className="mt-1 text-xs text-slate-500">{es ? 'Viaja con puntualidad' : 'Travel on time'}</p><span className="mt-2 inline-block text-xs font-bold text-cyan-700">{es ? 'Ver opciones →' : 'View options →'}</span></div>
+            </a>
+            <a href="#rent" className="group flex items-center gap-4 rounded-2xl border border-cyan-100 bg-white p-5 shadow-sm">
+              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-cyan-50 text-cyan-700"><CarFront className="h-5 w-5" /></div>
+              <div><h2 className="text-sm font-black text-slate-900">Rent Car</h2><p className="mt-1 text-xs text-slate-500">{es ? 'Explora a tu ritmo' : 'Explore at your pace'}</p><span className="mt-2 inline-block text-xs font-bold text-cyan-700">{es ? 'Ver opciones →' : 'View options →'}</span></div>
+            </a>
+            <a href="#tours" className="group flex items-center gap-4 rounded-2xl border border-cyan-100 bg-white p-5 shadow-sm">
+              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-cyan-50 text-cyan-700"><CalendarDays className="h-5 w-5" /></div>
+              <div><h2 className="text-sm font-black text-slate-900">{es ? 'Tours y Excursiones' : 'Tours & Excursions'}</h2><p className="mt-1 text-xs text-slate-500">{es ? 'Vive experiencias únicas' : 'Discover unique experiences'}</p><span className="mt-2 inline-block text-xs font-bold text-cyan-700">{es ? 'Ver opciones →' : 'View options →'}</span></div>
+            </a>
+            <a href="#fleet" className="group flex items-center gap-4 rounded-2xl border border-cyan-100 bg-white p-5 shadow-sm">
+              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-cyan-50 text-cyan-700"><ShieldCheck className="h-5 w-5" /></div>
+              <div><h2 className="text-sm font-black text-slate-900">{es ? 'Nuestra Flota' : 'Our Fleet'}</h2><p className="mt-1 text-xs text-slate-500">{es ? 'Confort y seguridad' : 'Comfort and safety'}</p><span className="mt-2 inline-block text-xs font-bold text-cyan-700">{es ? 'Ver opciones →' : 'View options →'}</span></div>
+            </a>
+          </div>
+        </div>
+      </section>
 
-            {/* existing quick quote form */}
-            <form
-              onSubmit={(event) => {
-                event.preventDefault()
-                window.open(getWhatsappUrl(quoteMessage), '_blank', 'noopener,noreferrer')
-              }}
-              className="rounded-2xl border border-cyan-100 bg-white p-6 shadow-sm"
-            >
-              <h3 className="mb-5 text-xl font-black text-slate-900">{es ? 'Cotizador rápido' : 'Quick Quote'}</h3>
-              <div className="space-y-3">
-                <select value={origin} onChange={(event) => setOrigin(event.target.value)} className="w-full rounded-xl border border-cyan-100 px-4 py-3 text-sm">
-                  <option>Aeropuerto Las Américas SDQ</option>
-                  <option>Aeropuerto Punta Cana PUJ</option>
-                  <option>Aeropuerto La Romana LRM</option>
-                  <option>Santo Domingo</option>
-                  <option>{es ? 'Otro' : 'Other'}</option>
-                </select>
-                <input value={destination} onChange={(event) => setDestination(event.target.value)} placeholder={es ? 'Destino / Hotel / Zona' : 'Destination / Hotel / Area'} className="w-full rounded-xl border border-cyan-100 px-4 py-3 text-sm" />
-                <input type="date" value={date} onChange={(event) => setDate(event.target.value)} className="w-full rounded-xl border border-cyan-100 px-4 py-3 text-sm" />
-                <div className="grid grid-cols-2 gap-3">
-                  <select value={passengers} onChange={(event) => setPassengers(event.target.value)} className="rounded-xl border border-cyan-100 px-3 py-3 text-sm">
-                    {Array.from({ length: 14 }, (_, index) => index + 1).map((number) => <option key={number} value={number}>{number === 14 ? '14+' : number}</option>)}
-                  </select>
-                  <select value={luggage} onChange={(event) => setLuggage(event.target.value)} aria-label={es ? 'Maletas' : 'Luggage'} className="rounded-xl border border-cyan-100 px-3 py-3 text-sm">
-                    {Array.from({ length: 16 }, (_, index) => index).map((number) => <option key={number} value={number}>{number === 15 ? '15+' : number}</option>)}
-                  </select>
+      <section id="transfers" className="bg-cyan-50/40 py-16">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8">
+          <div className="mb-8 max-w-2xl">
+            <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">{es ? 'LOS MÁS SOLICITADOS' : 'MOST REQUESTED'}</p>
+            <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-4xl">{copy.transfersTitle}</h2>
+            <p className="mt-3 leading-7 text-slate-600">{copy.transfersSubtitle}</p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+            {displayTransfers.slice(0, 3).map((card) => (
+              <article key={card._id} className="flex min-h-48 flex-col rounded-2xl border border-cyan-100 bg-white p-6 shadow-sm">
+                <p className="text-xs font-extrabold uppercase tracking-wider text-cyan-600">{card.detail}</p>
+                <h3 className="mt-3 text-xl font-black leading-7 text-slate-900">{card.title}</h3>
+                {card.estimatedTime && <p className="mt-3 text-sm leading-6 text-slate-600">{card.estimatedTime}</p>}
+                {typeof card.privateRateUsd === 'number' && <p className="mt-auto pt-4 text-sm font-bold text-cyan-700">Desde USD ${card.privateRateUsd}</p>}
+              </article>
+            ))}
+          </div>
+
+          <div className="mt-7 flex justify-center">
+            <a href={getWhatsappUrl(quoteMessage)} target="_blank" rel="noopener noreferrer" className="rounded-full bg-cyan-700 px-7 py-3.5 text-sm font-extrabold text-white shadow-sm">
+              {copy.quote}
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section id="tours" className="py-16">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8">
+          <div className="mb-8 max-w-2xl">
+            <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">{es ? 'EXCURSIONES DESTACADAS' : 'FEATURED EXCURSIONS'}</p>
+            <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-4xl">{copy.toursTitle}</h2>
+            <p className="mt-3 leading-7 text-slate-600">{copy.toursSubtitle}</p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {displayTours.slice(0, 3).map((tour) => (
+              <article key={tour._id} className="overflow-hidden rounded-2xl border border-cyan-100 bg-white shadow-sm">
+                <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100">
+                  {tour.imageUrl ? (
+                    <img src={tour.imageUrl} alt={es ? tour.title : tour.titleEn || tour.title} className="absolute inset-0 h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-sm font-semibold text-slate-400">{es ? 'Próximamente' : 'Coming soon'}</div>
+                  )}
                 </div>
-                <select value={tripType} onChange={(event) => setTripType(event.target.value)} className="w-full rounded-xl border border-cyan-100 px-3 py-3 text-sm">
-                  <option>{es ? 'Solo ida' : 'One way'}</option>
-                  <option>{es ? 'Ida y vuelta' : 'Round trip'}</option>
-                </select>
-                <button type="submit" className="w-full rounded-full bg-emerald-500 px-5 py-3.5 text-sm font-extrabold text-white">{copy.quote}</button>
+                <div className="p-5">
+                  <p className="text-xs font-extrabold uppercase tracking-wider text-cyan-600">{tour.category}</p>
+                  <h3 className="mt-2 text-xl font-black text-slate-900">{es ? tour.title : tour.titleEn || tour.title}</h3>
+                  <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{es ? tour.description : tour.descriptionEn || tour.description}</p>
+                  <div className="mt-4 flex items-center justify-between gap-3">
+                    {typeof tour.priceUsd === 'number' && tour.showPrice !== false && <p className="text-sm font-bold text-cyan-700">Desde USD ${tour.priceUsd}</p>}
+                    <a href={getWhatsappUrl(es ? `Hola, quiero reservar ${tour.title}.` : `Hello, I want to book ${tour.titleEn || tour.title}.`)} target="_blank" rel="noopener noreferrer" className="ml-auto text-sm font-bold text-cyan-700">{es ? 'Reservar →' : 'Book →'}</a>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="fleet" className="bg-cyan-50/40 py-16">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8">
+          <div className="mb-8 max-w-2xl">
+            <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">{es ? 'CONFIANZA Y SEGURIDAD' : 'TRUST & SAFETY'}</p>
+            <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-4xl">{es ? 'Tu traslado seguro en nuestra flota moderna' : 'Your safe transfer in our modern fleet'}</h2>
+          </div>
+
+          {primaryVehicle && (
+            <div className="grid overflow-hidden rounded-3xl border border-cyan-100 bg-white shadow-sm lg:grid-cols-[1.15fr_.85fr]">
+              <div className="relative min-h-72">
+                <VehicleImage vehicle={primaryVehicle} name={primaryVehicle.name || 'Van VIP'} spanish={es} />
               </div>
-            </form>
-          </div>
+              <div className="flex flex-col justify-center p-7 sm:p-10">
+                <p className="text-xs font-extrabold uppercase tracking-wider text-cyan-600">Van / Minibus VIP</p>
+                <h3 className="mt-3 text-3xl font-black text-slate-900">{primaryVehicle.name || 'Van VIP'}</h3>
+                <p className="mt-4 leading-7 text-slate-600">{es ? 'Vehículo climatizado, cómodo y preparado para traslados privados con equipaje y atención personalizada.' : 'Air-conditioned, comfortable vehicle prepared for private transfers with luggage and personalized service.'}</p>
+                <div className="mt-6 grid grid-cols-2 gap-3">
+                  <div className="rounded-2xl bg-cyan-50 p-4"><Users className="h-5 w-5 text-cyan-700" /><p className="mt-2 text-sm font-bold text-slate-800">{primaryVehicle.passengers || 10} {es ? 'pasajeros' : 'passengers'}</p></div>
+                  <div className="rounded-2xl bg-cyan-50 p-4"><ShieldCheck className="h-5 w-5 text-cyan-700" /><p className="mt-2 text-sm font-bold text-slate-800">{es ? 'Viaje seguro' : 'Safe travel'}</p></div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
-      <section id="tours" className="py-24">
+      <section id="rent" className="py-16">
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
-          <div className="mb-10 max-w-2xl">
-            <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">EXCLUSIVOS</p>
-            <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-5xl">{copy.toursTitle}</h2>
-            <p className="mt-4 leading-7 text-slate-600">{copy.toursSubtitle}</p>
-          </div>
-
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {displayTours.map((tour) => (
-              <article
-                key={tour._id}
-                className="flex flex-col rounded-2xl border border-cyan-100 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
-              >
-                <div className="relative aspect-video w-full overflow-hidden rounded-xl">
-                  <img src={tour.imageUrl} alt={tour.title} className="absolute inset-0 h-full w-full object-cover" />
-                </div>
-                <div className="mt-4 flex flex-col gap-3">
-                  <div className="flex items-center gap-2">
-                    <p className="text-xs font-extrabold uppercase tracking-wider text-cyan-600">{tour.category}</p>
-                    <div className="flex-1" />
-                    <p className="whitespace-nowrap text-xs text-slate-500">{tour.duration}</p>
-                  </div>
-                  <h3 className="text-xl font-black leading-7 text-slate-900">{tour.title}</h3>
-                  <p className="line-clamp-2 text-sm leading-6 text-slate-600">{tour.description}</p>
-                  {typeof tour.priceUsd === 'number' && (
-                    <p className="mt-auto text-sm font-bold text-cyan-700">
-                      Desde USD ${tour.priceUsd}
-                    </p>
-                  )}
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="fleet" className="bg-cyan-50/40 py-24">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8">
-          <div className="mb-10 max-w-2xl">
-            <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">NUESTRA FLOTA</p>
-            <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-5xl">{copy.fleet}</h2>
-            <p className="mt-4 leading-7 text-slate-600">{es ? 'Vehículos cómodos y seguros para su traslado.' : 'Comfortable and safe vehicles for your transfer.'}</p>
-          </div>
-
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {displayVehicles.map((vehicle) => (
-              <article
-                key={vehicle._id}
-                className="flex flex-col rounded-2xl border border-cyan-100 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
-              >
-                <div className="relative aspect-video w-full overflow-hidden rounded-xl">
-                  <VehicleImage vehicle={vehicle} name={vehicle.name || ''} spanish={es} />
-                </div>
-                <div className="mt-4 flex flex-col gap-3">
-                  <div className="flex items-center gap-2">
-                    <p className="text-xs font-extrabold uppercase tracking-wider text-cyan-600">{vehicle.category}</p>
-                    <div className="flex-1" />
-                    <p className="whitespace-nowrap text-xs text-slate-500">{vehicle.passengers} {es ? 'pasajeros' : 'passengers'}</p>
-                  </div>
-                  <h3 className="text-xl font-black leading-7 text-slate-900">{vehicle.name}</h3>
-                  <p className="line-clamp-2 text-sm leading-6 text-slate-600">{vehicle.features?.join(', ')}</p>
-                  {typeof vehicle.dailyRateUsd === 'number' && (
-                    <p className="mt-auto text-sm font-bold text-cyan-700">
-                      Desde USD ${vehicle.dailyRateUsd}
-                    </p>
-                  )}
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="rent" className="py-24">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8">
-          <div className="mb-10 max-w-2xl">
+          <div className="mb-8 max-w-2xl">
             <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">RENT CAR</p>
-            <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-5xl">{copy.rentTitle}</h2>
-            <p className="mt-4 leading-7 text-slate-600">{copy.rentSubtitle}</p>
+            <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-4xl">{copy.rentTitle}</h2>
+            <p className="mt-3 leading-7 text-slate-600">{copy.rentSubtitle}</p>
           </div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {displayVehicles.map((vehicle) => (
+            {displayRentCars.slice(0, 3).map((rentCar) => (
               <article
-                key={vehicle._id}
+                key={rentCar._id}
                 className="flex flex-col rounded-2xl border border-cyan-100 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
               >
                 <div className="relative aspect-video w-full overflow-hidden rounded-xl">
-                  <VehicleImage vehicle={vehicle} name={vehicle.name || ''} spanish={es} />
+                  <VehicleImage vehicle={rentCar} name={rentCar.name || ''} spanish={es} />
                 </div>
                 <div className="mt-4 flex flex-col gap-3">
-                  <div className="flex items-center gap-2">
-                    <p className="text-xs font-extrabold uppercase tracking-wider text-cyan-600">{vehicle.category}</p>
-                    <div className="flex-1" />
-                    <p className="whitespace-nowrap text-xs text-slate-500">{vehicle.passengers} {es ? 'pasajeros' : 'passengers'}</p>
-                  </div>
-                  <h3 className="text-xl font-black leading-7 text-slate-900">{vehicle.name}</h3>
-                  <p className="line-clamp-2 text-sm leading-6 text-slate-600">{vehicle.features?.join(', ')}</p>
-                  {typeof vehicle.dailyRateUsd === 'number' && (
+                  <h3 className="text-xl font-black leading-7 text-slate-900">{rentCar.name}</h3>
+                  {rentCar.description && (
+                    <p className="line-clamp-3 text-sm leading-6 text-slate-600">{rentCar.description}</p>
+                  )}
+                  {typeof rentCar.pricePerDay === 'number' && (
                     <p className="mt-auto text-sm font-bold text-cyan-700">
-                      Desde USD ${vehicle.dailyRateUsd}
+                      USD ${rentCar.pricePerDay} / {es ? 'día' : 'day'}
                     </p>
                   )}
+                  <a
+                    href={getWhatsappUrl(es ? `Hola, quiero consultar disponibilidad para ${rentCar.name || 'Rent Car'}.` : `Hello, I want to check availability for ${rentCar.name || 'Rent Car'}.`)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-flex rounded-full bg-cyan-700 px-5 py-3 text-center text-sm font-bold text-white"
+                  >
+                    {es ? 'Consultar disponibilidad' : 'Check availability'}
+                  </a>
                 </div>
               </article>
             ))}
