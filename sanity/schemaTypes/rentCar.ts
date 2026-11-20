@@ -2,7 +2,7 @@ import { defineField, defineType } from 'sanity'
 
 export const rentCarType = defineType({
   name: 'rentCar',
-  title: 'Vehículos Rent Car',
+  title: '4. Vehículos Rent Car',
   type: 'document',
   fields: [
     defineField({

@@ -2,7 +2,7 @@ import {defineField, defineType} from 'sanity'
 
 export const transferRouteType = defineType({
   name: 'transferRoute',
-  title: 'Transporte Aeropuerto a Hoteles',
+  title: '2. Rutas de Aeropuerto',
   type: 'document',
   fields: [
     defineField({

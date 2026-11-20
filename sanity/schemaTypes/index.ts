@@ -1,11 +1,11 @@
-import { tourType } from './tour';
 import { vehicleType } from './vehicle';
-import { rentCarType } from './rentCar';
 import { transferRouteType } from './transferRoute';
+import { tourType } from './tour';
+import { rentCarType } from './rentCar';
 import { siteSettingsType } from './siteSettings';
 
-export { tourType, vehicleType, rentCarType, transferRouteType, siteSettingsType };
+export { vehicleType, transferRouteType, tourType, rentCarType, siteSettingsType };
 
 export const schema = {
-  types: [tourType, vehicleType, rentCarType, transferRouteType, siteSettingsType],
+  types: [vehicleType, transferRouteType, tourType, rentCarType, siteSettingsType],
 };

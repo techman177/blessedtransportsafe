@@ -2,7 +2,7 @@ import { defineField, defineType } from 'sanity';
 
 export const vehicleType = defineType({
   name: 'vehicle',
-  title: 'Flota (Traslados)',
+  title: '1. Flota (Traslados VIP)',
   type: 'document',
   fields: [
     defineField({

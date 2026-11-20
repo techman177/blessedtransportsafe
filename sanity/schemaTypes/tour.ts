@@ -2,7 +2,7 @@ import { defineField, defineType } from 'sanity';
 
 export const tourType = defineType({
   name: 'tour',
-  title: 'Tours y Excursiones',
+  title: '3. Tours y Excursiones',
   type: 'document',
   fields: [
     defineField({

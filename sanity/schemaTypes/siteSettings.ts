@@ -2,7 +2,7 @@ import { defineField, defineType } from 'sanity'
 
 export const siteSettingsType = defineType({
   name: 'siteSettings',
-  title: 'Configuración General',
+  title: '5. Configuración de Portada',
   type: 'document',
   fields: [
     defineField({ name: 'heroImage', title: 'Imagen de portada', type: 'image', options: { hotspot: true } }),
