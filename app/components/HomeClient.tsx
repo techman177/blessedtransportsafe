@@ -211,7 +211,7 @@ function RentCarGallery({ images, title, language }: { images: string[]; title: 
   const next = () => setActiveIndex((index) => (index + 1) % images.length)
 
   return (
-    <div className="relative h-48 w-full shrink-0 overflow-hidden bg-slate-100">
+    <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-slate-50 p-2">
       {images.length > 0 ? (
         <Image
           src={images[activeIndex]}
@@ -219,7 +219,7 @@ function RentCarGallery({ images, title, language }: { images: string[]; title: 
           fill
           unoptimized
           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-          className="object-cover"
+          className="object-contain"
         />
       ) : (
         <div className="grid h-full place-items-center text-slate-300" role="img" aria-label={language === 'es' ? 'Imagen no disponible' : language === 'it' ? 'Immagine non disponibile' : 'Image unavailable'}>
@@ -513,10 +513,10 @@ Before payment, guests may request written confirmation of the price, pickup det
       </header>
 
       <section id="top" className="relative pt-20">
-        <div
-          className="absolute inset-x-0 top-20 h-[420px] bg-cover bg-center sm:h-[470px]"
-          style={{ backgroundImage: `linear-gradient(90deg,rgba(2,6,23,.55),rgba(8,47,73,.34) 58%,rgba(8,47,73,.12)),url('${heroImage}')` }}
-        />
+        <div className="absolute inset-x-0 top-20 h-[420px] overflow-hidden bg-slate-100 sm:h-[470px]">
+          <Image src={heroImage} alt="" fill unoptimized priority sizes="100vw" className="object-contain p-2" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/55 via-cyan-950/34 to-cyan-950/12" />
+        </div>
         <div className="relative mx-auto max-w-7xl px-5 pb-16 pt-14 sm:px-8 sm:pt-20">
           <div className="max-w-2xl bg-transparent">
             <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-cyan-300 [text-shadow:_0_2px_4px_rgb(0_0_0_/_0.8)]">{copy.heroBadge}</p>
@@ -572,9 +572,9 @@ Before payment, guests may request written confirmation of the price, pickup det
 
                 return (
                   <article key={route._id} className="flex h-full flex-col overflow-hidden rounded-2xl border border-cyan-100 bg-white shadow-sm">
-                    <div className="relative h-48 w-full shrink-0 bg-slate-100">
+                    <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-slate-50 p-2">
                       {route.imageUrl ? (
-                        <Image src={route.imageUrl} alt={cardTitle} fill unoptimized sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw" className="object-cover" />
+                        <Image src={route.imageUrl} alt={cardTitle} fill unoptimized sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw" className="object-contain p-2" />
                       ) : (
                         <div className="grid h-full place-items-center text-slate-300" role="img" aria-label={es ? 'Imagen no disponible' : it ? 'Immagine non disponibile' : 'Image unavailable'}>
                           <CarFront className="h-10 w-10" aria-hidden="true" />
@@ -642,9 +642,9 @@ Before payment, guests may request written confirmation of the price, pickup det
 
               return (
                 <article key={tour._id} className="flex h-full flex-col overflow-hidden rounded-2xl border border-cyan-100 bg-white shadow-sm">
-                  <div className="relative h-48 w-full shrink-0 overflow-hidden bg-slate-100">
+                  <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-slate-50 p-2">
                     {tour.imageUrl ? (
-                      <img src={tour.imageUrl} alt={title} className="h-full w-full shrink-0 object-cover" />
+                      <img src={tour.imageUrl} alt={title} className="h-full w-full shrink-0 object-contain" />
                     ) : (
                       <div className="flex h-full items-center justify-center text-sm font-semibold text-slate-400">{es ? 'Próximamente' : it ? 'Prossimamente' : 'Coming soon'}</div>
                     )}
@@ -738,9 +738,9 @@ Before payment, guests may request written confirmation of the price, pickup det
 
                 return (
                   <article key={vehicle._id} className="flex h-full flex-col overflow-hidden rounded-2xl border border-cyan-100 bg-white shadow-sm">
-                    <div className="relative h-48 w-full shrink-0 bg-slate-100">
+                    <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-slate-50 p-2">
                       {imageUrl ? (
-                        <Image src={imageUrl} alt={cardTitle} fill unoptimized sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw" className="object-cover" />
+                        <Image src={imageUrl} alt={cardTitle} fill unoptimized sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw" className="object-contain p-2" />
                       ) : (
                         <div className="grid h-full place-items-center text-slate-300" role="img" aria-label={es ? 'Imagen no disponible' : it ? 'Immagine non disponibile' : 'Image unavailable'}>
                           <CarFront className="h-10 w-10" aria-hidden="true" />
@@ -866,8 +866,8 @@ Before payment, guests may request written confirmation of the price, pickup det
                 </div>
               </div>
             </div>
-            <div className="relative aspect-[3/2] w-full overflow-hidden rounded-2xl border border-cyan-100 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
-              <img src={aboutImage} alt="Sobre nosotros" className="absolute inset-0 h-full w-full object-cover" />
+            <div className="relative aspect-[3/2] w-full overflow-hidden rounded-2xl border border-cyan-100 bg-slate-50 p-2 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+              <img src={aboutImage} alt="Sobre nosotros" className="absolute inset-2 h-[calc(100%-1rem)] w-[calc(100%-1rem)] object-contain" />
             </div>
           </div>
 

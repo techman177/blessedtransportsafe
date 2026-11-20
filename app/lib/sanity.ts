@@ -26,7 +26,7 @@ export function getSanityImageUrl(
       .image(image)
       .width(width)
       .height(height)
-      .fit('crop')
+      .fit('max')
       .auto('format')
       .url()
   } catch {
