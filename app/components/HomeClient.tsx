@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 import { CalendarDays, Camera, CarFront, CheckCircle, ChevronDown, Circle, Clock3, ShieldCheck, Users, X } from 'lucide-react'
 
 export type Tour = {
@@ -143,6 +144,187 @@ function getTourCategoryLabel(category: string | null | undefined, title: string
   return duplicatesTitle ? null : label
 }
 
+type AirportDirectoryEntry = {
+  code: string
+  aliases: string[]
+  name: Record<Language, string>
+  destinations: Record<Language, string>
+}
+
+type AirportTransferItem = {
+  key: string
+  code?: string
+  name: string
+  destinations: string
+  estimatedTime?: string
+  privateRateUsd?: number
+}
+
+const DOMINICAN_AIRPORTS: AirportDirectoryEntry[] = [
+  {
+    code: 'SDQ',
+    aliases: ['Las Americas', 'Santo Domingo'],
+    name: {
+      es: 'Aeropuerto Internacional Las Américas',
+      en: 'Las Américas International Airport',
+      it: 'Aeroporto Internazionale Las Américas',
+    },
+    destinations: {
+      es: 'Santo Domingo, Boca Chica, Juan Dolio, La Romana y Bayahíbe',
+      en: 'Santo Domingo, Boca Chica, Juan Dolio, La Romana, and Bayahibe',
+      it: 'Santo Domingo, Boca Chica, Juan Dolio, La Romana e Bayahibe',
+    },
+  },
+  {
+    code: 'PUJ',
+    aliases: ['Punta Cana'],
+    name: {
+      es: 'Aeropuerto Internacional de Punta Cana',
+      en: 'Punta Cana International Airport',
+      it: 'Aeroporto Internazionale di Punta Cana',
+    },
+    destinations: {
+      es: 'Punta Cana, Bávaro, Cap Cana y Uvero Alto',
+      en: 'Punta Cana, Bávaro, Cap Cana, and Uvero Alto',
+      it: 'Punta Cana, Bávaro, Cap Cana e Uvero Alto',
+    },
+  },
+  {
+    code: 'LRM',
+    aliases: ['La Romana'],
+    name: {
+      es: 'Aeropuerto Internacional de La Romana',
+      en: 'La Romana International Airport',
+      it: 'Aeroporto Internazionale di La Romana',
+    },
+    destinations: {
+      es: 'La Romana, Bayahíbe y Dominicus',
+      en: 'La Romana, Bayahibe, and Dominicus',
+      it: 'La Romana, Bayahibe e Dominicus',
+    },
+  },
+  {
+    code: 'POP',
+    aliases: ['Puerto Plata', 'Gregorio Luperon'],
+    name: {
+      es: 'Aeropuerto Internacional Gregorio Luperón',
+      en: 'Gregorio Luperón International Airport',
+      it: 'Aeroporto Internazionale Gregorio Luperón',
+    },
+    destinations: {
+      es: 'Puerto Plata, Sosúa y Cabarete',
+      en: 'Puerto Plata, Sosúa, and Cabarete',
+      it: 'Puerto Plata, Sosúa e Cabarete',
+    },
+  },
+  {
+    code: 'STI',
+    aliases: ['Cibao', 'Santiago'],
+    name: {
+      es: 'Aeropuerto Internacional del Cibao',
+      en: 'Cibao International Airport',
+      it: 'Aeroporto Internazionale del Cibao',
+    },
+    destinations: {
+      es: 'Santiago, Jarabacoa y Puerto Plata',
+      en: 'Santiago, Jarabacoa, and Puerto Plata',
+      it: 'Santiago, Jarabacoa e Puerto Plata',
+    },
+  },
+  {
+    code: 'AZS',
+    aliases: ['El Catey', 'Samana'],
+    name: {
+      es: 'Aeropuerto Internacional Presidente Juan Bosch (El Catey)',
+      en: 'Presidente Juan Bosch International Airport (El Catey)',
+      it: 'Aeroporto Internazionale Presidente Juan Bosch (El Catey)',
+    },
+    destinations: {
+      es: 'Samaná, Las Terrenas y El Limón',
+      en: 'Samaná, Las Terrenas, and El Limón',
+      it: 'Samaná, Las Terrenas ed El Limón',
+    },
+  },
+  {
+    code: 'JBQ',
+    aliases: ['La Isabela', 'Joaquin Balaguer'],
+    name: {
+      es: 'Aeropuerto Internacional La Isabela',
+      en: 'La Isabela International Airport',
+      it: 'Aeroporto Internazionale La Isabela',
+    },
+    destinations: {
+      es: 'Santo Domingo y sus alrededores',
+      en: 'Santo Domingo and nearby areas',
+      it: 'Santo Domingo e dintorni',
+    },
+  },
+]
+
+function getTransferAirportCode(route: TransferRoute) {
+  const source = `${route.airport || ''} ${route.title || ''}`
+  const code = source.match(/\b(SDQ|PUJ|LRM|POP|STI|AZS|JBQ)\b/i)?.[0].toUpperCase()
+  if (code) return code
+
+  const normalizedAirport = normalizeTourLabel(route.airport || route.title || '')
+  return DOMINICAN_AIRPORTS.find((airport) =>
+    airport.aliases.some((alias) => normalizedAirport.includes(normalizeTourLabel(alias))),
+  )?.code
+}
+
+function getRouteDestinations(route: TransferRoute) {
+  if (route.hotelZone?.trim()) return route.hotelZone.trim()
+
+  const title = route.title?.trim()
+  const destination = title?.split(/\s+(?:a|to|verso)\s+|→|->/i).pop()?.trim()
+  return destination && destination !== title ? destination : undefined
+}
+
+function buildAirportTransfers(routes: TransferRoute[], language: Language): AirportTransferItem[] {
+  const routesByCode = new Map<string, TransferRoute[]>()
+  const otherRoutes: TransferRoute[] = []
+
+  routes.forEach((route) => {
+    const code = getTransferAirportCode(route)
+    if (!code) {
+      otherRoutes.push(route)
+      return
+    }
+
+    const airportRoutes = routesByCode.get(code) || []
+    airportRoutes.push(route)
+    routesByCode.set(code, airportRoutes)
+  })
+
+  const knownAirports = DOMINICAN_AIRPORTS.map((airport) => {
+    const airportRoutes = routesByCode.get(airport.code) || []
+    const destinations = [...new Set(airportRoutes.map(getRouteDestinations).filter(Boolean))]
+    const rates = airportRoutes
+      .map((route) => route.privateRateUsd)
+      .filter((rate): rate is number => typeof rate === 'number' && Number.isFinite(rate))
+    const estimatedTime = airportRoutes.find((route) => route.estimatedTime?.trim())?.estimatedTime?.trim()
+
+    return {
+      key: airport.code,
+      code: airport.code,
+      name: airport.name[language],
+      destinations: destinations.length ? destinations.join('; ') : airport.destinations[language],
+      estimatedTime,
+      privateRateUsd: rates.length ? Math.min(...rates) : undefined,
+    }
+  })
+
+  const otherAirportRoutes = otherRoutes.map((route) => ({
+    key: route._id,
+    name: route.airport?.trim() || route.title?.trim() || (language === 'es' ? 'Otro aeropuerto' : language === 'it' ? 'Altro aeroporto' : 'Other airport'),
+    destinations: getRouteDestinations(route) || (language === 'es' ? 'Consulta destinos disponibles' : language === 'it' ? 'Consulta le destinazioni disponibili' : 'Ask about available destinations'),
+    estimatedTime: route.estimatedTime?.trim() || undefined,
+    privateRateUsd: typeof route.privateRateUsd === 'number' ? route.privateRateUsd : undefined,
+  }))
+
+  return [...knownAirports, ...otherAirportRoutes]
+}
+
 const WHATSAPP_PHONE = '18094477101'
 const WHATSAPP_ME = `https://wa.me/${WHATSAPP_PHONE}`
 const WHATSAPP_LINK = 'https://wa.link/pbnzgo'
@@ -272,21 +454,8 @@ export default function HomeClient({ tours, transfers, vehicles, rentCars, setti
   const primaryVehicle = displayVehicles.find((vehicle) => vehicle.category === 'van-vip' || vehicle.name?.toLowerCase().includes('van')) || displayVehicles[0]
   const rentCarImage = rentCars.find((rentCar) => rentCar.imageUrl?.trim())?.imageUrl
     || 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1800&q=85'
-  const displayTransfers = transfers.length
-    ? transfers.map((route) => ({
-        _id: route._id,
-        title: route.title || (route.airport && route.hotelZone ? `${route.airport} → ${route.hotelZone}` : (es ? 'Traslado privado' : 'Private transfer')),
-        detail: route.airport && route.hotelZone
-          ? `${route.airport} → ${route.hotelZone}`
-          : route.estimatedTime || (es ? 'Cotización personalizada' : 'Custom quote'),
-        estimatedTime: route.estimatedTime,
-        privateRateUsd: route.privateRateUsd,
-      }))
-    : [
-        { _id: 'fallback-sdq', title: es ? 'Aeropuerto Las Américas' : 'Las Américas Airport', detail: 'SDQ → HOTELS', estimatedTime: undefined, privateRateUsd: undefined },
-        { _id: 'fallback-puj', title: 'Punta Cana', detail: 'PUJ → PUNTA CANA', estimatedTime: undefined, privateRateUsd: undefined },
-        { _id: 'fallback-custom', title: es ? 'Rutas Personalizadas' : 'Custom Routes', detail: es ? 'Tu ruta, tu horario' : 'Your route, your schedule', estimatedTime: undefined, privateRateUsd: undefined },
-      ]
+  const airportTransfers = buildAirportTransfers(transfers, language)
+  const transferImage = primaryVehicle.photoUrl || primaryVehicle.imageUrl || aboutImage
 
   const configuredFaqs = settings?.faqs?.map((faq) => ({
     question: (es ? faq.questionEs || faq.questionEn : faq.questionEn || faq.questionEs)?.trim(),
@@ -503,32 +672,56 @@ Before payment, guests may request written confirmation of the price, pickup det
 
       <section id="transfers" className="bg-cyan-50/40 py-16">
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
-          <div className="mb-8 max-w-2xl">
-            <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">{es ? 'LOS MÁS SOLICITADOS' : 'MOST REQUESTED'}</p>
-            <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-4xl">{copy.transfersTitle}</h2>
-            <p className="mt-3 leading-7 text-slate-600">{copy.transfersSubtitle}</p>
-          </div>
+          <div className="grid overflow-hidden rounded-3xl border border-cyan-100 bg-white shadow-sm lg:grid-cols-[.85fr_1.15fr]">
+            <div className="relative min-h-64 bg-slate-100 sm:min-h-80 lg:min-h-[36rem]">
+              <Image
+                src={transferImage}
+                alt={es ? 'Vehículo para traslados privados' : it ? 'Veicolo per transfer privati' : 'Private transfer vehicle'}
+                fill
+                unoptimized
+                sizes="(max-width: 1024px) 100vw, 40vw"
+                className="object-cover"
+              />
+            </div>
+            <div className="p-6 sm:p-8 lg:p-10">
+              <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">
+                {es ? 'TRASLADOS AEROPORTUARIOS' : it ? 'TRANSFER AEROPORTUALI' : 'AIRPORT TRANSFERS'}
+              </p>
+              <h2 className="mt-3 text-2xl font-black text-slate-900 sm:text-3xl">
+                {es ? 'Traslados a los aeropuertos del país' : it ? 'Transfer verso gli aeroporti del paese' : 'Transfers to airports across the country'}
+              </h2>
+              <p className="mt-3 leading-7 text-slate-600">{copy.transfersSubtitle}</p>
 
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-            {displayTransfers.slice(0, 3).map((card) => (
-              <article key={card._id} className="flex min-h-56 min-w-0 flex-col gap-3 rounded-2xl border border-cyan-100 bg-white p-6 shadow-sm">
-                <p className="break-words text-xs font-extrabold uppercase tracking-wider text-cyan-600">{card.detail || (es ? 'Ruta personalizada' : 'Custom route')}</p>
-                <h3 className="mt-1 break-words text-xl font-black leading-7 text-slate-900">{card.title || (es ? 'Traslado privado' : 'Private transfer')}</h3>
-                {card.estimatedTime?.trim() && <p className="text-sm leading-6 text-slate-600">{card.estimatedTime}</p>}
-                <p className="mt-1 text-sm font-bold text-cyan-700">
-                  {typeof card.privateRateUsd === 'number' ? `Desde USD $${card.privateRateUsd}` : (es ? 'Consultar precio' : 'Request a quote')}
-                </p>
-                <a href={getServiceWhatsappUrl(card.title || (es ? 'Traslado privado' : 'Private transfer'))} target="_blank" rel="noopener noreferrer" className="mt-auto pt-3 text-sm font-bold text-cyan-700">
-                  {es ? 'Reservar traslado →' : it ? 'Prenota transfer →' : 'Book transfer →'}
-                </a>
-              </article>
-            ))}
-          </div>
+              <ol className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {airportTransfers.map((airport, index) => (
+                  <li key={airport.key} className="min-w-0 rounded-2xl bg-cyan-50/70 p-4">
+                    <div className="flex items-start gap-3">
+                      <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white text-xs font-extrabold text-cyan-700">
+                        {index + 1}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-start justify-between gap-2">
+                          <h3 className="text-sm font-bold leading-5 text-slate-900">{airport.name}</h3>
+                          {airport.code && <span className="shrink-0 rounded-md bg-white px-2 py-1 text-[10px] font-extrabold tracking-wide text-cyan-700">{airport.code}</span>}
+                        </div>
+                        <p className="mt-2 text-xs font-semibold text-slate-500">{es ? 'Destinos principales' : it ? 'Destinazioni principali' : 'Main destinations'}</p>
+                        <p className="mt-0.5 text-sm leading-5 text-slate-600">{airport.destinations}</p>
+                        {(airport.estimatedTime || typeof airport.privateRateUsd === 'number') && (
+                          <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs font-semibold text-cyan-700">
+                            {airport.estimatedTime && <span>{es ? 'Tiempo' : it ? 'Tempo' : 'Time'}: {airport.estimatedTime}</span>}
+                            {typeof airport.privateRateUsd === 'number' && <span>{es ? 'Desde' : it ? 'Da' : 'From'} USD ${airport.privateRateUsd}</span>}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ol>
 
-          <div className="mt-7 flex justify-center">
-            <a href={getWhatsappUrl(quoteMessage)} target="_blank" rel="noopener noreferrer" className="rounded-full bg-cyan-700 px-7 py-3.5 text-sm font-extrabold text-white shadow-sm">
-              {copy.quote}
-            </a>
+              <a href={getWhatsappUrl(quoteMessage)} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex rounded-full bg-cyan-700 px-7 py-3.5 text-sm font-extrabold text-white shadow-sm">
+                {copy.quote}
+              </a>
+            </div>
           </div>
         </div>
       </section>
