@@ -11,14 +11,50 @@ export const transferRouteType = defineType({
       type: 'string',
     }),
     defineField({
+      name: 'titleEn',
+      title: 'Title (EN)',
+      type: 'string',
+    }),
+    defineField({
+      name: 'titleIt',
+      title: 'Titolo (IT)',
+      type: 'string',
+    }),
+    defineField({
       name: 'airport',
       title: 'Aeropuerto',
+      type: 'string',
+    }),
+    defineField({
+      name: 'airportEn',
+      title: 'Airport (EN)',
+      type: 'string',
+    }),
+    defineField({
+      name: 'airportIt',
+      title: 'Aeroporto (IT)',
       type: 'string',
     }),
     defineField({
       name: 'hotelZone',
       title: 'Zona de hoteles',
       type: 'string',
+    }),
+    defineField({
+      name: 'hotelZoneEn',
+      title: 'Hotel zone / destination (EN)',
+      type: 'string',
+    }),
+    defineField({
+      name: 'hotelZoneIt',
+      title: 'Zona hotel / destinazione (IT)',
+      type: 'string',
+    }),
+    defineField({
+      name: 'image',
+      title: 'Imagen de la ruta',
+      type: 'image',
+      options: {hotspot: true},
     }),
     defineField({
       name: 'privateRateUsd',
@@ -29,6 +65,16 @@ export const transferRouteType = defineType({
     defineField({
       name: 'estimatedTime',
       title: 'Tiempo estimado',
+      type: 'string',
+    }),
+    defineField({
+      name: 'estimatedTimeEn',
+      title: 'Estimated time (EN)',
+      type: 'string',
+    }),
+    defineField({
+      name: 'estimatedTimeIt',
+      title: 'Tempo stimato (IT)',
       type: 'string',
     }),
     defineField({

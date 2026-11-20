@@ -11,6 +11,34 @@ export const vehicleType = defineType({
       type: 'string',
     }),
     defineField({
+      name: 'nameEn',
+      title: 'Name (EN)',
+      type: 'string',
+    }),
+    defineField({
+      name: 'nameIt',
+      title: 'Nome (IT)',
+      type: 'string',
+    }),
+    defineField({
+      name: 'description',
+      title: 'Descripción',
+      type: 'text',
+      rows: 4,
+    }),
+    defineField({
+      name: 'descriptionEn',
+      title: 'Description (EN)',
+      type: 'text',
+      rows: 4,
+    }),
+    defineField({
+      name: 'descriptionIt',
+      title: 'Descrizione (IT)',
+      type: 'text',
+      rows: 4,
+    }),
+    defineField({
       name: 'category',
       title: 'Categoría',
       type: 'string',
@@ -51,6 +79,18 @@ export const vehicleType = defineType({
     defineField({
       name: 'features',
       title: 'Características',
+      type: 'array',
+      of: [{ type: 'string' }],
+    }),
+    defineField({
+      name: 'featuresEn',
+      title: 'Features (EN)',
+      type: 'array',
+      of: [{ type: 'string' }],
+    }),
+    defineField({
+      name: 'featuresIt',
+      title: 'Caratteristiche (IT)',
       type: 'array',
       of: [{ type: 'string' }],
     }),

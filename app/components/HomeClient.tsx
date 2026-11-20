@@ -26,35 +26,57 @@ export type Tour = {
 
 export type TransferRoute = {
   _id: string
-  title?: string
-  airport?: string
-  hotelZone?: string
-  privateRateUsd?: number
-  estimatedTime?: string
+  title?: string | null
+  titleEn?: string | null
+  titleIt?: string | null
+  airport?: string | null
+  airportEn?: string | null
+  airportIt?: string | null
+  hotelZone?: string | null
+  hotelZoneEn?: string | null
+  hotelZoneIt?: string | null
+  imageUrl?: string | null
+  privateRateUsd?: number | null
+  estimatedTime?: string | null
+  estimatedTimeEn?: string | null
+  estimatedTimeIt?: string | null
   featured?: boolean
 }
 
 export type Vehicle = {
   _id: string
-  name?: string
+  name?: string | null
+  nameEn?: string | null
+  nameIt?: string | null
+  description?: string | null
+  descriptionEn?: string | null
+  descriptionIt?: string | null
   category?: string
-  dailyRateUsd?: number
-  passengers?: number
-  luggage?: number
+  dailyRateUsd?: number | null
+  passengers?: number | null
+  luggage?: number | null
   photo?: unknown
-  photoUrl?: string
-  imageUrl?: string
+  photoUrl?: string | null
+  imageUrl?: string | null
   image?: unknown
-  features?: string[]
-  available?: boolean
+  features?: Array<string | null> | null
+  featuresEn?: Array<string | null> | null
+  featuresIt?: Array<string | null> | null
+  available?: boolean | null
 }
 
 export type RentCar = {
   _id: string
-  name?: string
-  description?: string
-  pricePerDay?: number
-  imageUrl?: string
+  name?: string | null
+  nameEn?: string | null
+  nameIt?: string | null
+  description?: string | null
+  descriptionEn?: string | null
+  descriptionIt?: string | null
+  pricePerDay?: number | null
+  passengers?: number | null
+  luggage?: number | null
+  imageUrl?: string | null
 }
 
 export type SiteSettings = {
@@ -112,6 +134,27 @@ export type SiteSettings = {
 
 type Language = 'es' | 'en' | 'it'
 
+function getLocalizedValue(language: Language, spanish?: string | null, english?: string | null, italian?: string | null) {
+  const localizedValue = language === 'es'
+    ? spanish || english || italian
+    : language === 'it'
+      ? italian || english || spanish
+      : english || spanish || italian
+
+  return localizedValue?.trim() || undefined
+}
+
+function getLocalizedList(language: Language, spanish?: Array<string | null> | null, english?: Array<string | null> | null, italian?: Array<string | null> | null) {
+  const localizedList = language === 'es'
+    ? spanish || english || italian
+    : language === 'it'
+      ? italian || english || spanish
+      : english || spanish || italian
+
+  return localizedList?.filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
+    .map((value) => value.trim()) ?? []
+}
+
 const TOUR_CATEGORY_LABELS: Record<string, Record<Language, string>> = {
   'tres-ojos': { es: 'Los Tres Ojos', en: 'Three Eyes', it: 'Los Tres Occhi' },
   'faro-a-colon': { es: 'Faro a Colón', en: 'Columbus Lighthouse', it: 'Faro a Colón' },
@@ -120,6 +163,12 @@ const TOUR_CATEGORY_LABELS: Record<string, Record<Language, string>> = {
   'isla-saona': { es: 'Isla Saona', en: 'Saona Island', it: 'Isola Saona' },
   buggies: { es: 'Buggies', en: 'Buggy Adventure', it: 'Buggy' },
   samana: { es: 'Samaná', en: 'Samaná', it: 'Samaná' },
+}
+
+const VEHICLE_CATEGORY_LABELS: Record<string, Record<Language, string>> = {
+  'van-vip': { es: 'Van / Minibús VIP', en: 'VIP Van / Minibus', it: 'Van / Minibus VIP' },
+  suv: { es: 'SUV / Ejecutivo', en: 'SUV / Executive', it: 'SUV / Executive' },
+  sedan: { es: 'Sedán privado', en: 'Private Sedan', it: 'Berlina privata' },
 }
 
 function normalizeTourLabel(value: string) {
@@ -144,187 +193,6 @@ function getTourCategoryLabel(category: string | null | undefined, title: string
   return duplicatesTitle ? null : label
 }
 
-type AirportDirectoryEntry = {
-  code: string
-  aliases: string[]
-  name: Record<Language, string>
-  destinations: Record<Language, string>
-}
-
-type AirportTransferItem = {
-  key: string
-  code?: string
-  name: string
-  destinations: string
-  estimatedTime?: string
-  privateRateUsd?: number
-}
-
-const DOMINICAN_AIRPORTS: AirportDirectoryEntry[] = [
-  {
-    code: 'SDQ',
-    aliases: ['Las Americas', 'Santo Domingo'],
-    name: {
-      es: 'Aeropuerto Internacional Las Américas',
-      en: 'Las Américas International Airport',
-      it: 'Aeroporto Internazionale Las Américas',
-    },
-    destinations: {
-      es: 'Santo Domingo, Boca Chica, Juan Dolio, La Romana y Bayahíbe',
-      en: 'Santo Domingo, Boca Chica, Juan Dolio, La Romana, and Bayahibe',
-      it: 'Santo Domingo, Boca Chica, Juan Dolio, La Romana e Bayahibe',
-    },
-  },
-  {
-    code: 'PUJ',
-    aliases: ['Punta Cana'],
-    name: {
-      es: 'Aeropuerto Internacional de Punta Cana',
-      en: 'Punta Cana International Airport',
-      it: 'Aeroporto Internazionale di Punta Cana',
-    },
-    destinations: {
-      es: 'Punta Cana, Bávaro, Cap Cana y Uvero Alto',
-      en: 'Punta Cana, Bávaro, Cap Cana, and Uvero Alto',
-      it: 'Punta Cana, Bávaro, Cap Cana e Uvero Alto',
-    },
-  },
-  {
-    code: 'LRM',
-    aliases: ['La Romana'],
-    name: {
-      es: 'Aeropuerto Internacional de La Romana',
-      en: 'La Romana International Airport',
-      it: 'Aeroporto Internazionale di La Romana',
-    },
-    destinations: {
-      es: 'La Romana, Bayahíbe y Dominicus',
-      en: 'La Romana, Bayahibe, and Dominicus',
-      it: 'La Romana, Bayahibe e Dominicus',
-    },
-  },
-  {
-    code: 'POP',
-    aliases: ['Puerto Plata', 'Gregorio Luperon'],
-    name: {
-      es: 'Aeropuerto Internacional Gregorio Luperón',
-      en: 'Gregorio Luperón International Airport',
-      it: 'Aeroporto Internazionale Gregorio Luperón',
-    },
-    destinations: {
-      es: 'Puerto Plata, Sosúa y Cabarete',
-      en: 'Puerto Plata, Sosúa, and Cabarete',
-      it: 'Puerto Plata, Sosúa e Cabarete',
-    },
-  },
-  {
-    code: 'STI',
-    aliases: ['Cibao', 'Santiago'],
-    name: {
-      es: 'Aeropuerto Internacional del Cibao',
-      en: 'Cibao International Airport',
-      it: 'Aeroporto Internazionale del Cibao',
-    },
-    destinations: {
-      es: 'Santiago, Jarabacoa y Puerto Plata',
-      en: 'Santiago, Jarabacoa, and Puerto Plata',
-      it: 'Santiago, Jarabacoa e Puerto Plata',
-    },
-  },
-  {
-    code: 'AZS',
-    aliases: ['El Catey', 'Samana'],
-    name: {
-      es: 'Aeropuerto Internacional Presidente Juan Bosch (El Catey)',
-      en: 'Presidente Juan Bosch International Airport (El Catey)',
-      it: 'Aeroporto Internazionale Presidente Juan Bosch (El Catey)',
-    },
-    destinations: {
-      es: 'Samaná, Las Terrenas y El Limón',
-      en: 'Samaná, Las Terrenas, and El Limón',
-      it: 'Samaná, Las Terrenas ed El Limón',
-    },
-  },
-  {
-    code: 'JBQ',
-    aliases: ['La Isabela', 'Joaquin Balaguer'],
-    name: {
-      es: 'Aeropuerto Internacional La Isabela',
-      en: 'La Isabela International Airport',
-      it: 'Aeroporto Internazionale La Isabela',
-    },
-    destinations: {
-      es: 'Santo Domingo y sus alrededores',
-      en: 'Santo Domingo and nearby areas',
-      it: 'Santo Domingo e dintorni',
-    },
-  },
-]
-
-function getTransferAirportCode(route: TransferRoute) {
-  const source = `${route.airport || ''} ${route.title || ''}`
-  const code = source.match(/\b(SDQ|PUJ|LRM|POP|STI|AZS|JBQ)\b/i)?.[0].toUpperCase()
-  if (code) return code
-
-  const normalizedAirport = normalizeTourLabel(route.airport || route.title || '')
-  return DOMINICAN_AIRPORTS.find((airport) =>
-    airport.aliases.some((alias) => normalizedAirport.includes(normalizeTourLabel(alias))),
-  )?.code
-}
-
-function getRouteDestinations(route: TransferRoute) {
-  if (route.hotelZone?.trim()) return route.hotelZone.trim()
-
-  const title = route.title?.trim()
-  const destination = title?.split(/\s+(?:a|to|verso)\s+|→|->/i).pop()?.trim()
-  return destination && destination !== title ? destination : undefined
-}
-
-function buildAirportTransfers(routes: TransferRoute[], language: Language): AirportTransferItem[] {
-  const routesByCode = new Map<string, TransferRoute[]>()
-  const otherRoutes: TransferRoute[] = []
-
-  routes.forEach((route) => {
-    const code = getTransferAirportCode(route)
-    if (!code) {
-      otherRoutes.push(route)
-      return
-    }
-
-    const airportRoutes = routesByCode.get(code) || []
-    airportRoutes.push(route)
-    routesByCode.set(code, airportRoutes)
-  })
-
-  const knownAirports = DOMINICAN_AIRPORTS.map((airport) => {
-    const airportRoutes = routesByCode.get(airport.code) || []
-    const destinations = [...new Set(airportRoutes.map(getRouteDestinations).filter(Boolean))]
-    const rates = airportRoutes
-      .map((route) => route.privateRateUsd)
-      .filter((rate): rate is number => typeof rate === 'number' && Number.isFinite(rate))
-    const estimatedTime = airportRoutes.find((route) => route.estimatedTime?.trim())?.estimatedTime?.trim()
-
-    return {
-      key: airport.code,
-      code: airport.code,
-      name: airport.name[language],
-      destinations: destinations.length ? destinations.join('; ') : airport.destinations[language],
-      estimatedTime,
-      privateRateUsd: rates.length ? Math.min(...rates) : undefined,
-    }
-  })
-
-  const otherAirportRoutes = otherRoutes.map((route) => ({
-    key: route._id,
-    name: route.airport?.trim() || route.title?.trim() || (language === 'es' ? 'Otro aeropuerto' : language === 'it' ? 'Altro aeroporto' : 'Other airport'),
-    destinations: getRouteDestinations(route) || (language === 'es' ? 'Consulta destinos disponibles' : language === 'it' ? 'Consulta le destinazioni disponibili' : 'Ask about available destinations'),
-    estimatedTime: route.estimatedTime?.trim() || undefined,
-    privateRateUsd: typeof route.privateRateUsd === 'number' ? route.privateRateUsd : undefined,
-  }))
-
-  return [...knownAirports, ...otherAirportRoutes]
-}
-
 const WHATSAPP_PHONE = '18094477101'
 const WHATSAPP_ME = `https://wa.me/${WHATSAPP_PHONE}`
 const WHATSAPP_LINK = 'https://wa.link/pbnzgo'
@@ -333,77 +201,11 @@ function whatsappUrl(message: string) {
   return `${WHATSAPP_ME}?text=${encodeURIComponent(message)}`
 }
 
-const copy = {
-  es: {
-    navTours: 'Excursiones', navTransfers: 'Traslados', navRent: 'Rent Car', book: 'Reservar',
-    heroLabel: 'Servicio VIP en República Dominicana', heroTitle: 'Traslados VIP y Tours en República Dominicana',
-    heroText: 'Traslados privados, tours exclusivos y vehículos cómodos con atención personalizada las 24 horas.',
-    whatsapp: 'Reservar por WhatsApp', seeTours: 'Ver Excursiones', punctual: 'Puntualidad garantizada',
-    comfortable: 'Vehículos confortables', support: 'Atención 24/7',
-    toursEyebrow: 'Experiencias seleccionadas', toursTitle: 'Tours y excursiones', toursText: 'Descubre los mejores destinos de República Dominicana con transporte privado y servicio personalizado.',
-    duration: 'Duración', reserveTour: 'Reservar tour', noTours: 'Próximamente publicaremos nuestras excursiones.',
-    transfersEyebrow: 'Traslados privados', transfersTitle: 'Viaja con total tranquilidad', transfersText: 'Punto a punto, con chofer profesional y vehículos climatizados.',
-    quote: 'Solicitar cotización', sdq: 'Aeropuerto Internacional de Las Américas', puy: 'Punta Cana', custom: 'Rutas Personalizadas',
-    rentEyebrow: 'Mobility & comfort', rentTitle: 'Rent Car para explorar sin límites', rentText: 'SUV, sedanes y vehículos ejecutivos disponibles según tu itinerario.',
-    rentButton: 'Consultar disponibilidad', footerText: 'VIP Transfers, tours y rent car en República Dominicana.',
-    floating: 'Chatear por WhatsApp', faqEyebrow: 'Información útil', faqTitle: 'Preguntas frecuentes',
-    privacy: 'Política de Privacidad', terms: 'Términos y Condiciones', cancellation: 'Política de Cancelación',
-    rights: '© 2026 Blessed Transport Safe. Todos los derechos reservados.', credit: 'Creado por IntegratCore', close: 'Cerrar',
-  },
-  en: {
-    navTours: 'Tours', navTransfers: 'Transfers', navRent: 'Rent Car', book: 'Book Now',
-    heroLabel: 'VIP service in the Dominican Republic', heroTitle: 'Your trip, safe, comfortable and worry-free',
-    heroText: 'Private transfers, exclusive tours and comfortable vehicles with personalized 24-hour assistance.',
-    whatsapp: 'Book on WhatsApp', seeTours: 'Explore Tours', punctual: 'Guaranteed punctuality',
-    comfortable: 'Comfortable vehicles', support: '24/7 assistance',
-    toursEyebrow: 'Handpicked experiences', toursTitle: 'Tours & excursions', toursText: 'Discover the best destinations in the Dominican Republic with private transportation and personalized service.',
-    duration: 'Duration', reserveTour: 'Book tour', noTours: 'Our excursions will be available soon.',
-    transfersEyebrow: 'Private transfers', transfersTitle: 'Travel with complete peace of mind', transfersText: 'Point-to-point service with professional drivers and air-conditioned vehicles.',
-    quote: 'Request a quote', sdq: 'Las Américas Airport', puy: 'Punta Cana', custom: 'Custom Routes',
-    rentEyebrow: 'Mobility & comfort', rentTitle: 'Rent Car for limitless exploration', rentText: 'SUVs, sedans and executive vehicles available for your itinerary.',
-    rentButton: 'Check availability', footerText: 'VIP Transfers, tours and rent car in the Dominican Republic.',
-    floating: 'Chat on WhatsApp', faqEyebrow: 'Useful information', faqTitle: 'Frequently Asked Questions',
-    privacy: 'Privacy Policy', terms: 'Terms & Conditions', cancellation: 'Cancellation Policy',
-    rights: '© 2026 Blessed Transport Safe. All rights reserved.', credit: 'Creado por IntegratCore', close: 'Close',
-  },
-} as const
-
-function VehicleImage({ vehicle, name, spanish }: { vehicle: Vehicle; name: string; spanish: boolean }) {
-  const [failed, setFailed] = useState(false)
-  const source = vehicle.photoUrl || vehicle.imageUrl
-
-  if (!source || failed) {
-    return (
-      <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-gray-100 text-center" role="img" aria-label={spanish ? 'Imagen no disponible' : 'Image unavailable'}>
-        <CarFront className="h-10 w-10 text-gray-400" aria-hidden="true" />
-        <span className="text-sm font-semibold text-gray-500">
-          {spanish ? 'Próximamente' : 'Coming soon'}
-        </span>
-      </div>
-    )
-  }
-
-  return (
-    <img
-      src={source}
-      alt={name}
-      className="absolute inset-0 h-full w-full object-cover"
-      onError={() => setFailed(true)}
-    />
-  )
-}
-
 export default function HomeClient({ tours, transfers, vehicles, rentCars, settings }: { tours: Tour[]; transfers: TransferRoute[]; vehicles: Vehicle[]; rentCars: RentCar[]; settings: SiteSettings | null }) {
   const [language, setLanguage] = useState<'es' | 'en' | 'it'>('es')
   const [menuOpen, setMenuOpen] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(0)
   const [activePolicy, setActivePolicy] = useState<'privacy' | 'terms' | 'cancellation' | null>(null)
-  const [origin, setOrigin] = useState('Aeropuerto Las Américas SDQ')
-  const [destination, setDestination] = useState('')
-  const [date, setDate] = useState('')
-  const [passengers, setPassengers] = useState('1')
-  const [tripType, setTripType] = useState('Solo ida')
-  const [luggage, setLuggage] = useState('0')
 
   useEffect(() => { document.documentElement.lang = language }, [language])
   useEffect(() => {
@@ -454,24 +256,12 @@ export default function HomeClient({ tours, transfers, vehicles, rentCars, setti
     return getWhatsappUrl(`${prefix}${serviceName}`)
   }
 
-  const quoteMessage = es
-    ? `Hola, quisiera cotizar un traslado privado.\nOrigen: ${origin}\nDestino: ${destination || 'Por confirmar'}\nFecha: ${date || 'Por confirmar'}\nPasajeros: ${passengers}\nMaletas: ${luggage}\nTipo de viaje: ${tripType}`
-    : `Hello, I would like a private transfer quote.\nOrigin: ${origin}\nDestination: ${destination || 'To be confirmed'}\nDate: ${date || 'To be confirmed'}\nPassengers: ${passengers}\nLuggage: ${luggage}\nTrip type: ${tripType}`
-
   const fallbackTours: Tour[] = [
     { _id: 'saona', title: 'Excursión Isla Saona', titleEn: 'Saona Island Excursion', category: 'isla-saona', priceUsd: 120, showPrice: true, duration: 'Día completo', durationEn: 'Full day', description: 'Aguas turquesas y playas paradisíacas.', descriptionEn: 'Turquoise waters and paradise beaches.', imageUrl: 'https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?auto=format&fit=crop&w=1200&q=85' },
     { _id: 'colonial', title: 'Zona Colonial', titleEn: 'Colonial Zone', category: 'zona-colonial', priceUsd: 65, showPrice: true, duration: 'Medio día', durationEn: 'Half day', description: 'Historia y arquitectura en Santo Domingo.', descriptionEn: 'History and architecture in Santo Domingo.', imageUrl: 'https://images.unsplash.com/photo-1512813195386-6cf811ad3542?auto=format&fit=crop&w=1200&q=85' },
     { _id: 'buggies', title: 'Buggies / Aventura', titleEn: 'Buggies / Adventure', category: 'buggies', duration: 'Medio día', durationEn: 'Half day', description: 'Una aventura emocionante por paisajes naturales.', descriptionEn: 'An exciting adventure through natural landscapes.', imageUrl: 'https://images.unsplash.com/photo-1530789253388-582c481c54b0?auto=format&fit=crop&w=1200&q=85' },
   ]
   const displayTours = tours.length ? tours : fallbackTours
-  const displayVehicles = vehicles.length ? vehicles : [
-    { _id: 'fallback-van', name: 'Van VIP', category: 'van-vip', passengers: 10, luggage: 10, available: true, features: ['A/C', 'Espacio de equipaje'] },
-  ]
-  const primaryVehicle = displayVehicles.find((vehicle) => vehicle.category === 'van-vip' || vehicle.name?.toLowerCase().includes('van')) || displayVehicles[0]
-  const rentCarImage = rentCars.find((rentCar) => rentCar.imageUrl?.trim())?.imageUrl
-    || 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1800&q=85'
-  const airportTransfers = buildAirportTransfers(transfers, language)
-  const transferImage = primaryVehicle.photoUrl || primaryVehicle.imageUrl || aboutImage
 
   const configuredFaqs = settings?.faqs?.map((faq) => ({
     question: (es ? faq.questionEs || faq.questionEn : faq.questionEn || faq.questionEs)?.trim(),
@@ -694,57 +484,60 @@ Before payment, guests may request written confirmation of the price, pickup det
 
       <section id="transfers" className="bg-cyan-50/40 py-16">
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
-          <div className="grid overflow-hidden rounded-3xl border border-cyan-100 bg-white shadow-sm lg:grid-cols-[.85fr_1.15fr]">
-            <div className="relative min-h-64 bg-slate-100 sm:min-h-80 lg:min-h-[36rem]">
-              <Image
-                src={transferImage}
-                alt={es ? 'Vehículo para traslados privados' : it ? 'Veicolo per transfer privati' : 'Private transfer vehicle'}
-                fill
-                unoptimized
-                sizes="(max-width: 1024px) 100vw, 40vw"
-                className="object-cover"
-              />
-            </div>
-            <div className="p-6 sm:p-8 lg:p-10">
-              <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">
-                {es ? 'TRASLADOS AEROPORTUARIOS' : it ? 'TRANSFER AEROPORTUALI' : 'AIRPORT TRANSFERS'}
-              </p>
-              <h2 className="mt-3 text-2xl font-black text-slate-900 sm:text-3xl">
-                {es ? 'Traslados a los aeropuertos del país' : it ? 'Transfer verso gli aeroporti del paese' : 'Transfers to airports across the country'}
-              </h2>
-              <p className="mt-3 leading-7 text-slate-600">{copy.transfersSubtitle}</p>
+          <div className="mb-8 max-w-2xl">
+            <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">{es ? 'TRASLADOS AEROPORTUARIOS' : it ? 'TRANSFER AEROPORTUALI' : 'AIRPORT TRANSFERS'}</p>
+            <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-4xl">{copy.transfersTitle}</h2>
+            {copy.transfersSubtitle?.trim() && <p className="mt-3 leading-7 text-slate-600">{copy.transfersSubtitle}</p>}
+          </div>
 
-              <ol className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {airportTransfers.map((airport, index) => (
-                  <li key={airport.key} className="min-w-0 rounded-2xl bg-cyan-50/70 p-4">
-                    <div className="flex items-start gap-3">
-                      <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white text-xs font-extrabold text-cyan-700">
-                        {index + 1}
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-start justify-between gap-2">
-                          <h3 className="text-sm font-bold leading-5 text-slate-900">{airport.name}</h3>
-                          {airport.code && <span className="shrink-0 rounded-md bg-white px-2 py-1 text-[10px] font-extrabold tracking-wide text-cyan-700">{airport.code}</span>}
+          {transfers.length > 0 ? (
+            <div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {transfers.map((route) => {
+                const title = getLocalizedValue(language, route.title, route.titleEn, route.titleIt)
+                const airport = getLocalizedValue(language, route.airport, route.airportEn, route.airportIt)
+                const destination = getLocalizedValue(language, route.hotelZone, route.hotelZoneEn, route.hotelZoneIt)
+                const estimatedTime = getLocalizedValue(language, route.estimatedTime, route.estimatedTimeEn, route.estimatedTimeIt)
+                const cardTitle = title || [airport, destination].filter(Boolean).join(' →')
+                  || (es ? 'Traslado aeroportuario' : it ? 'Transfer aeroportuale' : 'Airport transfer')
+                const priceLabel = typeof route.privateRateUsd === 'number'
+                  ? `${es ? 'Desde' : it ? 'Da' : 'From'} USD $${route.privateRateUsd}`
+                  : es ? 'Consultar precio' : it ? 'Richiedi un preventivo' : 'Request a quote'
+                const quoteDetails = [airport, destination].filter(Boolean).join(' →') || cardTitle
+
+                return (
+                  <article key={route._id} className="flex h-full flex-col overflow-hidden rounded-2xl border border-cyan-100 bg-white shadow-sm">
+                    <div className="relative h-48 w-full shrink-0 bg-slate-100">
+                      {route.imageUrl ? (
+                        <Image src={route.imageUrl} alt={cardTitle} fill unoptimized sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw" className="object-cover" />
+                      ) : (
+                        <div className="grid h-full place-items-center text-slate-300" role="img" aria-label={es ? 'Imagen no disponible' : it ? 'Immagine non disponibile' : 'Image unavailable'}>
+                          <CarFront className="h-10 w-10" aria-hidden="true" />
                         </div>
-                        <p className="mt-2 text-xs font-semibold text-slate-500">{es ? 'Destinos principales' : it ? 'Destinazioni principali' : 'Main destinations'}</p>
-                        <p className="mt-0.5 text-sm leading-5 text-slate-600">{airport.destinations}</p>
-                        {(airport.estimatedTime || typeof airport.privateRateUsd === 'number') && (
-                          <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs font-semibold text-cyan-700">
-                            {airport.estimatedTime && <span>{es ? 'Tiempo' : it ? 'Tempo' : 'Time'}: {airport.estimatedTime}</span>}
-                            {typeof airport.privateRateUsd === 'number' && <span>{es ? 'Desde' : it ? 'Da' : 'From'} USD ${airport.privateRateUsd}</span>}
-                          </div>
-                        )}
+                      )}
+                    </div>
+                    <div className="flex flex-1 flex-col justify-between p-5">
+                      <div>
+                        <h3 className="line-clamp-2 text-lg font-black text-slate-900">{cardTitle}</h3>
+                        {airport && <p className="mt-3 text-sm leading-6 text-slate-600"><span className="font-bold text-slate-700">{es ? 'Aeropuerto' : it ? 'Aeroporto' : 'Airport'}:</span> {airport}</p>}
+                        {destination && <p className="mt-1 text-sm leading-6 text-slate-600"><span className="font-bold text-slate-700">{es ? 'Destino' : it ? 'Destinazione' : 'Destination'}:</span> {destination}</p>}
+                        {estimatedTime && <p className="mt-2 text-sm font-semibold text-cyan-700">{es ? 'Tiempo estimado' : it ? 'Tempo stimato' : 'Estimated time'}: {estimatedTime}</p>}
+                      </div>
+                      <div className="mt-auto flex items-center justify-between gap-3 pt-5">
+                        <p className="text-sm font-bold text-cyan-700">{priceLabel}</p>
+                        <a href={getServiceWhatsappUrl(quoteDetails)} target="_blank" rel="noopener noreferrer" className="ml-auto text-sm font-bold text-cyan-700">
+                          {es ? 'Reservar →' : it ? 'Prenota →' : 'Book →'}
+                        </a>
                       </div>
                     </div>
-                  </li>
-                ))}
-              </ol>
-
-              <a href={getWhatsappUrl(quoteMessage)} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex rounded-full bg-cyan-700 px-7 py-3.5 text-sm font-extrabold text-white shadow-sm">
-                {copy.quote}
-              </a>
+                  </article>
+                )
+              })}
             </div>
-          </div>
+          ) : (
+            <p className="rounded-2xl border border-cyan-100 bg-white p-6 text-sm text-slate-600">
+              {es ? 'Próximamente publicaremos las rutas disponibles.' : it ? 'Presto pubblicheremo le rotte disponibili.' : 'Available routes will be published soon.'}
+            </p>
+          )}
         </div>
       </section>
 
@@ -853,25 +646,70 @@ Before payment, guests may request written confirmation of the price, pickup det
       <section id="fleet" className="bg-cyan-50/40 py-16">
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
           <div className="mb-8 max-w-2xl">
-            <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">{es ? 'CONFIANZA Y SEGURIDAD' : 'TRUST & SAFETY'}</p>
-            <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-4xl">{es ? 'Tu traslado seguro en nuestra flota moderna' : 'Your safe transfer in our modern fleet'}</h2>
+            <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">{es ? 'NUESTRA FLOTA' : it ? 'LA NOSTRA FLOTTA' : 'OUR FLEET'}</p>
+            <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-4xl">{es ? 'Vehículos para tus traslados' : it ? 'Veicoli per i tuoi transfer' : 'Vehicles for your transfers'}</h2>
           </div>
 
-          {primaryVehicle && (
-            <div className="grid overflow-hidden rounded-3xl border border-cyan-100 bg-white shadow-sm lg:grid-cols-[1.15fr_.85fr]">
-              <div className="relative min-h-72">
-                <VehicleImage vehicle={primaryVehicle} name={primaryVehicle.name || 'Van VIP'} spanish={es} />
-              </div>
-              <div className="flex flex-col justify-center p-7 sm:p-10">
-                <p className="text-xs font-extrabold uppercase tracking-wider text-cyan-600">Van / Minibus VIP</p>
-                <h3 className="mt-3 text-3xl font-black text-slate-900">{primaryVehicle.name || 'Van VIP'}</h3>
-                <p className="mt-4 leading-7 text-slate-600">{es ? 'Vehículo climatizado, cómodo y preparado para traslados privados con equipaje y atención personalizada.' : 'Air-conditioned, comfortable vehicle prepared for private transfers with luggage and personalized service.'}</p>
-                <div className="mt-6 grid grid-cols-2 gap-3">
-                  <div className="rounded-2xl bg-cyan-50 p-4"><Users className="h-5 w-5 text-cyan-700" /><p className="mt-2 text-sm font-bold text-slate-800">{primaryVehicle.passengers || 10} {es ? 'pasajeros' : 'passengers'}</p></div>
-                  <div className="rounded-2xl bg-cyan-50 p-4"><ShieldCheck className="h-5 w-5 text-cyan-700" /><p className="mt-2 text-sm font-bold text-slate-800">{es ? 'Viaje seguro' : 'Safe travel'}</p></div>
-                </div>
-              </div>
+          {vehicles.length > 0 ? (
+            <div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {vehicles.map((vehicle) => {
+                const title = getLocalizedValue(language, vehicle.name, vehicle.nameEn, vehicle.nameIt)
+                const categoryLabel = vehicle.category
+                  ? VEHICLE_CATEGORY_LABELS[vehicle.category]?.[language] || vehicle.category.replace(/[-_]+/g, ' ')
+                  : undefined
+                const cardTitle = title || categoryLabel || (es ? 'Vehículo' : it ? 'Veicolo' : 'Vehicle')
+                const description = getLocalizedValue(language, vehicle.description, vehicle.descriptionEn, vehicle.descriptionIt)
+                const features = getLocalizedList(language, vehicle.features, vehicle.featuresEn, vehicle.featuresIt).slice(0, 3)
+                const imageUrl = vehicle.photoUrl || vehicle.imageUrl
+                const priceLabel = typeof vehicle.dailyRateUsd === 'number'
+                  ? `${es ? 'Desde' : it ? 'Da' : 'From'} USD $${vehicle.dailyRateUsd}${es ? '/día' : it ? '/giorno' : '/day'}`
+                  : es ? 'Consultar precio' : it ? 'Richiedi un preventivo' : 'Request a quote'
+                const availabilityLabel = typeof vehicle.available !== 'boolean'
+                  ? undefined
+                  : vehicle.available
+                    ? es ? 'Disponible' : it ? 'Disponibile' : 'Available'
+                    : es ? 'No disponible' : it ? 'Non disponibile' : 'Unavailable'
+
+                return (
+                  <article key={vehicle._id} className="flex h-full flex-col overflow-hidden rounded-2xl border border-cyan-100 bg-white shadow-sm">
+                    <div className="relative h-48 w-full shrink-0 bg-slate-100">
+                      {imageUrl ? (
+                        <Image src={imageUrl} alt={cardTitle} fill unoptimized sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw" className="object-cover" />
+                      ) : (
+                        <div className="grid h-full place-items-center text-slate-300" role="img" aria-label={es ? 'Imagen no disponible' : it ? 'Immagine non disponibile' : 'Image unavailable'}>
+                          <CarFront className="h-10 w-10" aria-hidden="true" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex flex-1 flex-col justify-between p-5">
+                      <div>
+                        {categoryLabel && <p className="text-xs font-bold tracking-wide text-cyan-700">{categoryLabel}</p>}
+                        <h3 className="mt-1 line-clamp-2 text-lg font-black text-slate-900">{cardTitle}</h3>
+                        {description && <p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-600">{description}</p>}
+                        {(typeof vehicle.passengers === 'number' || typeof vehicle.luggage === 'number' || availabilityLabel) && (
+                          <div className="mt-4 flex flex-wrap gap-2">
+                            {typeof vehicle.passengers === 'number' && <span className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-semibold text-slate-700">{vehicle.passengers} {es ? 'pasajeros' : it ? 'passeggeri' : 'passengers'}</span>}
+                            {typeof vehicle.luggage === 'number' && <span className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-semibold text-slate-700">{vehicle.luggage} {es ? 'maletas' : it ? 'bagagli' : 'bags'}</span>}
+                            {availabilityLabel && <span className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-semibold text-slate-700">{availabilityLabel}</span>}
+                          </div>
+                        )}
+                        {features.length > 0 && <ul className="mt-3 space-y-1 text-sm text-slate-600">{features.map((feature, index) => <li key={`${feature}-${index}`} className="line-clamp-1">• {feature}</li>)}</ul>}
+                      </div>
+                      <div className="mt-auto flex items-center justify-between gap-3 pt-5">
+                        <p className="text-sm font-bold text-cyan-700">{priceLabel}</p>
+                        <a href={getServiceWhatsappUrl(cardTitle)} target="_blank" rel="noopener noreferrer" className="ml-auto text-sm font-bold text-cyan-700">
+                          {es ? 'Consultar →' : it ? 'Richiedi info →' : 'Inquire →'}
+                        </a>
+                      </div>
+                    </div>
+                  </article>
+                )
+              })}
             </div>
+          ) : (
+            <p className="rounded-2xl border border-cyan-100 bg-white p-6 text-sm text-slate-600">
+              {es ? 'Próximamente publicaremos los vehículos disponibles.' : it ? 'Presto pubblicheremo i veicoli disponibili.' : 'Available vehicles will be published soon.'}
+            </p>
           )}
         </div>
       </section>
@@ -879,29 +717,59 @@ Before payment, guests may request written confirmation of the price, pickup det
       <section id="rent" className="py-16">
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
           <div className="mb-8 max-w-2xl">
-            <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">RENT CAR</p>
+            <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">{es ? 'ALQUILER DE VEHÍCULOS' : it ? 'NOLEGGIO AUTO' : 'CAR RENTAL'}</p>
             <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-4xl">{copy.rentTitle}</h2>
-            <p className="mt-3 leading-7 text-slate-600">{copy.rentSubtitle}</p>
+            {copy.rentSubtitle?.trim() && <p className="mt-3 leading-7 text-slate-600">{copy.rentSubtitle}</p>}
           </div>
 
-          <div className="grid overflow-hidden rounded-3xl border border-cyan-100 bg-white shadow-sm lg:grid-cols-[1.1fr_.9fr]">
-            <div className="relative min-h-64 bg-slate-100 sm:min-h-80">
-              <div
-                role="img"
-                aria-label={es ? 'Servicio de alquiler de vehículos' : 'Car rental service'}
-                className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: `linear-gradient(0deg,rgba(15,23,42,.16),rgba(15,23,42,.02)),url('${rentCarImage}')` }}
-              />
+          {rentCars.length > 0 ? (
+            <div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {rentCars.map((rentCar) => {
+                const title = getLocalizedValue(language, rentCar.name, rentCar.nameEn, rentCar.nameIt)
+                  || (es ? 'Vehículo de alquiler' : it ? 'Auto a noleggio' : 'Rental vehicle')
+                const description = getLocalizedValue(language, rentCar.description, rentCar.descriptionEn, rentCar.descriptionIt)
+                const priceLabel = typeof rentCar.pricePerDay === 'number'
+                  ? `USD $${rentCar.pricePerDay}${es ? '/día' : it ? '/giorno' : '/day'}`
+                  : es ? 'Consultar precio' : it ? 'Richiedi un preventivo' : 'Request a quote'
+
+                return (
+                  <article key={rentCar._id} className="flex h-full flex-col overflow-hidden rounded-2xl border border-cyan-100 bg-white shadow-sm">
+                    <div className="relative h-48 w-full shrink-0 bg-slate-100">
+                      {rentCar.imageUrl ? (
+                        <Image src={rentCar.imageUrl} alt={title} fill unoptimized sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw" className="object-cover" />
+                      ) : (
+                        <div className="grid h-full place-items-center text-slate-300" role="img" aria-label={es ? 'Imagen no disponible' : it ? 'Immagine non disponibile' : 'Image unavailable'}>
+                          <CarFront className="h-10 w-10" aria-hidden="true" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex flex-1 flex-col justify-between p-5">
+                      <div>
+                        <h3 className="line-clamp-2 text-lg font-black text-slate-900">{title}</h3>
+                        {description && <p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-600">{description}</p>}
+                        {(typeof rentCar.passengers === 'number' || typeof rentCar.luggage === 'number') && (
+                          <div className="mt-4 flex flex-wrap gap-2">
+                            {typeof rentCar.passengers === 'number' && <span className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-semibold text-slate-700">{rentCar.passengers} {es ? 'pasajeros' : it ? 'passeggeri' : 'passengers'}</span>}
+                            {typeof rentCar.luggage === 'number' && <span className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-semibold text-slate-700">{rentCar.luggage} {es ? 'maletas' : it ? 'bagagli' : 'bags'}</span>}
+                          </div>
+                        )}
+                      </div>
+                      <div className="mt-auto flex items-center justify-between gap-3 pt-5">
+                        <p className="text-sm font-bold text-cyan-700">{priceLabel}</p>
+                        <a href={getServiceWhatsappUrl(title)} target="_blank" rel="noopener noreferrer" className="ml-auto text-sm font-bold text-cyan-700">
+                          {es ? 'Reservar →' : it ? 'Prenota →' : 'Book →'}
+                        </a>
+                      </div>
+                    </div>
+                  </article>
+                )
+              })}
             </div>
-            <div className="flex flex-col items-start justify-center gap-5 p-6 sm:p-10 lg:p-12">
-              <CarFront className="h-10 w-10 text-cyan-700" aria-hidden="true" />
-              <h3 className="text-2xl font-black text-slate-900 sm:text-3xl">{es ? 'Vehículos para cada viaje' : 'The right vehicle for every trip'}</h3>
-              <p className="max-w-xl leading-7 text-slate-600">{copy.rentSubtitle?.trim() || (es ? 'Consulta nuestra disponibilidad de vehículos y encuentra la opción ideal para recorrer República Dominicana.' : 'Ask about our available vehicles and find the right option for exploring the Dominican Republic.')}</p>
-              <a href={getServiceWhatsappUrl(es ? 'vehículos disponibles para alquiler' : 'available rental vehicles')} target="_blank" rel="noopener noreferrer" className="inline-flex rounded-full bg-cyan-700 px-6 py-3.5 text-center text-sm font-bold text-white shadow-sm hover:bg-cyan-800">
-                {es ? 'Consultar Vehículos disponibles' : 'Ask about available vehicles'}
-              </a>
-            </div>
-          </div>
+          ) : (
+            <p className="rounded-2xl border border-cyan-100 bg-white p-6 text-sm text-slate-600">
+              {es ? 'Próximamente publicaremos los vehículos de alquiler.' : it ? 'Presto pubblicheremo le auto a noleggio.' : 'Rental vehicles will be published soon.'}
+            </p>
+          )}
         </div>
       </section>
 

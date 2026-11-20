@@ -24,31 +24,53 @@ type Tour = {
 type TransferRoute = {
   _id: string
   title?: string
+  titleEn?: string
+  titleIt?: string
   airport?: string
+  airportEn?: string
+  airportIt?: string
   hotelZone?: string
+  hotelZoneEn?: string
+  hotelZoneIt?: string
+  imageUrl?: string
   privateRateUsd?: number
   estimatedTime?: string
+  estimatedTimeEn?: string
+  estimatedTimeIt?: string
   featured?: boolean
 }
 
 type Vehicle = {
   _id: string
   name?: string
+  nameEn?: string
+  nameIt?: string
+  description?: string
+  descriptionEn?: string
+  descriptionIt?: string
   category?: string
   dailyRateUsd?: number
   passengers?: number
   luggage?: number
   photo?: unknown
-  features?: string[]
-  available?: boolean
+  features?: Array<string | null> | null
+  featuresEn?: Array<string | null> | null
+  featuresIt?: Array<string | null> | null
+  available?: boolean | null
   photoUrl?: string
 }
 
 type RentCar = {
   _id: string
   name?: string
+  nameEn?: string
+  nameIt?: string
   description?: string
+  descriptionEn?: string
+  descriptionIt?: string
   pricePerDay?: number
+  passengers?: number
+  luggage?: number
   imageUrl?: string
 }
 
@@ -130,32 +152,54 @@ export default async function Home() {
       featured,
       "imageUrl": image.asset->url
     },
-    "transfers": *[_type == "transferRoute"] | order(featured desc, title asc) {
+    "transfers": *[_type in ["transferRoute", "airportRoute"]] | order(featured desc, title asc) {
       _id,
       title,
+      titleEn,
+      titleIt,
       airport,
+      airportEn,
+      airportIt,
       hotelZone,
+      hotelZoneEn,
+      hotelZoneIt,
+      "imageUrl": image.asset->url,
       privateRateUsd,
       estimatedTime,
+      estimatedTimeEn,
+      estimatedTimeIt,
       featured
     },
     "vehicles": *[_type == "vehicle" && category != "rent-car"] {
       _id,
       name,
+      nameEn,
+      nameIt,
+      description,
+      descriptionEn,
+      descriptionIt,
       category,
       dailyRateUsd,
       passengers,
       luggage,
       photo,
       features,
+      featuresEn,
+      featuresIt,
       available,
       "photoUrl": coalesce(photo.asset->url, image.asset->url),
     },
     "rentCars": *[_type == "rentCar"] | order(_createdAt desc) {
       _id,
       name,
+      nameEn,
+      nameIt,
       description,
+      descriptionEn,
+      descriptionIt,
       pricePerDay,
+      passengers,
+      luggage,
       "imageUrl": image.asset->url
     },
     "settings": *[_type == "siteSettings"][0] {

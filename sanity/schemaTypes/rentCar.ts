@@ -11,6 +11,16 @@ export const rentCarType = defineType({
       type: 'string',
     }),
     defineField({
+      name: 'nameEn',
+      title: 'Name (EN)',
+      type: 'string',
+    }),
+    defineField({
+      name: 'nameIt',
+      title: 'Nome (IT)',
+      type: 'string',
+    }),
+    defineField({
       name: 'image',
       title: 'Imagen',
       type: 'image',
@@ -23,10 +33,34 @@ export const rentCarType = defineType({
       rows: 4,
     }),
     defineField({
+      name: 'descriptionEn',
+      title: 'Description (EN)',
+      type: 'text',
+      rows: 4,
+    }),
+    defineField({
+      name: 'descriptionIt',
+      title: 'Descrizione (IT)',
+      type: 'text',
+      rows: 4,
+    }),
+    defineField({
       name: 'pricePerDay',
       title: 'Precio por día',
       type: 'number',
       validation: (Rule) => Rule.min(0).warning(),
+    }),
+    defineField({
+      name: 'passengers',
+      title: 'Capacidad de pasajeros',
+      type: 'number',
+      validation: (Rule) => Rule.min(1).max(50).warning(),
+    }),
+    defineField({
+      name: 'luggage',
+      title: 'Capacidad de maletas',
+      type: 'number',
+      validation: (Rule) => Rule.min(0).max(50).warning(),
     }),
   ],
   preview: {
