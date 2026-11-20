@@ -659,13 +659,13 @@ Before payment, guests may request written confirmation of the price, pickup det
       <section id="top" className="relative pt-20">
         <div
           className="absolute inset-x-0 top-20 h-[420px] bg-cover bg-center sm:h-[470px]"
-          style={{ backgroundImage: `linear-gradient(90deg,rgba(2,6,23,.88),rgba(8,47,73,.72) 58%,rgba(8,47,73,.3)),url('${heroImage}')` }}
+          style={{ backgroundImage: `linear-gradient(90deg,rgba(2,6,23,.55),rgba(8,47,73,.34) 58%,rgba(8,47,73,.12)),url('${heroImage}')` }}
         />
         <div className="relative mx-auto max-w-7xl px-5 pb-16 pt-14 sm:px-8 sm:pt-20">
-          <div className="max-w-2xl rounded-3xl border border-white/15 bg-slate-950/60 p-6 shadow-xl shadow-cyan-950/20 backdrop-blur-sm sm:p-8">
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-cyan-300">{copy.heroBadge}</p>
-            <h1 className="mt-4 text-4xl font-black leading-[1.05] text-cyan-300 sm:text-6xl">{copy.heroTitle}</h1>
-            <p className="mt-5 max-w-xl text-base leading-7 text-gray-100 sm:text-lg">{copy.heroSubtitle}</p>
+          <div className="max-w-2xl bg-transparent">
+            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-cyan-300 [text-shadow:_0_2px_4px_rgb(0_0_0_/_0.8)]">{copy.heroBadge}</p>
+            <h1 className="mt-4 text-4xl font-black leading-[1.05] text-cyan-300 [text-shadow:_0_2px_4px_rgb(0_0_0_/_0.8)] sm:text-6xl">{copy.heroTitle}</h1>
+            <p className="mt-5 max-w-xl text-base leading-7 text-gray-100 [text-shadow:_0_2px_4px_rgb(0_0_0_/_0.8)] sm:text-lg">{copy.heroSubtitle}</p>
             <a href={getWhatsappUrl(defaultMessage)} target="_blank" rel="noopener noreferrer" className="mt-7 inline-flex rounded-full bg-emerald-500 px-6 py-3.5 text-sm font-extrabold text-white shadow-sm">
               {copy.heroCta}
             </a>
