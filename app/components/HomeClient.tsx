@@ -406,6 +406,22 @@ export default function HomeClient({ tours, transfers, vehicles, rentCars, setti
   const [luggage, setLuggage] = useState('0')
 
   useEffect(() => { document.documentElement.lang = language }, [language])
+  useEffect(() => {
+    if (!activePolicy) return
+
+    const previousOverflow = document.body.style.overflow
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setActivePolicy(null)
+    }
+
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', closeOnEscape)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', closeOnEscape)
+    }
+  }, [activePolicy])
 
   const es = language === 'es'
   const it = language === 'it'
@@ -556,17 +572,23 @@ Approved refunds will be returned to the original payment method or issued as ag
 
 Before payment, guests may request written confirmation of the price, pickup details, cancellation terms and any special conditions.`
 
-  const policyContent = es
-    ? {
-        privacy: ['Política de Privacidad', settings?.legalPolicies?.privacyPolicyEs || privacyFallbackEs],
-        terms: ['Términos y Condiciones', settings?.legalPolicies?.termsConditionsEs || termsFallbackEs],
-        cancellation: ['Política de Cancelación', settings?.legalPolicies?.cancellationPolicyEs || cancellationFallbackEs],
-      }
-    : {
-        privacy: ['Privacy Policy', settings?.legalPolicies?.privacyPolicyEn || privacyFallbackEn],
-        terms: ['Terms & Conditions', settings?.legalPolicies?.termsConditionsEn || termsFallbackEn],
-        cancellation: ['Cancellation Policy', settings?.legalPolicies?.cancellationPolicyEn || cancellationFallbackEn],
-      }
+  const policyContent = {
+    privacy: {
+      title: es ? 'Política de Privacidad' : it ? 'Informativa sulla privacy' : 'Privacy Policy',
+      body: (es ? settings?.legalPolicies?.privacyPolicyEs : settings?.legalPolicies?.privacyPolicyEn)?.trim()
+        || (es ? privacyFallbackEs : privacyFallbackEn),
+    },
+    terms: {
+      title: es ? 'Términos y Condiciones' : it ? 'Termini e condizioni' : 'Terms & Conditions',
+      body: (es ? settings?.legalPolicies?.termsConditionsEs : settings?.legalPolicies?.termsConditionsEn)?.trim()
+        || (es ? termsFallbackEs : termsFallbackEn),
+    },
+    cancellation: {
+      title: es ? 'Política de Cancelación' : it ? 'Politica di cancellazione' : 'Cancellation Policy',
+      body: (es ? settings?.legalPolicies?.cancellationPolicyEs : settings?.legalPolicies?.cancellationPolicyEn)?.trim()
+        || (es ? cancellationFallbackEs : cancellationFallbackEn),
+    },
+  }
 
   function getPromoVideoEmbedUrl(url?: string) {
     if (!url) return null
@@ -637,13 +659,13 @@ Before payment, guests may request written confirmation of the price, pickup det
       <section id="top" className="relative pt-20">
         <div
           className="absolute inset-x-0 top-20 h-[420px] bg-cover bg-center sm:h-[470px]"
-          style={{ backgroundImage: `linear-gradient(90deg,rgba(255,255,255,.94),rgba(255,255,255,.78) 58%,rgba(207,250,254,.35)),url('${heroImage}')` }}
+          style={{ backgroundImage: `linear-gradient(90deg,rgba(2,6,23,.88),rgba(8,47,73,.72) 58%,rgba(8,47,73,.3)),url('${heroImage}')` }}
         />
         <div className="relative mx-auto max-w-7xl px-5 pb-16 pt-14 sm:px-8 sm:pt-20">
-          <div className="max-w-2xl rounded-3xl border border-white/80 bg-white/85 p-6 shadow-xl shadow-cyan-950/5 backdrop-blur-sm sm:p-8">
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-cyan-700">{copy.heroBadge}</p>
-            <h1 className="mt-4 text-4xl font-black leading-[1.05] text-slate-900 sm:text-6xl">{copy.heroTitle}</h1>
-            <p className="mt-5 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">{copy.heroSubtitle}</p>
+          <div className="max-w-2xl rounded-3xl border border-white/15 bg-slate-950/60 p-6 shadow-xl shadow-cyan-950/20 backdrop-blur-sm sm:p-8">
+            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-cyan-300">{copy.heroBadge}</p>
+            <h1 className="mt-4 text-4xl font-black leading-[1.05] text-cyan-300 sm:text-6xl">{copy.heroTitle}</h1>
+            <p className="mt-5 max-w-xl text-base leading-7 text-gray-100 sm:text-lg">{copy.heroSubtitle}</p>
             <a href={getWhatsappUrl(defaultMessage)} target="_blank" rel="noopener noreferrer" className="mt-7 inline-flex rounded-full bg-emerald-500 px-6 py-3.5 text-sm font-extrabold text-white shadow-sm">
               {copy.heroCta}
             </a>
@@ -978,8 +1000,8 @@ Before payment, guests may request written confirmation of the price, pickup det
               <a href="#transfers" className="text-sm text-slate-500 hover:text-cyan-700">{copy.transfers}</a>
               <a href="#rent" className="text-sm text-slate-500 hover:text-cyan-700">{copy.rent}</a>
               <a href="#about" className="text-sm text-slate-500 hover:text-cyan-700">{copy.about}</a>
-              <a href="#" className="text-sm text-slate-500 hover:text-cyan-700">{es ? 'Política de Privacidad' : 'Privacy Policy'}</a>
-              <a href="#" className="text-sm text-slate-500 hover:text-cyan-700">{es ? 'Términos y Condiciones' : 'Terms & Conditions'}</a>
+              <button type="button" onClick={() => setActivePolicy('privacy')} className="text-left text-sm text-slate-500 hover:text-cyan-700">{policyContent.privacy.title}</button>
+              <button type="button" onClick={() => setActivePolicy('terms')} className="text-left text-sm text-slate-500 hover:text-cyan-700">{policyContent.terms.title}</button>
               <div className="col-span-2 flex items-center gap-4 sm:col-span-3" aria-label={es ? 'Redes sociales' : 'Social media'}>
                 <a href="#" aria-label="Facebook" className="text-slate-500 transition hover:text-cyan-700">
                   <span className="relative grid h-5 w-5 place-items-center"><Circle className="absolute h-5 w-5" /><span className="text-xs font-bold">f</span></span>
@@ -995,6 +1017,38 @@ Before payment, guests may request written confirmation of the price, pickup det
           </div>
         </div>
       </footer>
+      {activePolicy && (
+        <div
+          className="fixed inset-0 z-[60] grid place-items-center bg-slate-950/60 p-4"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) setActivePolicy(null)
+          }}
+        >
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="legal-policy-title"
+            className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl sm:p-8"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <h2 id="legal-policy-title" className="text-xl font-extrabold text-slate-900 sm:text-2xl">
+                {policyContent[activePolicy].title}
+              </h2>
+              <button
+                type="button"
+                onClick={() => setActivePolicy(null)}
+                aria-label={es ? 'Cerrar' : it ? 'Chiudi' : 'Close'}
+                className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <p className="mt-5 whitespace-pre-line text-sm leading-7 text-slate-600">
+              {policyContent[activePolicy].body}
+            </p>
+          </section>
+        </div>
+      )}
       <a
         href={whatsappLink || getWhatsappUrl(defaultMessage)}
         target="_blank"
