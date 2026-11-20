@@ -5,6 +5,14 @@ const nextConfig: NextConfig = {
     agentFeedback: true,
   },
   cacheComponents: false,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "cdn.sanity.io",
+      },
+    ],
+  },
   turbopack: {
     rules: {
       "*.css": {
