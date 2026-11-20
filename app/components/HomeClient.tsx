@@ -541,7 +541,7 @@ Before payment, guests may request written confirmation of the price, pickup det
             <p className="mt-3 leading-7 text-slate-600">{copy.toursSubtitle}</p>
           </div>
 
-          <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
             {displayTours.map((tour) => {
               const includedSource = (
                 es ? tour.includes : tour.includesEn?.length ? tour.includesEn : tour.includes
@@ -567,42 +567,44 @@ Before payment, guests may request written confirmation of the price, pickup det
                 : es ? 'Consultar precio' : it ? 'Richiedi un preventivo' : 'Request a quote'
 
               return (
-                <article key={tour._id} className="h-fit self-start overflow-hidden rounded-2xl border border-cyan-100 bg-white shadow-sm">
-                  <div className="relative h-48 w-full overflow-hidden bg-slate-100">
+                <article key={tour._id} className="flex h-full flex-col overflow-hidden rounded-2xl border border-cyan-100 bg-white shadow-sm">
+                  <div className="relative h-48 w-full shrink-0 overflow-hidden bg-slate-100">
                     {tour.imageUrl ? (
-                      <img src={tour.imageUrl} alt={title} className="absolute inset-0 h-full w-full object-cover" />
+                      <img src={tour.imageUrl} alt={title} className="h-full w-full shrink-0 object-cover" />
                     ) : (
                       <div className="flex h-full items-center justify-center text-sm font-semibold text-slate-400">{es ? 'Próximamente' : it ? 'Prossimamente' : 'Coming soon'}</div>
                     )}
                   </div>
-                  <div className="p-4">
-                    {categoryLabel && <p className="text-xs font-bold tracking-wide text-cyan-600">{categoryLabel}</p>}
-                    <h3 className="mt-1 line-clamp-2 text-lg font-black leading-6 text-slate-900">{title}</h3>
-                    {duration && <p className="mt-2 text-sm font-semibold text-cyan-700">{es ? 'Duración' : it ? 'Durata' : 'Duration'}: {duration}</p>}
-                    {description && <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{description}</p>}
-                    {(includedItems.length > 0 || excludedItems.length > 0) && (
-                      <div className="mt-4 space-y-3">
-                        {includedItems.length > 0 && (
-                          <div>
-                            <h4 className="text-sm font-bold text-slate-800">{es ? 'Incluye' : it ? 'Incluso' : 'Includes'}</h4>
-                            <ul className="mt-1 list-disc space-y-0.5 pl-5 text-sm leading-5 text-slate-600">
-                              {includedPreviewItems.map((item, index) => <li key={`included-${index}-${item}`} className="line-clamp-1">{item}</li>)}
-                            </ul>
-                            {includedItems.length > includedPreviewItems.length && <p className="mt-1 text-xs text-slate-500">+{includedItems.length - includedPreviewItems.length} {es ? 'más' : it ? 'altri' : 'more'}</p>}
-                          </div>
-                        )}
-                        {excludedItems.length > 0 && (
-                          <div>
-                            <h4 className="text-sm font-bold text-slate-800">{es ? 'No incluye' : it ? 'Non incluso' : 'Not included'}</h4>
-                            <ul className="mt-1 list-disc space-y-0.5 pl-5 text-sm leading-5 text-slate-600">
-                              {excludedPreviewItems.map((item, index) => <li key={`excluded-${index}-${item}`} className="line-clamp-1">{item}</li>)}
-                            </ul>
-                            {excludedItems.length > excludedPreviewItems.length && <p className="mt-1 text-xs text-slate-500">+{excludedItems.length - excludedPreviewItems.length} {es ? 'más' : it ? 'altri' : 'more'}</p>}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    <div className="mt-3 flex items-center justify-between gap-3">
+                  <div className="flex flex-1 flex-col justify-between p-4">
+                    <div>
+                      {categoryLabel && <p className="text-xs font-bold tracking-wide text-cyan-600">{categoryLabel}</p>}
+                      <h3 className="mt-1 line-clamp-2 text-lg font-black leading-6 text-slate-900">{title}</h3>
+                      {duration && <p className="mt-2 text-sm font-semibold text-cyan-700">{es ? 'Duración' : it ? 'Durata' : 'Duration'}: {duration}</p>}
+                      {description && <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{description}</p>}
+                      {(includedItems.length > 0 || excludedItems.length > 0) && (
+                        <div className="mt-4 space-y-3">
+                          {includedItems.length > 0 && (
+                            <div>
+                              <h4 className="text-sm font-bold text-slate-800">{es ? 'Incluye' : it ? 'Incluso' : 'Includes'}</h4>
+                              <ul className="mt-1 list-disc space-y-0.5 pl-5 text-sm leading-5 text-slate-600">
+                                {includedPreviewItems.map((item, index) => <li key={`included-${index}-${item}`} className="line-clamp-1">{item}</li>)}
+                              </ul>
+                              {includedItems.length > includedPreviewItems.length && <p className="mt-1 text-xs text-slate-500">+{includedItems.length - includedPreviewItems.length} {es ? 'más' : it ? 'altri' : 'more'}</p>}
+                            </div>
+                          )}
+                          {excludedItems.length > 0 && (
+                            <div>
+                              <h4 className="text-sm font-bold text-slate-800">{es ? 'No incluye' : it ? 'Non incluso' : 'Not included'}</h4>
+                              <ul className="mt-1 list-disc space-y-0.5 pl-5 text-sm leading-5 text-slate-600">
+                                {excludedPreviewItems.map((item, index) => <li key={`excluded-${index}-${item}`} className="line-clamp-1">{item}</li>)}
+                              </ul>
+                              {excludedItems.length > excludedPreviewItems.length && <p className="mt-1 text-xs text-slate-500">+{excludedItems.length - excludedPreviewItems.length} {es ? 'más' : it ? 'altri' : 'more'}</p>}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    <div className="mt-auto flex items-center justify-between gap-3 pt-4">
                       <p className="text-sm font-bold text-cyan-700">{priceLabel}</p>
                       <a href={getServiceWhatsappUrl(es ? tour.title || 'Tour' : tour.titleEn || tour.title || 'Tour')} target="_blank" rel="noopener noreferrer" className="ml-auto text-sm font-bold text-cyan-700">{es ? 'Reservar →' : it ? 'Prenota →' : 'Book →'}</a>
                     </div>
