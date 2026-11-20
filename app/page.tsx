@@ -72,6 +72,7 @@ type RentCar = {
   passengers?: number
   luggage?: number
   imageUrl?: string
+  galleryUrls?: Array<string | null> | null
 }
 
 type SiteSettings = {
@@ -200,7 +201,8 @@ export default async function Home() {
       pricePerDay,
       passengers,
       luggage,
-      "imageUrl": image.asset->url
+      "imageUrl": image.asset->url,
+      "galleryUrls": gallery[].asset->url
     },
     "settings": *[_type == "siteSettings"][0] {
       "heroImageUrl": heroImage.asset->url,

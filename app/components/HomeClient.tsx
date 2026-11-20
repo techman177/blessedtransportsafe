@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { CalendarDays, Camera, CarFront, CheckCircle, ChevronDown, Circle, Clock3, ShieldCheck, Users, X } from 'lucide-react'
+import { CalendarDays, Camera, CarFront, CheckCircle, ChevronDown, ChevronLeft, ChevronRight, Circle, Clock3, ShieldCheck, Users, X } from 'lucide-react'
 
 export type Tour = {
   _id: string
@@ -77,6 +77,7 @@ export type RentCar = {
   passengers?: number | null
   luggage?: number | null
   imageUrl?: string | null
+  galleryUrls?: Array<string | null> | null
 }
 
 export type SiteSettings = {
@@ -199,6 +200,64 @@ const WHATSAPP_LINK = 'https://wa.link/pbnzgo'
 
 function whatsappUrl(message: string) {
   return `${WHATSAPP_ME}?text=${encodeURIComponent(message)}`
+}
+
+function RentCarGallery({ images, title, language }: { images: string[]; title: string; language: Language }) {
+  const [activeIndex, setActiveIndex] = useState(0)
+
+  const previous = () => setActiveIndex((index) => (index - 1 + images.length) % images.length)
+  const next = () => setActiveIndex((index) => (index + 1) % images.length)
+
+  return (
+    <div className="relative h-48 w-full shrink-0 overflow-hidden bg-slate-100">
+      {images.length > 0 ? (
+        <Image
+          src={images[activeIndex]}
+          alt={`${title} ${activeIndex + 1}`}
+          fill
+          unoptimized
+          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+          className="object-cover"
+        />
+      ) : (
+        <div className="grid h-full place-items-center text-slate-300" role="img" aria-label={language === 'es' ? 'Imagen no disponible' : language === 'it' ? 'Immagine non disponibile' : 'Image unavailable'}>
+          <CarFront className="h-10 w-10" aria-hidden="true" />
+        </div>
+      )}
+      {images.length > 1 && (
+        <>
+          <button
+            type="button"
+            onClick={previous}
+            aria-label={language === 'es' ? 'Foto anterior' : language === 'it' ? 'Foto precedente' : 'Previous photo'}
+            className="absolute left-2 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full bg-slate-950/55 text-white transition hover:bg-slate-950/80"
+          >
+            <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            onClick={next}
+            aria-label={language === 'es' ? 'Foto siguiente' : language === 'it' ? 'Foto successiva' : 'Next photo'}
+            className="absolute right-2 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full bg-slate-950/55 text-white transition hover:bg-slate-950/80"
+          >
+            <ChevronRight className="h-5 w-5" aria-hidden="true" />
+          </button>
+          <div className="absolute inset-x-0 bottom-2 flex justify-center gap-1.5">
+            {images.map((image, index) => (
+              <button
+                key={`${image}-${index}`}
+                type="button"
+                onClick={() => setActiveIndex(index)}
+                aria-label={`${language === 'es' ? 'Foto' : language === 'it' ? 'Foto' : 'Photo'} ${index + 1} ${language === 'es' ? 'de' : language === 'it' ? 'di' : 'of'} ${images.length}`}
+                aria-pressed={activeIndex === index}
+                className={`h-2 w-2 rounded-full transition ${activeIndex === index ? 'bg-white' : 'bg-white/55 hover:bg-white/80'}`}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  )
 }
 
 export default function HomeClient({ tours, transfers, vehicles, rentCars, settings }: { tours: Tour[]; transfers: TransferRoute[]; vehicles: Vehicle[]; rentCars: RentCar[]; settings: SiteSettings | null }) {
@@ -728,21 +787,16 @@ Before payment, guests may request written confirmation of the price, pickup det
                 const title = getLocalizedValue(language, rentCar.name, rentCar.nameEn, rentCar.nameIt)
                   || (es ? 'Vehículo de alquiler' : it ? 'Auto a noleggio' : 'Rental vehicle')
                 const description = getLocalizedValue(language, rentCar.description, rentCar.descriptionEn, rentCar.descriptionIt)
+                const images = [...new Set([rentCar.imageUrl, ...(rentCar.galleryUrls || [])]
+                  .filter((image): image is string => typeof image === 'string' && image.trim().length > 0)
+                  .map((image) => image.trim()))]
                 const priceLabel = typeof rentCar.pricePerDay === 'number'
                   ? `USD $${rentCar.pricePerDay}${es ? '/día' : it ? '/giorno' : '/day'}`
                   : es ? 'Consultar precio' : it ? 'Richiedi un preventivo' : 'Request a quote'
 
                 return (
                   <article key={rentCar._id} className="flex h-full flex-col overflow-hidden rounded-2xl border border-cyan-100 bg-white shadow-sm">
-                    <div className="relative h-48 w-full shrink-0 bg-slate-100">
-                      {rentCar.imageUrl ? (
-                        <Image src={rentCar.imageUrl} alt={title} fill unoptimized sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw" className="object-cover" />
-                      ) : (
-                        <div className="grid h-full place-items-center text-slate-300" role="img" aria-label={es ? 'Imagen no disponible' : it ? 'Immagine non disponibile' : 'Image unavailable'}>
-                          <CarFront className="h-10 w-10" aria-hidden="true" />
-                        </div>
-                      )}
-                    </div>
+                    <RentCarGallery images={images} title={title} language={language} />
                     <div className="flex flex-1 flex-col justify-between p-5">
                       <div>
                         <h3 className="line-clamp-2 text-lg font-black text-slate-900">{title}</h3>

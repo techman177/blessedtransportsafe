@@ -27,6 +27,13 @@ export const rentCarType = defineType({
       options: { hotspot: true },
     }),
     defineField({
+      name: 'gallery',
+      title: 'Galería de imágenes',
+      type: 'array',
+      options: { layout: 'grid' },
+      of: [{ type: 'image', options: { hotspot: true } }],
+    }),
+    defineField({
       name: 'description',
       title: 'Descripción',
       type: 'text',
