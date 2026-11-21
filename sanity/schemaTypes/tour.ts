@@ -7,6 +7,12 @@ export const tourType = defineType({
   type: 'document',
   fields: [
     defineField({
+      name: 'order',
+      title: 'Orden de aparición',
+      type: 'number',
+      description: 'Número para ordenar (ej. 1, 2, 3)',
+    }),
+    defineField({
       name: 'title',
       title: 'Título (Español)',
       type: 'string',

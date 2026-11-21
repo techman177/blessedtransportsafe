@@ -5,6 +5,7 @@ export const revalidate = 0
 
 type Tour = {
   _id: string
+  order?: number
   title?: string | null
   titleEn?: string | null
   category?: string | null
@@ -43,6 +44,7 @@ type TransferRoute = {
 
 type Vehicle = {
   _id: string
+  order?: number
   name?: string
   nameEn?: string
   nameIt?: string
@@ -63,6 +65,7 @@ type Vehicle = {
 
 type RentCar = {
   _id: string
+  order?: number
   name?: string
   nameEn?: string
   nameIt?: string
@@ -139,11 +142,12 @@ type SiteSettings = {
 
 export default async function Home() {
   const query = `{
-    "tours": *[_type == "tour"] | order(featured desc, _createdAt desc) {
+    "tours": *[_type == "tour"] | order(coalesce(order, 2147483647) asc, _createdAt asc) {
       _id,
       _type,
       _createdAt,
       _updatedAt,
+      order,
       title,
       titleEn,
       slug,
@@ -181,8 +185,9 @@ export default async function Home() {
       estimatedTimeIt,
       featured
     },
-    "vehicles": *[_type == "vehicle" && category != "rent-car"] {
+    "vehicles": *[_type == "vehicle" && category != "rent-car"] | order(coalesce(order, 2147483647) asc, _createdAt asc) {
       _id,
+      order,
       name,
       nameEn,
       nameIt,
@@ -200,8 +205,9 @@ export default async function Home() {
       available,
       "photoUrl": coalesce(photo.asset->url, image.asset->url),
     },
-    "rentCars": *[_type == "rentCar"] | order(_createdAt desc) {
+    "rentCars": *[_type == "rentCar"] | order(coalesce(order, 2147483647) asc, _createdAt asc) {
       _id,
+      order,
       name,
       nameEn,
       nameIt,

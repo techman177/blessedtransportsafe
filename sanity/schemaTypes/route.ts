@@ -7,6 +7,12 @@ export const routeType = defineType({
   type: 'document',
   fields: [
     defineField({
+      name: 'order',
+      title: 'Orden de aparición',
+      type: 'number',
+      description: 'Número para ordenar (ej. 1, 2, 3)',
+    }),
+    defineField({
       name: 'title',
       title: 'Nombre de la ruta',
       type: 'string',

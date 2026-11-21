@@ -6,6 +6,7 @@ import { CalendarDays, CarFront, CheckCircle, ChevronDown, ChevronLeft, ChevronR
 
 export type Tour = {
   _id: string
+  order?: number | null
   title?: string | null
   titleEn?: string | null
   category?: string | null
@@ -26,6 +27,7 @@ export type Tour = {
 
 export type TransferRoute = {
   _id: string
+  order?: number | null
   title?: string | null
   titleEn?: string | null
   titleIt?: string | null
@@ -45,6 +47,7 @@ export type TransferRoute = {
 
 export type Vehicle = {
   _id: string
+  order?: number | null
   name?: string | null
   nameEn?: string | null
   nameIt?: string | null
@@ -67,6 +70,7 @@ export type Vehicle = {
 
 export type RentCar = {
   _id: string
+  order?: number | null
   name?: string | null
   nameEn?: string | null
   nameIt?: string | null
