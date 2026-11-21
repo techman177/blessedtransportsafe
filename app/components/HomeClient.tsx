@@ -99,6 +99,10 @@ export type SiteSettings = {
   aboutTitleEn?: string
   aboutDescriptionEs?: string
   aboutDescriptionEn?: string
+  aboutDescriptionIt?: string
+  safetyTextEs?: string
+  safetyTextEn?: string
+  safetyTextIt?: string
   aboutHighlightsEs?: string[]
   aboutHighlightsEn?: string[]
   toursTitleEs?: string
@@ -876,7 +880,13 @@ Before payment, guests may request written confirmation of the price, pickup det
           <div className="mb-10 max-w-2xl">
             <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-cyan-600">SOBRE NOSOTROS</p>
             <h2 className="mt-3 text-3xl font-black text-slate-900 sm:text-5xl">{copy.about}</h2>
-            <p className="mt-4 leading-7 text-slate-600">{es ? 'Comprometidos con su seguridad y satisfacción.' : 'Committed to your safety and satisfaction.'}</p>
+            <p className="mt-4 leading-7 text-slate-600">
+              {it
+                ? settings?.safetyTextIt || 'Impegnati per la vostra sicurezza e soddisfazione.'
+                : es
+                  ? settings?.safetyTextEs || 'Comprometidos con su seguridad y satisfacción.'
+                  : settings?.safetyTextEn || 'Committed to your safety and satisfaction.'}
+            </p>
           </div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">

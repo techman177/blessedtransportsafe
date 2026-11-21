@@ -94,6 +94,10 @@ type SiteSettings = {
   aboutTitleEn?: string
   aboutDescriptionEs?: string
   aboutDescriptionEn?: string
+  aboutDescriptionIt?: string
+  safetyTextEs?: string
+  safetyTextEn?: string
+  safetyTextIt?: string
   aboutHighlightsEs?: string[]
   aboutHighlightsEn?: string[]
   toursTitleEs?: string
@@ -235,6 +239,10 @@ export default async function Home() {
       aboutTitleEn,
       aboutDescriptionEs,
       aboutDescriptionEn,
+      aboutDescriptionIt,
+      safetyTextEs,
+      safetyTextEn,
+      safetyTextIt,
       aboutHighlightsEs,
       aboutHighlightsEn,
       toursTitleEs,

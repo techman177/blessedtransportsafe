@@ -18,8 +18,12 @@ export const siteSettingsType = defineType({
     defineField({ name: 'aboutBadgeEn', title: 'About Us Badge (EN)', type: 'string' }),
     defineField({ name: 'aboutTitleEs', title: 'Título Quiénes Somos (ES)', type: 'string' }),
     defineField({ name: 'aboutTitleEn', title: 'About Us Title (EN)', type: 'string' }),
+    defineField({ name: 'aboutDescriptionIt', title: 'Descrizione Chi siamo (IT)', type: 'text', rows: 4 }),
     defineField({ name: 'aboutDescriptionEs', title: 'Descripción Quiénes Somos (ES)', type: 'text', rows: 4 }),
     defineField({ name: 'aboutDescriptionEn', title: 'About Us Description (EN)', type: 'text', rows: 4 }),
+    defineField({ name: 'safetyTextEs', title: 'Texto de seguridad y confianza (ES)', type: 'text', rows: 4, description: 'Breve texto para explicar por qué los clientes pueden confiar en la empresa.' }),
+    defineField({ name: 'safetyTextEn', title: 'Safety and trust text (EN)', type: 'text', rows: 4, description: 'Short text explaining why customers can trust the company.' }),
+    defineField({ name: 'safetyTextIt', title: 'Testo di sicurezza e fiducia (IT)', type: 'text', rows: 4, description: 'Breve testo per spiegare perché i clienti possono fidarsi dell’azienda.' }),
     defineField({ name: 'aboutHighlightsEs', title: 'Puntos fuertes (ES)', type: 'array', of: [{ type: 'string' }] }),
     defineField({ name: 'aboutHighlightsEn', title: 'Key highlights (EN)', type: 'array', of: [{ type: 'string' }] }),
 
