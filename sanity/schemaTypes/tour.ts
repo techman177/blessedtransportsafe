@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity';
+import {CurrencyNumberInput} from '../components/CurrencyNumberInput'
 
 export const tourType = defineType({
   name: 'tour',
@@ -42,6 +43,7 @@ export const tourType = defineType({
       title: 'Precio en USD ($) (Opcional)',
       type: 'number',
       description: 'Ingrese únicamente el monto numérico, sin el signo $.',
+      components: {input: CurrencyNumberInput},
       validation: (Rule) => Rule.min(0).warning(),
     }),
     defineField({

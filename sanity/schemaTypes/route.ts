@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity';
+import {CurrencyNumberInput} from '../components/CurrencyNumberInput'
 
 export const routeType = defineType({
   name: 'route',
@@ -25,6 +26,7 @@ export const routeType = defineType({
       title: 'Tarifa privada en USD ($)',
       type: 'number',
       description: 'Ingrese únicamente el monto numérico, sin el signo $.',
+      components: {input: CurrencyNumberInput},
       validation: (Rule) => Rule.min(0).warning(),
     }),
     defineField({

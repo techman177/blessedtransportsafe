@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity'
+import {CurrencyNumberInput} from '../components/CurrencyNumberInput'
 
 export const rentCarType = defineType({
   name: 'rentCar',
@@ -56,6 +57,7 @@ export const rentCarType = defineType({
       title: 'Precio por día (USD $)',
       type: 'number',
       description: 'Ingrese únicamente el monto numérico, sin el signo $.',
+      components: {input: CurrencyNumberInput},
       validation: (Rule) => Rule.min(0).warning(),
     }),
     defineField({
