@@ -12,6 +12,13 @@ export const siteSettingsType = defineType({
     defineField({ name: 'heroTitleEn', title: 'Hero Title (EN)', type: 'string' }),
     defineField({ name: 'heroSubtitleEs', title: 'Subtítulo Hero (ES)', type: 'text', rows: 3 }),
     defineField({ name: 'heroSubtitleEn', title: 'Hero Subtitle (EN)', type: 'text', rows: 3 }),
+    defineField({ name: 'seoTitleEs', title: 'Título SEO (ES)', type: 'string' }),
+    defineField({ name: 'seoTitleEn', title: 'SEO Title (EN)', type: 'string' }),
+    defineField({ name: 'seoTitleIt', title: 'Titolo SEO (IT)', type: 'string' }),
+    defineField({ name: 'seoDescriptionEs', title: 'Descripción SEO (ES)', type: 'text', rows: 3 }),
+    defineField({ name: 'seoDescriptionEn', title: 'SEO Description (EN)', type: 'text', rows: 3 }),
+    defineField({ name: 'seoDescriptionIt', title: 'Descrizione SEO (IT)', type: 'text', rows: 3 }),
+    defineField({ name: 'seoImage', title: 'Imagen para compartir (Open Graph)', type: 'image', options: { hotspot: true }, description: 'Imagen horizontal recomendada: 1200 x 630 px.' }),
 
     defineField({ name: 'aboutImage', title: 'Imagen Quiénes Somos', type: 'image', options: { hotspot: true } }),
     defineField({ name: 'aboutBadgeEs', title: 'Etiqueta Quiénes Somos (ES)', type: 'string' }),

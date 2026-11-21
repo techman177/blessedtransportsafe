@@ -294,8 +294,22 @@ function RentCarGallery({ images, title, language }: { images: string[]; title: 
   )
 }
 
-export default function HomeClient({ tours, transfers, vehicles, rentCars, settings }: { tours: Tour[]; transfers: TransferRoute[]; vehicles: Vehicle[]; rentCars: RentCar[]; settings: SiteSettings | null }) {
-  const [language, setLanguage] = useState<'es' | 'en' | 'it'>('es')
+export default function HomeClient({
+  tours,
+  transfers,
+  vehicles,
+  rentCars,
+  settings,
+  initialLanguage,
+}: {
+  tours: Tour[]
+  transfers: TransferRoute[]
+  vehicles: Vehicle[]
+  rentCars: RentCar[]
+  settings: SiteSettings | null
+  initialLanguage: 'es' | 'en' | 'it'
+}) {
+  const [language, setLanguage] = useState<'es' | 'en' | 'it'>(initialLanguage)
   const [menuOpen, setMenuOpen] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(0)
   const [activePolicy, setActivePolicy] = useState<'privacy' | 'terms' | 'cancellation' | null>(null)
@@ -555,7 +569,7 @@ Before payment, guests may request written confirmation of the price, pickup det
 
       <section id="top" className="relative pt-20">
         <div className="absolute inset-x-5 top-20 mx-auto h-[420px] max-w-7xl overflow-hidden rounded-3xl bg-slate-100 shadow-sm sm:inset-x-8 sm:h-[470px]">
-          <Image src={heroImage} alt="" fill unoptimized priority sizes="100vw" className="object-cover object-center" />
+          <Image src={heroImage} alt={copy.heroTitle} fill unoptimized priority sizes="100vw" className="object-cover object-center" />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-950/55 via-cyan-950/34 to-cyan-950/12" />
         </div>
         <div className="relative mx-auto max-w-7xl px-5 pb-16 pt-14 sm:px-8 sm:pt-20">
@@ -685,7 +699,7 @@ Before payment, guests may request written confirmation of the price, pickup det
                 <article key={tour._id} className="flex h-full flex-col overflow-hidden rounded-2xl border border-cyan-100 bg-white shadow-sm">
                   <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden rounded-t-2xl bg-slate-50">
                     {tour.imageUrl ? (
-                      <img src={tour.imageUrl} alt={title} className="h-full w-full shrink-0 object-cover object-center" />
+                      <Image src={tour.imageUrl} alt={title} fill unoptimized sizes="(max-width: 768px) 100vw, 50vw" className="object-cover object-center" />
                     ) : (
                       <div className="flex h-full items-center justify-center text-sm font-semibold text-slate-400">{es ? 'Próximamente' : it ? 'Prossimamente' : 'Coming soon'}</div>
                     )}
@@ -923,7 +937,14 @@ Before payment, guests may request written confirmation of the price, pickup det
               </div>
             </div>
             <div className="relative aspect-[3/2] w-full overflow-hidden rounded-2xl border border-cyan-100 bg-slate-50 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
-              <img src={aboutImage} alt="Sobre nosotros" className="absolute inset-0 h-full w-full object-cover object-center" />
+              <Image
+                src={aboutImage}
+                alt={it ? 'Chi siamo e i nostri servizi di trasporto' : es ? 'Quiénes somos y nuestros servicios de transporte' : 'About us and our transportation services'}
+                fill
+                unoptimized
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover object-center"
+              />
             </div>
           </div>
 

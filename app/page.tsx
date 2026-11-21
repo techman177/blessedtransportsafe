@@ -1,7 +1,118 @@
 import HomeClient from '@/app/components/HomeClient'
 import { sanityClient } from '@/app/lib/sanity'
+import type { Metadata } from 'next'
+import { headers } from 'next/headers'
 
 export const revalidate = 0
+
+const siteUrl = 'https://blessedtransportsafe.com'
+
+type SeoSettings = {
+  seoTitleEs?: string | null
+  seoTitleEn?: string | null
+  seoTitleIt?: string | null
+  seoDescriptionEs?: string | null
+  seoDescriptionEn?: string | null
+  seoDescriptionIt?: string | null
+  seoImageUrl?: string | null
+  heroImageUrl?: string | null
+}
+
+const seoSettingsQuery = `*[_type == "siteSettings"][0] {
+  seoTitleEs,
+  seoTitleEn,
+  seoTitleIt,
+  seoDescriptionEs,
+  seoDescriptionEn,
+  seoDescriptionIt,
+  "seoImageUrl": seoImage.asset->url,
+  "heroImageUrl": heroImage.asset->url
+}`
+
+function getLanguage(acceptLanguage: string | null): 'es' | 'en' | 'it' {
+  const languages = acceptLanguage
+    ?.split(',')
+    .map((item) => item.split(';')[0].trim().split('-')[0].toLowerCase())
+
+  return languages?.find((language): language is 'es' | 'en' | 'it' =>
+    language === 'es' || language === 'en' || language === 'it',
+  ) ?? 'es'
+}
+
+const defaultSeo = {
+  es: {
+    title: 'Traslados privados SDQ, PUJ y LRM | Blessed Transport Safe',
+    description: 'Traslados privados desde los aeropuertos SDQ, PUJ y LRM, tours VIP y rent car en República Dominicana. Viaja con seguridad y atención personalizada.',
+    locale: 'es_DO',
+  },
+  en: {
+    title: 'Private Airport Transfers SDQ, PUJ & LRM | Blessed Transport Safe',
+    description: 'Private airport transfers from SDQ, PUJ and LRM, VIP tours and car rental across the Dominican Republic.',
+    locale: 'en_US',
+  },
+  it: {
+    title: 'Transfer aeroportuali SDQ, PUJ e LRM | Blessed Transport Safe',
+    description: 'Transfer privati dagli aeroporti SDQ, PUJ e LRM, tour VIP e noleggio auto nella Repubblica Dominicana.',
+    locale: 'it_IT',
+  },
+} as const
+
+export async function generateMetadata(): Promise<Metadata> {
+  const requestHeaders = await headers()
+  const language = getLanguage(requestHeaders.get('accept-language'))
+  const defaults = defaultSeo[language]
+
+  let settings: SeoSettings | null = null
+  try {
+    settings = await sanityClient.fetch<SeoSettings | null>(seoSettingsQuery)
+  } catch (error) {
+    console.error('Failed to fetch SEO metadata from Sanity', error)
+  }
+
+  const localizedSettings = language === 'es'
+    ? {
+        title: settings?.seoTitleEs,
+        description: settings?.seoDescriptionEs,
+      }
+    : language === 'en'
+      ? {
+          title: settings?.seoTitleEn,
+          description: settings?.seoDescriptionEn,
+        }
+      : {
+          title: settings?.seoTitleIt,
+          description: settings?.seoDescriptionIt,
+        }
+  const title = localizedSettings.title || defaults.title
+  const description = localizedSettings.description || defaults.description
+  const image = settings?.seoImageUrl || settings?.heroImageUrl
+  const imageUrl = image
+    ? `${image}${image.includes('?') ? '&' : '?'}w=1200&h=630&fit=crop&auto=format`
+    : new URL('/og-image.svg', siteUrl).toString()
+
+  return {
+    title: { absolute: title },
+    description,
+    alternates: { canonical: siteUrl },
+    robots: { index: true, follow: true },
+    openGraph: {
+      type: 'website',
+      locale: defaults.locale,
+      alternateLocale: ['es_DO', 'en_US', 'it_IT'].filter((locale) => locale !== defaults.locale),
+      siteName: 'Blessed Transport Safe',
+      url: siteUrl,
+      title,
+      description,
+      images: [{ url: imageUrl, width: 1200, height: 630, alt: title }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [{ url: imageUrl, alt: title }],
+    },
+  }
+}
 
 type Tour = {
   _id: string
@@ -145,6 +256,7 @@ type SiteSettings = {
 }
 
 export default async function Home() {
+  const initialLanguage = getLanguage((await headers()).get('accept-language'))
   const query = `{
     "tours": *[_type == "tour"] | order(coalesce(order, 2147483647) asc, _createdAt asc) {
       _id,
@@ -321,6 +433,7 @@ export default async function Home() {
       vehicles={vehicles}
       rentCars={rentCars}
       settings={settings}
+      initialLanguage={initialLanguage}
     />
   )
 }
