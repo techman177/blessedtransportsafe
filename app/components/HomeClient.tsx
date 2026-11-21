@@ -887,6 +887,15 @@ Before payment, guests may request written confirmation of the price, pickup det
                   ? settings?.safetyTextEs || 'Comprometidos con su seguridad y satisfacción.'
                   : settings?.safetyTextEn || 'Committed to your safety and satisfaction.'}
             </p>
+            {(it ? settings?.aboutDescriptionIt : es ? settings?.aboutDescriptionEs : settings?.aboutDescriptionEn)?.trim() && (
+              <p className="mt-3 max-w-2xl whitespace-pre-line text-base leading-7 text-slate-600">
+                {it
+                  ? settings?.aboutDescriptionIt?.trim()
+                  : es
+                    ? settings?.aboutDescriptionEs?.trim()
+                    : settings?.aboutDescriptionEn?.trim()}
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
