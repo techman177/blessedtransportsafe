@@ -109,10 +109,16 @@ type SiteSettings = {
   whatsappLink?: string
   whatsappFloatingTextEs?: string
   whatsappFloatingTextEn?: string
+  whatsappFloatingTextIt?: string
+  whatsappGreeting?: string
+  whatsappGreetingEn?: string
+  whatsappGreetingIt?: string
   whatsappDefaultMessageEs?: string
   whatsappDefaultMessageEn?: string
+  whatsappDefaultMessageIt?: string
   faqs?: Array<{ questionEs?: string; questionEn?: string; answerEs?: string; answerEn?: string }>
   instagramHandle?: string
+  facebookUrl?: string
   email?: string
   phone?: string
   footerDescriptionEs?: string
@@ -240,11 +246,17 @@ export default async function Home() {
       whatsappLink,
       whatsappFloatingTextEs,
       whatsappFloatingTextEn,
+      whatsappFloatingTextIt,
+      whatsappGreeting,
+      whatsappGreetingEn,
+      whatsappGreetingIt,
       whatsappDefaultMessageEs,
       whatsappDefaultMessageEn,
+      whatsappDefaultMessageIt,
       faqs,
       reviews,
       instagramHandle,
+      facebookUrl,
       email,
       phone,
       footerDescriptionEs,

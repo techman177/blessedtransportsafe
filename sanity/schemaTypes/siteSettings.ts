@@ -41,8 +41,13 @@ export const siteSettingsType = defineType({
     defineField({ name: 'whatsappLink', title: 'Enlace directo de WhatsApp', type: 'url', initialValue: 'https://wa.link/pbnzgo' }),
     defineField({ name: 'whatsappFloatingTextEs', title: 'Texto flotante WhatsApp (ES)', type: 'string', initialValue: '¡Escríbenos!' }),
     defineField({ name: 'whatsappFloatingTextEn', title: 'Floating WhatsApp Text (EN)', type: 'string', initialValue: 'Chat with us!' }),
-    defineField({ name: 'whatsappDefaultMessageEs', title: 'Mensaje predeterminado (ES)', type: 'string' }),
-    defineField({ name: 'whatsappDefaultMessageEn', title: 'Default WhatsApp Message (EN)', type: 'string' }),
+    defineField({ name: 'whatsappFloatingTextIt', title: 'Testo WhatsApp fluttuante (IT)', type: 'string', initialValue: 'Scrivici!' }),
+    defineField({ name: 'whatsappGreeting', title: 'Saludo inicial de WhatsApp', type: 'text', rows: 3, initialValue: '¡Hola Blessed Transport Safe! Gracias por la información, quisiera cotizar un servicio de transporte.' }),
+    defineField({ name: 'whatsappGreetingEn', title: 'WhatsApp Initial Greeting (EN)', type: 'text', rows: 3, initialValue: 'Hello Blessed Transport Safe! Thank you for the information. I would like to request a quote for a transportation service.' }),
+    defineField({ name: 'whatsappGreetingIt', title: 'Saluto iniziale WhatsApp (IT)', type: 'text', rows: 3, initialValue: 'Ciao Blessed Transport Safe! Grazie per le informazioni, vorrei richiedere un preventivo per un servizio di trasporto.' }),
+    defineField({ name: 'whatsappDefaultMessageEs', title: 'Mensaje predeterminado (ES)', type: 'string', initialValue: 'Hola, quiero reservar un servicio VIP. ¿Podrían indicarme disponibilidad y precios? Gracias.' }),
+    defineField({ name: 'whatsappDefaultMessageEn', title: 'Default WhatsApp Message (EN)', type: 'string', initialValue: 'Hello, I would like to book a VIP service. Could you share availability and prices? Thank you.' }),
+    defineField({ name: 'whatsappDefaultMessageIt', title: 'Messaggio predefinito WhatsApp (IT)', type: 'string', initialValue: 'Ciao, vorrei prenotare un servizio VIP. Potreste indicarmi disponibilità e prezzi? Grazie.' }),
 
     defineField({
       name: 'faqs', title: 'Preguntas Frecuentes', type: 'array', of: [{
@@ -73,6 +78,7 @@ export const siteSettingsType = defineType({
     }),
 
     defineField({ name: 'instagramHandle', title: 'Instagram', type: 'string', initialValue: '@BlessedTransportSafe' }),
+    defineField({ name: 'facebookUrl', title: 'Facebook', type: 'url', initialValue: 'https://www.facebook.com/BlessedTransportSafe' }),
     defineField({ name: 'email', title: 'Correo Electrónico Corporativo', type: 'string', initialValue: 'reservas@blessedtransportsafe.com' }),
     defineField({ name: 'phone', title: 'Teléfono / WhatsApp de Contacto', type: 'string', initialValue: '+1 809-447-7101' }),
     defineField({ name: 'footerDescriptionEs', title: 'Descripción del footer (ES)', type: 'string' }),

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { CalendarDays, Camera, CarFront, CheckCircle, ChevronDown, ChevronLeft, ChevronRight, Circle, Clock3, Mail, MessageCircle, ShieldCheck, Users, X } from 'lucide-react'
+import { CalendarDays, CarFront, CheckCircle, ChevronDown, ChevronLeft, ChevronRight, Clock3, Mail, MessageCircle, ShieldCheck, Users, X } from 'lucide-react'
 
 export type Tour = {
   _id: string
@@ -114,12 +114,18 @@ export type SiteSettings = {
   whatsappLink?: string
   whatsappFloatingTextEs?: string
   whatsappFloatingTextEn?: string
+  whatsappFloatingTextIt?: string
+  whatsappGreeting?: string
+  whatsappGreetingEn?: string
+  whatsappGreetingIt?: string
   whatsappDefaultMessageEs?: string
   whatsappDefaultMessageEn?: string
+  whatsappDefaultMessageIt?: string
   showPromoVideo?: boolean
   promoVideoUrl?: string
   faqs?: Array<{ questionEs?: string; questionEn?: string; answerEs?: string; answerEn?: string }>
   instagramHandle?: string
+  facebookUrl?: string
   email?: string
   phone?: string
   footerDescriptionEs?: string
@@ -202,6 +208,24 @@ const WHATSAPP_LINK = 'https://wa.link/pbnzgo'
 
 function whatsappUrl(message: string) {
   return `${WHATSAPP_ME}?text=${encodeURIComponent(message)}`
+}
+
+function normalizeInstagramUrl(value?: string): string {
+  const fallback = 'https://www.instagram.com/blessedtransportsafe/'
+  const trimmed = value?.trim()
+  if (!trimmed) return fallback
+  if (/^https?:\/\//i.test(trimmed)) return trimmed
+  const handle = trimmed.replace(/^@/, '').replace(/^instagram\.com\//i, '').replace(/^www\.instagram\.com\//i, '').replace(/[/?#].*$/, '').trim()
+  return handle ? `https://www.instagram.com/${encodeURIComponent(handle)}/` : fallback
+}
+
+function normalizeFacebookUrl(value?: string): string {
+  const fallback = 'https://www.facebook.com/BlessedTransportSafe'
+  const trimmed = value?.trim()
+  if (!trimmed) return fallback
+  if (/^https?:\/\//i.test(trimmed)) return trimmed
+  const page = trimmed.replace(/^@/, '').replace(/^facebook\.com\//i, '').replace(/^www\.facebook\.com\//i, '').replace(/[/?#].*$/, '').trim()
+  return page ? `https://www.facebook.com/${encodeURIComponent(page)}` : fallback
 }
 
 function RentCarGallery({ images, title, language }: { images: string[]; title: string; language: Language }) {
@@ -295,17 +319,26 @@ export default function HomeClient({ tours, transfers, vehicles, rentCars, setti
       : { tours: 'Tours', transfers: 'Transfers', fleet: 'Fleet', rent: 'Rent Car', about: 'About Us', reviews: 'Reviews', faq: 'FAQ', book: 'Book Now', heroBadge: settings?.heroBadgeEn || 'VIP service in the Dominican Republic', heroTitle: settings?.heroTitleEn || 'Your trip, safe, comfortable and worry-free', heroSubtitle: settings?.heroSubtitleEn || 'Private transfers, exclusive tours and comfortable vehicles with personalized 24-hour assistance.', heroCta: 'Book on WhatsApp', toursCta: 'Explore Tours', toursTitle: settings?.toursTitleEn || 'Tours & excursions', toursSubtitle: settings?.toursSubtitleEn || 'Discover the best destinations in the Dominican Republic.', transfersTitle: settings?.transfersTitleEn || 'Private VIP transfers', transfersSubtitle: settings?.transfersSubtitleEn || 'Point-to-point service with professional drivers and air-conditioned vehicles.', rentTitle: settings?.rentTitleEn || 'Rent Car for limitless exploration', rentSubtitle: settings?.rentSubtitleEn || 'Vehicles available for your itinerary.', aboutBadge: settings?.aboutBadgeEn || 'About Us', aboutTitle: settings?.aboutTitleEn || 'VIP experiences tailored to you', aboutDescription: settings?.aboutDescriptionEn || 'We are a Dominican company specializing in private transfers, excursions and rent car.', quote: 'Get Quote on WhatsApp', priceQuote: 'Price via WhatsApp', faqTitle: 'Frequently Asked Questions', footerDescription: settings?.footerDescriptionEn || 'VIP Transfers, tours and rent car in the Dominican Republic.' }
 
   const whatsappNumber = settings?.whatsappNumber || `+1 ${WHATSAPP_PHONE.slice(1,4)}-${WHATSAPP_PHONE.slice(4,7)}-${WHATSAPP_PHONE.slice(7)}`
-  const whatsappLink = settings?.whatsappLink || 'https://wa.link/pbnzgo'
   const whatsappMe = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}`
-  const defaultMessage = es
-    ? settings?.whatsappDefaultMessageEs || 'Hola, quiero reservar un servicio VIP.'
+  const whatsappGreeting = es
+    ? settings?.whatsappGreeting?.trim() || '¡Hola Blessed Transport Safe! Gracias por la información, quisiera cotizar un servicio de transporte.'
     : it
-      ? 'Ciao, vorrei prenotare un servizio VIP.'
-      : settings?.whatsappDefaultMessageEn || 'Hello, I would like to book a VIP service.'
-  const floatingText = es ? settings?.whatsappFloatingTextEs || '¡Escríbenos!' : settings?.whatsappFloatingTextEn || 'Chat with us!'
+      ? settings?.whatsappGreetingIt?.trim() || 'Ciao Blessed Transport Safe! Grazie per le informazioni, vorrei richiedere un preventivo per un servizio di trasporto.'
+      : settings?.whatsappGreetingEn?.trim() || 'Hello Blessed Transport Safe! Thank you for the information. I would like to request a quote for a transportation service.'
+  const defaultMessage = es
+    ? `${whatsappGreeting} ¿Podrían indicarme disponibilidad y precios? Gracias.`
+    : it
+      ? `${whatsappGreeting} Potreste indicarmi disponibilità e prezzi? Grazie.`
+      : `${whatsappGreeting} Could you share availability and prices? Thank you.`
+  const floatingText = es
+    ? settings?.whatsappFloatingTextEs || '¡Escríbenos!'
+    : it
+      ? settings?.whatsappFloatingTextIt || 'Scrivici!'
+      : settings?.whatsappFloatingTextEn || 'Chat with us!'
   const heroImage = settings?.heroImageUrl || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1800&q=88'
   const aboutImage = settings?.aboutImageUrl || 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=85'
-  const instagramHandle = settings?.instagramHandle || '@BlessedTransportSafe'
+  const instagramUrl = normalizeInstagramUrl(settings?.instagramHandle)
+  const facebookUrl = normalizeFacebookUrl(settings?.facebookUrl)
   const contactEmail = settings?.email?.trim() || 'reservas@blessedtransportsafe.com'
   const contactPhone = settings?.phone?.trim() || '+1 809-447-7101'
   const contactPhoneDigits = contactPhone.replace(/[^0-9]/g, '')
@@ -314,12 +347,12 @@ export default function HomeClient({ tours, transfers, vehicles, rentCars, setti
 
   const getWhatsappUrl = (message: string) => `${whatsappMe}?text=${encodeURIComponent(message)}`
   const getServiceWhatsappUrl = (serviceName: string) => {
-    const prefix = es
-      ? 'Hola, me interesa '
+    const suffix = es
+      ? ` Quisiera consultar por ${serviceName}. ¿Podrían compartir disponibilidad y precios? Gracias.`
       : it
-        ? 'Ciao, mi interessa '
-        : 'Hello, I am interested in '
-    return getWhatsappUrl(`${prefix}${serviceName}`)
+        ? ` Vorrei avere informazioni su ${serviceName}. Potreste indicare disponibilità e prezzi? Grazie.`
+        : ` I would like information about ${serviceName}. Could you share availability and prices? Thank you.`
+    return getWhatsappUrl(`${whatsappGreeting}${suffix}`)
   }
 
   const fallbackTours: Tour[] = [
@@ -932,10 +965,28 @@ Before payment, guests may request written confirmation of the price, pickup det
               <button type="button" onClick={() => setActivePolicy('privacy')} className="text-left text-sm text-slate-500 hover:text-cyan-700">{policyContent.privacy.title}</button>
               <button type="button" onClick={() => setActivePolicy('terms')} className="text-left text-sm text-slate-500 hover:text-cyan-700">{policyContent.terms.title}</button>
               <div className="col-span-2 flex items-center gap-4 sm:col-span-3" aria-label={es ? 'Redes sociales' : 'Social media'}>
-                <a href="#" aria-label="Facebook" className="text-slate-500 transition hover:text-cyan-700">
-                  <span className="relative grid h-5 w-5 place-items-center"><Circle className="absolute h-5 w-5" /><span className="text-xs font-bold">f</span></span>
+                <a href={facebookUrl} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="grid h-8 w-8 place-items-center rounded-full transition hover:scale-105">
+                  <svg viewBox="0 0 24 24" className="h-7 w-7" aria-hidden="true">
+                    <circle cx="12" cy="12" r="12" fill="#1877F2" />
+                    <path d="M13.35 22v-8.7h2.92l.44-3.39h-3.36V7.67c0-.98.27-1.65 1.68-1.65h1.79V3.02a24 24 0 0 0-2.61-.13c-2.58 0-4.35 1.58-4.35 4.47v2.55H6.92v3.39h2.94V22h3.49Z" fill="#fff" />
+                  </svg>
                 </a>
-                <a href="#" aria-label="Instagram" className="text-slate-500 transition hover:text-cyan-700"><Camera className="h-5 w-5" /></a>
+                <a href={instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="grid h-8 w-8 place-items-center transition hover:scale-105">
+                  <svg viewBox="0 0 24 24" className="h-7 w-7" aria-hidden="true">
+                    <defs>
+                      <radialGradient id="instagramGradient" cx="30%" cy="107%" r="120%">
+                        <stop offset="0%" stopColor="#FDF497" />
+                        <stop offset="45%" stopColor="#FDF497" />
+                        <stop offset="60%" stopColor="#FD5949" />
+                        <stop offset="90%" stopColor="#D6249F" />
+                        <stop offset="100%" stopColor="#285AEB" />
+                      </radialGradient>
+                    </defs>
+                    <rect x="2" y="2" width="20" height="20" rx="6" fill="url(#instagramGradient)" />
+                    <circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" strokeWidth="2" />
+                    <circle cx="17.5" cy="6.5" r="1.25" fill="#fff" />
+                  </svg>
+                </a>
               </div>
             </div>
             <div className="min-w-0 sm:w-64">
@@ -992,7 +1043,7 @@ Before payment, guests may request written confirmation of the price, pickup det
         </div>
       )}
       <a
-        href={whatsappLink || getWhatsappUrl(defaultMessage)}
+        href={getWhatsappUrl(defaultMessage)}
         target="_blank"
         rel="noopener noreferrer"
         aria-label={es ? 'Chatear por WhatsApp' : 'Chat on WhatsApp'}
