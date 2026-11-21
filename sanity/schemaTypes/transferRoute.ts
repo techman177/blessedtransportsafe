@@ -64,8 +64,9 @@ export const transferRouteType = defineType({
     }),
     defineField({
       name: 'privateRateUsd',
-      title: 'Tarifa privada en USD',
+      title: 'Tarifa privada en USD ($)',
       type: 'number',
+      description: 'Ingrese únicamente el monto numérico, sin el signo $.',
       validation: (Rule) => Rule.min(0).warning(),
     }),
     defineField({

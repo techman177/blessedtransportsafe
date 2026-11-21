@@ -53,8 +53,9 @@ export const rentCarType = defineType({
     }),
     defineField({
       name: 'pricePerDay',
-      title: 'Precio por día',
+      title: 'Precio por día (USD $)',
       type: 'number',
+      description: 'Ingrese únicamente el monto numérico, sin el signo $.',
       validation: (Rule) => Rule.min(0).warning(),
     }),
     defineField({

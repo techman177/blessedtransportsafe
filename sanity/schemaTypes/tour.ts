@@ -39,8 +39,9 @@ export const tourType = defineType({
     }),
     defineField({
       name: 'priceUsd',
-      title: 'Precio en USD (Opcional)',
+      title: 'Precio en USD ($) (Opcional)',
       type: 'number',
+      description: 'Ingrese únicamente el monto numérico, sin el signo $.',
       validation: (Rule) => Rule.min(0).warning(),
     }),
     defineField({

@@ -22,8 +22,9 @@ export const routeType = defineType({
     }),
     defineField({
       name: 'priceUsd',
-      title: 'Tarifa privada en USD',
+      title: 'Tarifa privada en USD ($)',
       type: 'number',
+      description: 'Ingrese únicamente el monto numérico, sin el signo $.',
       validation: (Rule) => Rule.min(0).warning(),
     }),
     defineField({

@@ -54,8 +54,9 @@ export const vehicleType = defineType({
     }),
     defineField({
       name: 'dailyRateUsd',
-      title: 'Tarifa diaria en USD',
+      title: 'Tarifa diaria en USD ($)',
       type: 'number',
+      description: 'Ingrese únicamente el monto numérico, sin el signo $.',
       validation: (Rule) => Rule.min(0).warning(),
     }),
     defineField({
