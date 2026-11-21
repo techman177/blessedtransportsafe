@@ -23,6 +23,7 @@ type Tour = {
 
 type TransferRoute = {
   _id: string
+  order?: number
   title?: string
   titleEn?: string
   titleIt?: string
@@ -161,8 +162,9 @@ export default async function Home() {
       featured,
       "imageUrl": image.asset->url
     },
-    "transfers": *[_type in ["transferRoute", "airportRoute"]] | order(featured desc, title asc) {
+    "transfers": *[_type in ["transferRoute", "airportRoute"]] | order(coalesce(order, 2147483647) asc, _createdAt asc) {
       _id,
+      order,
       title,
       titleEn,
       titleIt,
